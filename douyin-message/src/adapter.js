@@ -602,7 +602,11 @@ class NetworkCapture {
     }
     if (body.length > 10 * 1024 * 1024) return;
     if (isProtobuf) {
-      if (this.protobuf.length < 100) this.protobuf.push({ url: cleanResourceUrl(response.url()), value: body });
+      if (this.protobuf.length < 100) this.protobuf.push({
+        url: cleanResourceUrl(response.url()),
+        status: response.status(),
+        value: body,
+      });
       return;
     }
     try {
@@ -754,13 +758,30 @@ async function detectLogin(session) {
   const url = session.page.url();
   const title = await session.page.title().catch(() => "");
   const verification = /验证码|安全验证|verification|captcha/i.test(title) || /verify|captcha/i.test(url);
-  if (verification) return { valid: false, status: "verification_required", message_entry: false, reason_code: "VERIFICATION_REQUIRED" };
+  const verificationPanel = await firstVisible(session.page, [
+    '[id*="captcha" i]',
+    '[class*="captcha" i]',
+    '[id*="verify" i]',
+    '[class*="verify" i]',
+    'text=/请输入验证码|安全验证|拖动滑块/',
+  ]);
+  if (verification || verificationPanel) return { valid: false, status: "verification_required", message_entry: false, reason_code: "VERIFICATION_REQUIRED" };
   const loginUrl = /passport|login/i.test(url);
   const loginPanel = await firstVisible(session.page, ['[id^="login-full-panel"]', '[class*="login-full-panel"]']);
   const messageEntry = await firstVisible(session.page, SELECTORS.messageEntry);
   const loginButton = await firstVisible(session.page, ['button:has-text("登录")', 'a:has-text("登录")', '[data-e2e="login-button"]']);
   if (loginUrl || loginPanel || (!messageEntry && loginButton)) return { valid: false, status: "login_required", message_entry: false, reason_code: "LOGIN_REQUIRED" };
-  if (new URL(url).pathname === "/chat") return { valid: true, status: "valid", message_entry: false, reason_code: null };
+  const initializedImSession = (session.capture?.protobuf || []).some((response) => (
+    response.url?.includes("/v1/message/get_message_by_init")
+    && response.status >= 200
+    && response.status < 300
+    && response.value?.length > 0
+  ));
+  if (new URL(url).pathname === "/chat") {
+    return initializedImSession
+      ? { valid: true, status: "valid", message_entry: false, reason_code: null }
+      : { valid: false, status: "login_required", message_entry: false, reason_code: "LOGIN_REQUIRED" };
+  }
   return { valid: Boolean(messageEntry), status: messageEntry ? "valid" : "verification_required", message_entry: Boolean(messageEntry), reason_code: messageEntry ? null : "VERIFICATION_REQUIRED" };
 }
 

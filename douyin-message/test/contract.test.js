@@ -2,10 +2,70 @@
 
 const assert = require("node:assert/strict");
 const test = require("node:test");
-const { MESSAGE_BODY_FIELDS, NetworkCapture, buildLaunchOptions, enrichDirectConversationNames, extractProtobufConversations, extractProtobufGroups, extractProtobufMessages, locateMessageByText, mergeDiscoveredConversations, normalizeConversationCandidate, normalizeDomConversationSnapshot, normalizeDomGroupSnapshot, normalizeGroupCandidate, normalizeMessageCandidate } = require("../src/adapter");
+const { MESSAGE_BODY_FIELDS, NetworkCapture, buildLaunchOptions, detectLogin, enrichDirectConversationNames, extractProtobufConversations, extractProtobufGroups, extractProtobufMessages, locateMessageByText, mergeDiscoveredConversations, normalizeConversationCandidate, normalizeDomConversationSnapshot, normalizeDomGroupSnapshot, normalizeGroupCandidate, normalizeMessageCandidate } = require("../src/adapter");
 const { fieldDiff, inventoryValues, redactShape } = require("../src/page-doctor");
 const { parseGroupSelection } = require("../src/commands");
 const { decodeFields, encodeFields, redactEndpoint, redactSendResponse, rewriteSignedSendRequest } = require("../src/protocol");
+
+function chatLoginSession(protobuf = [], { verificationPanel = false } = {}) {
+  const invisibleLocator = {
+    count: async () => 0,
+    isVisible: async () => false,
+  };
+  const visibleLocator = {
+    count: async () => 1,
+    isVisible: async () => true,
+  };
+  return {
+    page: {
+      url: () => "https://www.douyin.com/chat",
+      title: async () => "Douyin Chat",
+      locator: (selector) => ({ first: () => (verificationPanel && selector.includes("验证码") ? visibleLocator : invisibleLocator) }),
+    },
+    capture: { protobuf },
+  };
+}
+
+test("chat route without IM initialization remains login-required", async () => {
+  const login = await detectLogin(chatLoginSession());
+  assert.deepEqual(login, {
+    valid: false,
+    status: "login_required",
+    message_entry: false,
+    reason_code: "LOGIN_REQUIRED",
+  });
+});
+
+test("chat route requires a successful nonempty IM initialization response", async () => {
+  const denied = await detectLogin(chatLoginSession([{
+    url: "https://imapi.douyin.com/v1/message/get_message_by_init",
+    status: 401,
+    value: Buffer.from([0x08, 0x02]),
+  }]));
+  assert.equal(denied.valid, false);
+
+  const login = await detectLogin(chatLoginSession([{
+    url: "https://imapi.douyin.com/v1/message/get_message_by_init",
+    status: 200,
+    value: Buffer.from([0x08, 0x02]),
+  }]));
+  assert.equal(login.valid, true);
+  assert.equal(login.status, "valid");
+});
+
+test("visible captcha blocks login even when an old IM initialization response exists", async () => {
+  const login = await detectLogin(chatLoginSession([{
+    url: "https://imapi.douyin.com/v1/message/get_message_by_init",
+    status: 200,
+    value: Buffer.from([0x08, 0x02]),
+  }], { verificationPanel: true }));
+  assert.deepEqual(login, {
+    valid: false,
+    status: "verification_required",
+    message_entry: false,
+    reason_code: "VERIFICATION_REQUIRED",
+  });
+});
 
 test("structured group and message candidates normalize stable identifiers", () => {
   const group = normalizeGroupCandidate({ conversation_id: "c1", conversation_type: 2, name: "测试群", update_time: 1760000000 });

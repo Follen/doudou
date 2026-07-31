@@ -1,0 +1,213 @@
+{
+  "schema": "comet.native.content-snapshot-projection.v1",
+  "origin": "change-created",
+  "capture": {
+    "provider": "git"
+  },
+  "complete": true,
+  "limits": {
+    "maxFiles": 10000,
+    "maxFileBytes": 268435456,
+    "maxTotalBytes": 268435456,
+    "maxManifestBytes": 1048576,
+    "maxDurationMs": 60000
+  },
+  "policy": {
+    "schema": "comet.native.snapshot-policy.v1",
+    "include": [
+      "**/*"
+    ],
+    "exclude": [],
+    "hash": "cc34dce5671bc1aefad09b658911a71d0434a26a1fbb4d8ba10de57b316f1f2f"
+  },
+  "entries": [
+    {
+      "path": "docs/protobuf-message-fields.md",
+      "hash": "b41b6808406840c3837244c007bb8ea4033b09af1743519d28ac4ac6ae8207a0",
+      "size": 3287,
+      "type": "file"
+    },
+    {
+      "path": "douyin-message/.gitignore",
+      "hash": "76996f411eb571e40adc37ba2b3577c18c3efcc2f69539830131f4031db033be",
+      "size": 117,
+      "type": "file"
+    },
+    {
+      "path": "douyin-message/SKILL.md",
+      "hash": "119ff339fbc49d5753e3a0954a046f6e36a236459a874e7dc8922acf4ff76688",
+      "size": 6592,
+      "type": "file"
+    },
+    {
+      "path": "douyin-message/agents/openai.yaml",
+      "hash": "ea043c7de8a822989be83e7bf72fbb58bd8e7bebddcdb189d5fed613ab40ebee",
+      "size": 288,
+      "type": "file"
+    },
+    {
+      "path": "douyin-message/bin/douyin-message.js",
+      "hash": "2ead0bd37f8f09721067dfe1eaa4be8b10c7a7902ddc4ffb9100e8c2abe92579",
+      "size": 517,
+      "type": "file"
+    },
+    {
+      "path": "douyin-message/npm-shrinkwrap.json",
+      "hash": "09eca1cd8caee31c4a6dc9dd2a19fb7acf90e5187994cd8ef63d5ef73f5d56ba",
+      "size": 1802,
+      "type": "file"
+    },
+    {
+      "path": "douyin-message/package.json",
+      "hash": "637c4a91c0953132f7e42aa42f5496280da2db21ca3fce6e2e2ec1929893e827",
+      "size": 731,
+      "type": "file"
+    },
+    {
+      "path": "douyin-message/references/layout.md",
+      "hash": "629f725dbae13f6ab4b5a529285754965bd68512e1884ba2d28eef5e032c16d8",
+      "size": 3157,
+      "type": "file"
+    },
+    {
+      "path": "douyin-message/references/protobuf-message-fields.md",
+      "hash": "0cb56b7e7b26a688357b727b8b93051ee2485fc5a0e537ef31ada1861cd1aecf",
+      "size": 3497,
+      "type": "file"
+    },
+    {
+      "path": "douyin-message/scripts/capture-headed-send.js",
+      "hash": "6efa535b2ce8508fb13496f7b4ad7ce5924c1e5ee36d83c0c4cb574838408195",
+      "size": 6356,
+      "type": "file"
+    },
+    {
+      "path": "douyin-message/src/adapter.js",
+      "hash": "fe3e776ba93c5c39568c0f5fb78a93eda3a7adea6273d9aa7ad199cf8944cf47",
+      "size": 54309,
+      "type": "file"
+    },
+    {
+      "path": "douyin-message/src/cli.js",
+      "hash": "c42587f65e53b8a9a0b73ef61a9214dc13a6f81ef26b4f4409a2985bbfac00e1",
+      "size": 4428,
+      "type": "file"
+    },
+    {
+      "path": "douyin-message/src/commands.js",
+      "hash": "f820ff94e5559606e2b82d40847de1ee47265e9c5d726401eafc566f33719c55",
+      "size": 38526,
+      "type": "file"
+    },
+    {
+      "path": "douyin-message/src/core.js",
+      "hash": "d47b0784ae991d86367ad57e600772a2f69a8fa5defd56d70b0657e63aa824f8",
+      "size": 5793,
+      "type": "file"
+    },
+    {
+      "path": "douyin-message/src/doctor.js",
+      "hash": "cac1a494b3745439a87150d2f16f77c969ec54770367c5ba6ac31565491c2d53",
+      "size": 5631,
+      "type": "file"
+    },
+    {
+      "path": "douyin-message/src/fingerprint.js",
+      "hash": "6e149ebe251c80f5dd95d121ba3cccf75a6a66eb8e0b60ff4b45f6d57216103c",
+      "size": 25117,
+      "type": "file"
+    },
+    {
+      "path": "douyin-message/src/page-doctor.js",
+      "hash": "50b8fb0bdbe8bf94b430576cba14191d6c5216889cc2d8d26814d58b61fd693d",
+      "size": 11703,
+      "type": "file"
+    },
+    {
+      "path": "douyin-message/src/profile.js",
+      "hash": "167be671c68842bdd52511dc442d34dc5907449c00e41e60c1d23e535ddb4600",
+      "size": 9868,
+      "type": "file"
+    },
+    {
+      "path": "douyin-message/src/protocol.js",
+      "hash": "3d0b2bd1bf40e347ee103a08fa57bb46da93864ba7babd7c67ee9481f423e799",
+      "size": 15085,
+      "type": "file"
+    },
+    {
+      "path": "douyin-message/src/resolver.js",
+      "hash": "73a4dbd01687037d100bcae3f4c7d15b73848f057f86a7fb741da3997d0e5035",
+      "size": 3533,
+      "type": "file"
+    },
+    {
+      "path": "douyin-message/src/schemas.js",
+      "hash": "a2701f81a94bb1e72d7e51ca41ec7d088e23a8ff2c90477adab8e480856de6f3",
+      "size": 4428,
+      "type": "file"
+    },
+    {
+      "path": "douyin-message/src/storage.js",
+      "hash": "cef406997261c7b13a776628b875f70f12b837c247b2bf7bf09d178ce9d611dc",
+      "size": 20174,
+      "type": "file"
+    },
+    {
+      "path": "douyin-message/src/warmup.js",
+      "hash": "c5d1b23370b85b2cb122648d3d196b971189ff515a1633af4cee1ebe9ab11423",
+      "size": 4900,
+      "type": "file"
+    },
+    {
+      "path": "douyin-message/test/cli.test.js",
+      "hash": "04f7047d92e1bc9ae7677c7471fea75cb5f2db507582c5816b67988fef70cfa0",
+      "size": 9656,
+      "type": "file"
+    },
+    {
+      "path": "douyin-message/test/contract.test.js",
+      "hash": "5a12bd6e2bcac01f4e09ad592c1b50ad36217ac9190c217ceed5e9becbbf2cac",
+      "size": 18771,
+      "type": "file"
+    },
+    {
+      "path": "douyin-message/test/core.test.js",
+      "hash": "f67bcfecc87086c7ac464500f6e8f5174763ae802359931795962ceda3522743",
+      "size": 1508,
+      "type": "file"
+    },
+    {
+      "path": "douyin-message/test/fingerprint.test.js",
+      "hash": "773869c59e0dc17160a1d75d0b2ad831006b30ee62e8c0c952687293c3a3940e",
+      "size": 6179,
+      "type": "file"
+    },
+    {
+      "path": "douyin-message/test/profile.test.js",
+      "hash": "aabf061fccf64d192d8ddb6cb213cfe4b77b2eec454de0374d3c9471a1e715fe",
+      "size": 3565,
+      "type": "file"
+    },
+    {
+      "path": "douyin-message/test/resolver.test.js",
+      "hash": "4cbaf13ab6aebe861087dc684f3b99a60e6a2f28102732019cb2b8945eadcef5",
+      "size": 2869,
+      "type": "file"
+    },
+    {
+      "path": "douyin-message/test/storage.test.js",
+      "hash": "a354b3347109cb7922833a9b33c2af7b7fb3bea2a81de4056916839a9e9c1d8a",
+      "size": 6697,
+      "type": "file"
+    },
+    {
+      "path": "douyin-message/test/warmup.test.js",
+      "hash": "deae3a41ece38ba7102e60fbbb1701d9067f26c0e7e5d1c5990c65c47c9d93c3",
+      "size": 2247,
+      "type": "file"
+    }
+  ],
+  "omitted": [],
+  "omittedCount": 0
+}

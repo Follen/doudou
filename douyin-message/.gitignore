@@ -1,0 +1,7 @@
+node_modules/
+profile/
+# Legacy root is ignored until the CLI migrates it to profile/.
+Profile/
+message/
+dist/
+*.log

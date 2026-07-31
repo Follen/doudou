@@ -1,0 +1,495 @@
+{
+  "schema": "comet.native.content-snapshot-projection.v1",
+  "origin": "change-created",
+  "capture": {
+    "provider": "git"
+  },
+  "complete": true,
+  "limits": {
+    "maxFiles": 10000,
+    "maxFileBytes": 268435456,
+    "maxTotalBytes": 268435456,
+    "maxManifestBytes": 1048576,
+    "maxDurationMs": 60000
+  },
+  "policy": {
+    "schema": "comet.native.snapshot-policy.v1",
+    "include": [
+      "**/*"
+    ],
+    "exclude": [],
+    "hash": "cc34dce5671bc1aefad09b658911a71d0434a26a1fbb4d8ba10de57b316f1f2f"
+  },
+  "entries": [
+    {
+      "path": ".agents/skills/comet-any/SKILL.md",
+      "hash": "49d907f2813e5912159022d0c58d5db9c43843f70f655b527cd4026cea924245",
+      "size": 7986,
+      "type": "file"
+    },
+    {
+      "path": ".agents/skills/comet-any/reference/authored-zone-example.md",
+      "hash": "440f1e4ef3f9ba2404110ed0a220492b0c902e5f4ed8a0346be69eedaf2e6a08",
+      "size": 8362,
+      "type": "file"
+    },
+    {
+      "path": ".agents/skills/comet-any/reference/authoring-subagents.md",
+      "hash": "6fbbee8ceb9c3fd7844e9d9f9336f8cbc1e3d79b7f318120498d23eb35512b11",
+      "size": 6534,
+      "type": "file"
+    },
+    {
+      "path": ".agents/skills/comet-any/reference/bundle-authoring.md",
+      "hash": "5c3199221e608b20f70e4ebc06c44b1a82b848af3740c069aa1c8a29ee77e500",
+      "size": 6432,
+      "type": "file"
+    },
+    {
+      "path": ".agents/skills/comet-any/reference/eval-provider.md",
+      "hash": "5998c9588c18dc52413f73a7b2ed50d28081e682f2a28b4ba44018c448d61e5b",
+      "size": 3218,
+      "type": "file"
+    },
+    {
+      "path": ".agents/skills/comet-any/reference/subagents/pause-points-author.md",
+      "hash": "543a34062573b5e6f8c47e37650cb450cf81edde4c618ef346f4fc079a076f75",
+      "size": 4515,
+      "type": "file"
+    },
+    {
+      "path": ".agents/skills/comet-any/reference/subagents/reference-author.md",
+      "hash": "6ded3e85ef29003236a78d82bed92100f851e1928857bc7ae29c2258ff7cc733",
+      "size": 3273,
+      "type": "file"
+    },
+    {
+      "path": ".agents/skills/comet-any/reference/subagents/script-author.md",
+      "hash": "c54904e095445b02ba8ef0e6ca21253aa980193a7feaf7c715b1eea85550b4aa",
+      "size": 3785,
+      "type": "file"
+    },
+    {
+      "path": ".agents/skills/comet-any/reference/subagents/skill-core-author.md",
+      "hash": "84ef68efec0e7b708f09ce5988575a087b63089b38849ef394c70ed3db66f895",
+      "size": 7302,
+      "type": "file"
+    },
+    {
+      "path": ".agents/skills/comet-any/reference/subagents/skill-reviewer.md",
+      "hash": "9e3fd0743297f1bc8d196ffcdb1704c4bdfc6c08ff14b2a05b7340c6b1c7f013",
+      "size": 6777,
+      "type": "file"
+    },
+    {
+      "path": ".agents/skills/comet-any/reference/subagents/workflow-entry-author.md",
+      "hash": "cef96c63ec69966719c7a3059abf39a358bd610ba75153b98978ab08fdc4083f",
+      "size": 6427,
+      "type": "file"
+    },
+    {
+      "path": ".agents/skills/comet-native/SKILL.md",
+      "hash": "7182d95ab2ee74916fc9d666339f5d40b7027002130546334a77327361bfa87a",
+      "size": 23620,
+      "type": "file"
+    },
+    {
+      "path": ".agents/skills/comet-native/reference/artifacts.md",
+      "hash": "3342cf0e73212a28408b193cb65fb0e3ea3604eea397ca2d38b3653f8244e079",
+      "size": 14312,
+      "type": "file"
+    },
+    {
+      "path": ".agents/skills/comet-native/reference/commands.md",
+      "hash": "f54caf112db3203e1b98511c915036e961c7cc5107e18e72a0599516d43244e6",
+      "size": 8938,
+      "type": "file"
+    },
+    {
+      "path": ".agents/skills/comet-native/reference/recovery.md",
+      "hash": "eeee898d3b8c6a32c1e9bb0ff4179015b28045f169c51c9d396ba7037720b641",
+      "size": 12069,
+      "type": "file"
+    },
+    {
+      "path": ".agents/skills/comet-native/scripts/comet-native-hook-guard.mjs",
+      "hash": "819de5cb6b2e32e79e6978988b50083a3faf2247683ff09d57d335883752c19d",
+      "size": 145,
+      "type": "file"
+    },
+    {
+      "path": ".agents/skills/comet-native/scripts/comet-native-runtime.mjs",
+      "hash": "ea4476965f04a81dc1c4d7868c90bae4ca91d98cebabf3d684d5ce0f3441649d",
+      "size": 1145894,
+      "type": "file"
+    },
+    {
+      "path": ".agents/skills/comet/SKILL.md",
+      "hash": "7a7262b67bc15afcd14d246243db9e6e7713988bbc8be6bee06f6f610b549329",
+      "size": 1343,
+      "type": "file"
+    },
+    {
+      "path": ".agents/skills/comet/scripts/comet-entry-runtime.mjs",
+      "hash": "d9f03607329ec1d58b668d86d5e175b589b401e92d294d68101aaf1afbb7b6c9",
+      "size": 289020,
+      "type": "file"
+    },
+    {
+      "path": ".agents/skills/comet/scripts/comet-hook-router.mjs",
+      "hash": "ef8f37e3267c8753bf095c1c95718e425a69102884f6cebefe066acd0d9b3d1b",
+      "size": 386166,
+      "type": "file"
+    },
+    {
+      "path": ".agents/skills/douyin-message/.gitignore",
+      "hash": "76996f411eb571e40adc37ba2b3577c18c3efcc2f69539830131f4031db033be",
+      "size": 117,
+      "type": "file"
+    },
+    {
+      "path": ".agents/skills/douyin-message/SKILL.md",
+      "hash": "6580dda68b428441198332c029288f81c7df54fef5ca687d02421f5906bc456e",
+      "size": 4964,
+      "type": "file"
+    },
+    {
+      "path": ".agents/skills/douyin-message/agents/openai.yaml",
+      "hash": "ea043c7de8a822989be83e7bf72fbb58bd8e7bebddcdb189d5fed613ab40ebee",
+      "size": 288,
+      "type": "file"
+    },
+    {
+      "path": ".agents/skills/douyin-message/bin/douyin-message.js",
+      "hash": "2ead0bd37f8f09721067dfe1eaa4be8b10c7a7902ddc4ffb9100e8c2abe92579",
+      "size": 517,
+      "type": "file"
+    },
+    {
+      "path": ".agents/skills/douyin-message/npm-shrinkwrap.json",
+      "hash": "09eca1cd8caee31c4a6dc9dd2a19fb7acf90e5187994cd8ef63d5ef73f5d56ba",
+      "size": 1802,
+      "type": "file"
+    },
+    {
+      "path": ".agents/skills/douyin-message/package.json",
+      "hash": "637c4a91c0953132f7e42aa42f5496280da2db21ca3fce6e2e2ec1929893e827",
+      "size": 731,
+      "type": "file"
+    },
+    {
+      "path": ".agents/skills/douyin-message/references/layout.md",
+      "hash": "cab09f6bc67f63e339269b8b00574497ce42af034e8fbb7850904b488a938667",
+      "size": 2800,
+      "type": "file"
+    },
+    {
+      "path": ".agents/skills/douyin-message/references/protobuf-message-fields.md",
+      "hash": "0cb56b7e7b26a688357b727b8b93051ee2485fc5a0e537ef31ada1861cd1aecf",
+      "size": 3497,
+      "type": "file"
+    },
+    {
+      "path": ".agents/skills/douyin-message/scripts/capture-headed-send.js",
+      "hash": "6efa535b2ce8508fb13496f7b4ad7ce5924c1e5ee36d83c0c4cb574838408195",
+      "size": 6356,
+      "type": "file"
+    },
+    {
+      "path": ".agents/skills/douyin-message/src/adapter.js",
+      "hash": "24f53f2cc4507970989e1fcfb95d9d06a9f79a85531119bbf443733b9532791c",
+      "size": 53341,
+      "type": "file"
+    },
+    {
+      "path": ".agents/skills/douyin-message/src/cli.js",
+      "hash": "65a5dc1dfffb66980fe4554ffed8a45e85b5d676936b0daaa4837bcac072ad18",
+      "size": 3906,
+      "type": "file"
+    },
+    {
+      "path": ".agents/skills/douyin-message/src/commands.js",
+      "hash": "9e4ad0b93ebd5a6ec4cdcd0cf486b8b3e516bf260bdcbc11fb04eaff2b0fe5f5",
+      "size": 34992,
+      "type": "file"
+    },
+    {
+      "path": ".agents/skills/douyin-message/src/core.js",
+      "hash": "d47b0784ae991d86367ad57e600772a2f69a8fa5defd56d70b0657e63aa824f8",
+      "size": 5793,
+      "type": "file"
+    },
+    {
+      "path": ".agents/skills/douyin-message/src/doctor.js",
+      "hash": "cac1a494b3745439a87150d2f16f77c969ec54770367c5ba6ac31565491c2d53",
+      "size": 5631,
+      "type": "file"
+    },
+    {
+      "path": ".agents/skills/douyin-message/src/fingerprint.js",
+      "hash": "6e149ebe251c80f5dd95d121ba3cccf75a6a66eb8e0b60ff4b45f6d57216103c",
+      "size": 25117,
+      "type": "file"
+    },
+    {
+      "path": ".agents/skills/douyin-message/src/page-doctor.js",
+      "hash": "50b8fb0bdbe8bf94b430576cba14191d6c5216889cc2d8d26814d58b61fd693d",
+      "size": 11703,
+      "type": "file"
+    },
+    {
+      "path": ".agents/skills/douyin-message/src/profile.js",
+      "hash": "167be671c68842bdd52511dc442d34dc5907449c00e41e60c1d23e535ddb4600",
+      "size": 9868,
+      "type": "file"
+    },
+    {
+      "path": ".agents/skills/douyin-message/src/protocol.js",
+      "hash": "3d0b2bd1bf40e347ee103a08fa57bb46da93864ba7babd7c67ee9481f423e799",
+      "size": 15085,
+      "type": "file"
+    },
+    {
+      "path": ".agents/skills/douyin-message/src/schemas.js",
+      "hash": "a2701f81a94bb1e72d7e51ca41ec7d088e23a8ff2c90477adab8e480856de6f3",
+      "size": 4428,
+      "type": "file"
+    },
+    {
+      "path": ".agents/skills/douyin-message/src/storage.js",
+      "hash": "f422778efa757b5f5b8dd998fffb482844894b046ee525fd80f78c6be46efc0b",
+      "size": 18974,
+      "type": "file"
+    },
+    {
+      "path": ".agents/skills/douyin-message/test/cli.test.js",
+      "hash": "56b957d67ce166d8ea3e9fe43d8bca6e4b7a0e4d7ea9115b0986179976ade91b",
+      "size": 7972,
+      "type": "file"
+    },
+    {
+      "path": ".agents/skills/douyin-message/test/contract.test.js",
+      "hash": "2d302a87f2056f6a36d718c01ef5b194511478e4e63e5bd3fdf8759349585f7f",
+      "size": 18811,
+      "type": "file"
+    },
+    {
+      "path": ".agents/skills/douyin-message/test/core.test.js",
+      "hash": "f67bcfecc87086c7ac464500f6e8f5174763ae802359931795962ceda3522743",
+      "size": 1508,
+      "type": "file"
+    },
+    {
+      "path": ".agents/skills/douyin-message/test/fingerprint.test.js",
+      "hash": "773869c59e0dc17160a1d75d0b2ad831006b30ee62e8c0c952687293c3a3940e",
+      "size": 6179,
+      "type": "file"
+    },
+    {
+      "path": ".agents/skills/douyin-message/test/profile.test.js",
+      "hash": "aabf061fccf64d192d8ddb6cb213cfe4b77b2eec454de0374d3c9471a1e715fe",
+      "size": 3565,
+      "type": "file"
+    },
+    {
+      "path": ".agents/skills/douyin-message/test/storage.test.js",
+      "hash": "a354b3347109cb7922833a9b33c2af7b7fb3bea2a81de4056916839a9e9c1d8a",
+      "size": 6697,
+      "type": "file"
+    },
+    {
+      "path": ".codex/hooks.json",
+      "hash": "a3e2cda2f97d76dd8b9c6f9656549701f587cfa5c8ae96800039782e3b23883c",
+      "size": 363,
+      "type": "file"
+    },
+    {
+      "path": ".codex/rules/comet-workflow-guard.md",
+      "hash": "d670067cd1c1573b4c655de3ec553252f20126d3dba3d187a78717c2c87cb3c8",
+      "size": 2196,
+      "type": "file"
+    },
+    {
+      "path": ".gitignore",
+      "hash": "875c03f82793aeb1f2b31c86c6bcccbb45268c25fa5f4e0c0a95b049851bcce3",
+      "size": 501,
+      "type": "file"
+    },
+    {
+      "path": "AGENTS.md",
+      "hash": "5d39a2d9525253b95066731f5be5be3a5bb67622252c8da29f09f021bc1c3b71",
+      "size": 1446,
+      "type": "file"
+    },
+    {
+      "path": "CLAUDE.md",
+      "hash": "5d39a2d9525253b95066731f5be5be3a5bb67622252c8da29f09f021bc1c3b71",
+      "size": 1446,
+      "type": "file"
+    },
+    {
+      "path": "docs/protobuf-message-fields.md",
+      "hash": "b41b6808406840c3837244c007bb8ea4033b09af1743519d28ac4ac6ae8207a0",
+      "size": 3287,
+      "type": "file"
+    },
+    {
+      "path": "douyin-message/.gitignore",
+      "hash": "76996f411eb571e40adc37ba2b3577c18c3efcc2f69539830131f4031db033be",
+      "size": 117,
+      "type": "file"
+    },
+    {
+      "path": "douyin-message/SKILL.md",
+      "hash": "6580dda68b428441198332c029288f81c7df54fef5ca687d02421f5906bc456e",
+      "size": 4964,
+      "type": "file"
+    },
+    {
+      "path": "douyin-message/agents/openai.yaml",
+      "hash": "ea043c7de8a822989be83e7bf72fbb58bd8e7bebddcdb189d5fed613ab40ebee",
+      "size": 288,
+      "type": "file"
+    },
+    {
+      "path": "douyin-message/bin/douyin-message.js",
+      "hash": "2ead0bd37f8f09721067dfe1eaa4be8b10c7a7902ddc4ffb9100e8c2abe92579",
+      "size": 517,
+      "type": "file"
+    },
+    {
+      "path": "douyin-message/npm-shrinkwrap.json",
+      "hash": "09eca1cd8caee31c4a6dc9dd2a19fb7acf90e5187994cd8ef63d5ef73f5d56ba",
+      "size": 1802,
+      "type": "file"
+    },
+    {
+      "path": "douyin-message/package.json",
+      "hash": "637c4a91c0953132f7e42aa42f5496280da2db21ca3fce6e2e2ec1929893e827",
+      "size": 731,
+      "type": "file"
+    },
+    {
+      "path": "douyin-message/references/layout.md",
+      "hash": "cab09f6bc67f63e339269b8b00574497ce42af034e8fbb7850904b488a938667",
+      "size": 2800,
+      "type": "file"
+    },
+    {
+      "path": "douyin-message/references/protobuf-message-fields.md",
+      "hash": "0cb56b7e7b26a688357b727b8b93051ee2485fc5a0e537ef31ada1861cd1aecf",
+      "size": 3497,
+      "type": "file"
+    },
+    {
+      "path": "douyin-message/scripts/capture-headed-send.js",
+      "hash": "6efa535b2ce8508fb13496f7b4ad7ce5924c1e5ee36d83c0c4cb574838408195",
+      "size": 6356,
+      "type": "file"
+    },
+    {
+      "path": "douyin-message/src/adapter.js",
+      "hash": "24f53f2cc4507970989e1fcfb95d9d06a9f79a85531119bbf443733b9532791c",
+      "size": 53341,
+      "type": "file"
+    },
+    {
+      "path": "douyin-message/src/cli.js",
+      "hash": "65a5dc1dfffb66980fe4554ffed8a45e85b5d676936b0daaa4837bcac072ad18",
+      "size": 3906,
+      "type": "file"
+    },
+    {
+      "path": "douyin-message/src/commands.js",
+      "hash": "9e4ad0b93ebd5a6ec4cdcd0cf486b8b3e516bf260bdcbc11fb04eaff2b0fe5f5",
+      "size": 34992,
+      "type": "file"
+    },
+    {
+      "path": "douyin-message/src/core.js",
+      "hash": "d47b0784ae991d86367ad57e600772a2f69a8fa5defd56d70b0657e63aa824f8",
+      "size": 5793,
+      "type": "file"
+    },
+    {
+      "path": "douyin-message/src/doctor.js",
+      "hash": "cac1a494b3745439a87150d2f16f77c969ec54770367c5ba6ac31565491c2d53",
+      "size": 5631,
+      "type": "file"
+    },
+    {
+      "path": "douyin-message/src/fingerprint.js",
+      "hash": "6e149ebe251c80f5dd95d121ba3cccf75a6a66eb8e0b60ff4b45f6d57216103c",
+      "size": 25117,
+      "type": "file"
+    },
+    {
+      "path": "douyin-message/src/page-doctor.js",
+      "hash": "50b8fb0bdbe8bf94b430576cba14191d6c5216889cc2d8d26814d58b61fd693d",
+      "size": 11703,
+      "type": "file"
+    },
+    {
+      "path": "douyin-message/src/profile.js",
+      "hash": "167be671c68842bdd52511dc442d34dc5907449c00e41e60c1d23e535ddb4600",
+      "size": 9868,
+      "type": "file"
+    },
+    {
+      "path": "douyin-message/src/protocol.js",
+      "hash": "3d0b2bd1bf40e347ee103a08fa57bb46da93864ba7babd7c67ee9481f423e799",
+      "size": 15085,
+      "type": "file"
+    },
+    {
+      "path": "douyin-message/src/schemas.js",
+      "hash": "a2701f81a94bb1e72d7e51ca41ec7d088e23a8ff2c90477adab8e480856de6f3",
+      "size": 4428,
+      "type": "file"
+    },
+    {
+      "path": "douyin-message/src/storage.js",
+      "hash": "f422778efa757b5f5b8dd998fffb482844894b046ee525fd80f78c6be46efc0b",
+      "size": 18974,
+      "type": "file"
+    },
+    {
+      "path": "douyin-message/test/cli.test.js",
+      "hash": "56b957d67ce166d8ea3e9fe43d8bca6e4b7a0e4d7ea9115b0986179976ade91b",
+      "size": 7972,
+      "type": "file"
+    },
+    {
+      "path": "douyin-message/test/contract.test.js",
+      "hash": "2d302a87f2056f6a36d718c01ef5b194511478e4e63e5bd3fdf8759349585f7f",
+      "size": 18811,
+      "type": "file"
+    },
+    {
+      "path": "douyin-message/test/core.test.js",
+      "hash": "f67bcfecc87086c7ac464500f6e8f5174763ae802359931795962ceda3522743",
+      "size": 1508,
+      "type": "file"
+    },
+    {
+      "path": "douyin-message/test/fingerprint.test.js",
+      "hash": "773869c59e0dc17160a1d75d0b2ad831006b30ee62e8c0c952687293c3a3940e",
+      "size": 6179,
+      "type": "file"
+    },
+    {
+      "path": "douyin-message/test/profile.test.js",
+      "hash": "aabf061fccf64d192d8ddb6cb213cfe4b77b2eec454de0374d3c9471a1e715fe",
+      "size": 3565,
+      "type": "file"
+    },
+    {
+      "path": "douyin-message/test/storage.test.js",
+      "hash": "a354b3347109cb7922833a9b33c2af7b7fb3bea2a81de4056916839a9e9c1d8a",
+      "size": 6697,
+      "type": "file"
+    }
+  ],
+  "omitted": [],
+  "omittedCount": 0
+}

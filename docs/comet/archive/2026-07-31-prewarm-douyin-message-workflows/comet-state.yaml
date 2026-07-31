@@ -1,0 +1,22 @@
+schema: comet.native.v3
+minimum_runtime_version: 3
+revision: 5
+name: prewarm-douyin-message-workflows
+language: zh-CN
+phase: archive
+brief: brief.md
+approval: confirmed
+approved_contract_hash: e9c897a2ec57b8c5466593e75610cca1e747736ecf7aa9cea6277f32a49246e3
+spec_changes:
+  - capability: message-workflow-prewarm
+    operation: create
+    source: specs/message-workflow-prewarm/spec.md
+    base_hash: null
+verification_result: pass
+verification_report: verification.md
+implementation_scope: runtime/evidence/scopes/8d7e3b7857baf50581bff091eb2f563ed7d0358d6a9ee9b932828a865d327e7b.json
+verification_evidence: runtime/evidence/verifications/48b08a5e9a07b7cbdb8b4026827b05d44e604bde71ec4659659a4a9cf7074331.json
+partial_allowance: null
+archived: true
+created_at: 2026-07-31
+run_id: 91bd99c7-03a9-4f49-a442-1756da1adea8

@@ -1,0 +1,363 @@
+{
+  "schema": "comet.native.content-snapshot-projection.v1",
+  "origin": "change-created",
+  "capture": {
+    "provider": "git"
+  },
+  "complete": true,
+  "limits": {
+    "maxFiles": 10000,
+    "maxFileBytes": 268435456,
+    "maxTotalBytes": 268435456,
+    "maxManifestBytes": 1048576,
+    "maxDurationMs": 60000
+  },
+  "policy": {
+    "schema": "comet.native.snapshot-policy.v1",
+    "include": [
+      "**/*"
+    ],
+    "exclude": [],
+    "hash": "cc34dce5671bc1aefad09b658911a71d0434a26a1fbb4d8ba10de57b316f1f2f"
+  },
+  "entries": [
+    {
+      "path": ".agents/skills/comet-any/SKILL.md",
+      "hash": "49d907f2813e5912159022d0c58d5db9c43843f70f655b527cd4026cea924245",
+      "size": 7986,
+      "type": "file"
+    },
+    {
+      "path": ".agents/skills/comet-any/reference/authored-zone-example.md",
+      "hash": "440f1e4ef3f9ba2404110ed0a220492b0c902e5f4ed8a0346be69eedaf2e6a08",
+      "size": 8362,
+      "type": "file"
+    },
+    {
+      "path": ".agents/skills/comet-any/reference/authoring-subagents.md",
+      "hash": "6fbbee8ceb9c3fd7844e9d9f9336f8cbc1e3d79b7f318120498d23eb35512b11",
+      "size": 6534,
+      "type": "file"
+    },
+    {
+      "path": ".agents/skills/comet-any/reference/bundle-authoring.md",
+      "hash": "5c3199221e608b20f70e4ebc06c44b1a82b848af3740c069aa1c8a29ee77e500",
+      "size": 6432,
+      "type": "file"
+    },
+    {
+      "path": ".agents/skills/comet-any/reference/eval-provider.md",
+      "hash": "5998c9588c18dc52413f73a7b2ed50d28081e682f2a28b4ba44018c448d61e5b",
+      "size": 3218,
+      "type": "file"
+    },
+    {
+      "path": ".agents/skills/comet-any/reference/subagents/pause-points-author.md",
+      "hash": "543a34062573b5e6f8c47e37650cb450cf81edde4c618ef346f4fc079a076f75",
+      "size": 4515,
+      "type": "file"
+    },
+    {
+      "path": ".agents/skills/comet-any/reference/subagents/reference-author.md",
+      "hash": "6ded3e85ef29003236a78d82bed92100f851e1928857bc7ae29c2258ff7cc733",
+      "size": 3273,
+      "type": "file"
+    },
+    {
+      "path": ".agents/skills/comet-any/reference/subagents/script-author.md",
+      "hash": "c54904e095445b02ba8ef0e6ca21253aa980193a7feaf7c715b1eea85550b4aa",
+      "size": 3785,
+      "type": "file"
+    },
+    {
+      "path": ".agents/skills/comet-any/reference/subagents/skill-core-author.md",
+      "hash": "84ef68efec0e7b708f09ce5988575a087b63089b38849ef394c70ed3db66f895",
+      "size": 7302,
+      "type": "file"
+    },
+    {
+      "path": ".agents/skills/comet-any/reference/subagents/skill-reviewer.md",
+      "hash": "9e3fd0743297f1bc8d196ffcdb1704c4bdfc6c08ff14b2a05b7340c6b1c7f013",
+      "size": 6777,
+      "type": "file"
+    },
+    {
+      "path": ".agents/skills/comet-any/reference/subagents/workflow-entry-author.md",
+      "hash": "cef96c63ec69966719c7a3059abf39a358bd610ba75153b98978ab08fdc4083f",
+      "size": 6427,
+      "type": "file"
+    },
+    {
+      "path": ".agents/skills/comet-native/SKILL.md",
+      "hash": "7182d95ab2ee74916fc9d666339f5d40b7027002130546334a77327361bfa87a",
+      "size": 23620,
+      "type": "file"
+    },
+    {
+      "path": ".agents/skills/comet-native/reference/artifacts.md",
+      "hash": "3342cf0e73212a28408b193cb65fb0e3ea3604eea397ca2d38b3653f8244e079",
+      "size": 14312,
+      "type": "file"
+    },
+    {
+      "path": ".agents/skills/comet-native/reference/commands.md",
+      "hash": "f54caf112db3203e1b98511c915036e961c7cc5107e18e72a0599516d43244e6",
+      "size": 8938,
+      "type": "file"
+    },
+    {
+      "path": ".agents/skills/comet-native/reference/recovery.md",
+      "hash": "eeee898d3b8c6a32c1e9bb0ff4179015b28045f169c51c9d396ba7037720b641",
+      "size": 12069,
+      "type": "file"
+    },
+    {
+      "path": ".agents/skills/comet-native/scripts/comet-native-hook-guard.mjs",
+      "hash": "819de5cb6b2e32e79e6978988b50083a3faf2247683ff09d57d335883752c19d",
+      "size": 145,
+      "type": "file"
+    },
+    {
+      "path": ".agents/skills/comet-native/scripts/comet-native-runtime.mjs",
+      "hash": "ea4476965f04a81dc1c4d7868c90bae4ca91d98cebabf3d684d5ce0f3441649d",
+      "size": 1145894,
+      "type": "file"
+    },
+    {
+      "path": ".agents/skills/comet/SKILL.md",
+      "hash": "7a7262b67bc15afcd14d246243db9e6e7713988bbc8be6bee06f6f610b549329",
+      "size": 1343,
+      "type": "file"
+    },
+    {
+      "path": ".agents/skills/comet/scripts/comet-entry-runtime.mjs",
+      "hash": "d9f03607329ec1d58b668d86d5e175b589b401e92d294d68101aaf1afbb7b6c9",
+      "size": 289020,
+      "type": "file"
+    },
+    {
+      "path": ".agents/skills/comet/scripts/comet-hook-router.mjs",
+      "hash": "ef8f37e3267c8753bf095c1c95718e425a69102884f6cebefe066acd0d9b3d1b",
+      "size": 386166,
+      "type": "file"
+    },
+    {
+      "path": ".codex/hooks.json",
+      "hash": "a3e2cda2f97d76dd8b9c6f9656549701f587cfa5c8ae96800039782e3b23883c",
+      "size": 363,
+      "type": "file"
+    },
+    {
+      "path": ".codex/rules/comet-workflow-guard.md",
+      "hash": "d670067cd1c1573b4c655de3ec553252f20126d3dba3d187a78717c2c87cb3c8",
+      "size": 2196,
+      "type": "file"
+    },
+    {
+      "path": ".gitignore",
+      "hash": "cd547f9e37baea1f4d468f79140b002cf8b2d28b0a5b7e3b7a7356be52dc7e6c",
+      "size": 410,
+      "type": "file"
+    },
+    {
+      "path": "AGENTS.md",
+      "hash": "5d39a2d9525253b95066731f5be5be3a5bb67622252c8da29f09f021bc1c3b71",
+      "size": 1446,
+      "type": "file"
+    },
+    {
+      "path": "CLAUDE.md",
+      "hash": "5d39a2d9525253b95066731f5be5be3a5bb67622252c8da29f09f021bc1c3b71",
+      "size": 1446,
+      "type": "file"
+    },
+    {
+      "path": "SKILL.md",
+      "hash": "4ec9896ef93bcad9b5314a09f7376f54be79ca1557562ea50b93afd801846518",
+      "size": 5012,
+      "type": "file"
+    },
+    {
+      "path": "agents/openai.yaml",
+      "hash": "3672ac6c7ff7c6d98e3569492a033ec2b2a9343f62affb1a4163b19f164ff3be",
+      "size": 267,
+      "type": "file"
+    },
+    {
+      "path": "bin/douyin-group-message.js",
+      "hash": "2ead0bd37f8f09721067dfe1eaa4be8b10c7a7902ddc4ffb9100e8c2abe92579",
+      "size": 517,
+      "type": "file"
+    },
+    {
+      "path": "diag-after.png",
+      "hash": "bb2ae324feaa2354a27ed10d5bd0206dc1db8a2dd0e613817c4a3e047bd5642a",
+      "size": 1191458,
+      "type": "file"
+    },
+    {
+      "path": "diag-before.png",
+      "hash": "5b55bb6177b131c4fee2e9353e8ffda52bad326925715162ccf729c7792e6127",
+      "size": 1173926,
+      "type": "file"
+    },
+    {
+      "path": "diag-conversation-current.png",
+      "hash": "821dea3852bf0d26a7f23fb4feaa1162fcb0882c030aeccbe84259287b0f4b71",
+      "size": 753427,
+      "type": "file"
+    },
+    {
+      "path": "diag-login-panel.png",
+      "hash": "a2e6b20caf79699a9f7554d0a76a19f5d0354bfe6cdeeb47e1856e5a7559f76e",
+      "size": 550804,
+      "type": "file"
+    },
+    {
+      "path": "docs/protobuf-message-fields.md",
+      "hash": "b41b6808406840c3837244c007bb8ea4033b09af1743519d28ac4ac6ae8207a0",
+      "size": 3287,
+      "type": "file"
+    },
+    {
+      "path": "package-lock.json",
+      "hash": "9e73ac54cda48272e822afd53f12426e3eb147fbbf3f792f9b250992a615dce4",
+      "size": 1826,
+      "type": "file"
+    },
+    {
+      "path": "package.json",
+      "hash": "997096b318e9b1fad0ee36c734f973f2f7badb998bf08110be913980ff568f78",
+      "size": 812,
+      "type": "file"
+    },
+    {
+      "path": "scripts/capture-headed-send.js",
+      "hash": "41b10c000580cdc0b0062aa05e6837625e12afd44f23a56a7bfd6c53cdae6724",
+      "size": 5533,
+      "type": "file"
+    },
+    {
+      "path": "scripts/login-douyin.js",
+      "hash": "fad49fe8bd6db061339bb0fd88a7a551eab80a50d9e76a11af8cb793228531ea",
+      "size": 1484,
+      "type": "file"
+    },
+    {
+      "path": "scripts/package-skill.js",
+      "hash": "c44f9d6bf29a16b5f34b3ab29fb94720e4bf420c53c0cd3ac51bd12516e14b02",
+      "size": 1995,
+      "type": "file"
+    },
+    {
+      "path": "scripts/send-protocol-reply-signed.js",
+      "hash": "40c3fad0fdf7c4e6db601d059b326a9833a4df20f6722cf5f3a25b75cd9546f4",
+      "size": 7269,
+      "type": "file"
+    },
+    {
+      "path": "scripts/send-protocol-reply.js",
+      "hash": "e4c67d293b0ea6d73ae2f314fc7518feaa6ae87941811a426bf8ba6fd924bbd1",
+      "size": 9071,
+      "type": "file"
+    },
+    {
+      "path": "src/adapter.js",
+      "hash": "0450ca13751de66f669b8b60c4788dc26813866a771d0956bba6fb3b1daff684",
+      "size": 45975,
+      "type": "file"
+    },
+    {
+      "path": "src/cli.js",
+      "hash": "d69670728e9bb18fc01fc7e57af0d6a7b26abf53ab92433be0b9d5170ac982f4",
+      "size": 2935,
+      "type": "file"
+    },
+    {
+      "path": "src/commands.js",
+      "hash": "3bbb397c2ba9895d46e05a5be6bcb7d8d36aa0a46869d0ce0d5e0f1853b855bc",
+      "size": 27878,
+      "type": "file"
+    },
+    {
+      "path": "src/core.js",
+      "hash": "ca2cefb5f7534cf4007a2c75db4b5c76295c938dd43624130f56deb144f2fadb",
+      "size": 5725,
+      "type": "file"
+    },
+    {
+      "path": "src/doctor.js",
+      "hash": "8b0583c21417243deb3f3b4cebc9f3760e9f94a9a2178e42d2a9da5c5bb99f99",
+      "size": 5426,
+      "type": "file"
+    },
+    {
+      "path": "src/fingerprint.js",
+      "hash": "c88abba1ccd9a33325b8630e90e61843975f2de32ce028e14b2d3719c9b58e17",
+      "size": 25053,
+      "type": "file"
+    },
+    {
+      "path": "src/page-doctor.js",
+      "hash": "db92a2bf53a7c8b48c86812a02bd5d99d198277d67310b1450be4378a3a3d71f",
+      "size": 11631,
+      "type": "file"
+    },
+    {
+      "path": "src/profile.js",
+      "hash": "ee868047e4202b9399a0fbcbbbc0fa0f452c5bf160e0faa06d65614681fa641e",
+      "size": 8622,
+      "type": "file"
+    },
+    {
+      "path": "src/schemas.js",
+      "hash": "fa1c0cdef41a4365002d4e98482520cf879b87d0857364381963723e706bcf94",
+      "size": 2915,
+      "type": "file"
+    },
+    {
+      "path": "src/storage.js",
+      "hash": "b64d72ee5416011f120c466c6e560ba4a3b0f9c6d88282ac2bd66cc3518eb527",
+      "size": 13226,
+      "type": "file"
+    },
+    {
+      "path": "test/cli.test.js",
+      "hash": "41995d2c8f3f50702aa6fc5f92a2440a145a2582404fd4f5f0ba6ee6afa788c8",
+      "size": 4538,
+      "type": "file"
+    },
+    {
+      "path": "test/contract.test.js",
+      "hash": "9c3ca0bcb18f64b1215040b350e9ef6866f24b46d6def60f0a753462a5d529f3",
+      "size": 12276,
+      "type": "file"
+    },
+    {
+      "path": "test/core.test.js",
+      "hash": "f67bcfecc87086c7ac464500f6e8f5174763ae802359931795962ceda3522743",
+      "size": 1508,
+      "type": "file"
+    },
+    {
+      "path": "test/fingerprint.test.js",
+      "hash": "773869c59e0dc17160a1d75d0b2ad831006b30ee62e8c0c952687293c3a3940e",
+      "size": 6179,
+      "type": "file"
+    },
+    {
+      "path": "test/profile.test.js",
+      "hash": "30b33bd12470e76237322e646be328fa612d4872c1123876541ebd3a4b8b23eb",
+      "size": 2573,
+      "type": "file"
+    },
+    {
+      "path": "test/storage.test.js",
+      "hash": "a354b3347109cb7922833a9b33c2af7b7fb3bea2a81de4056916839a9e9c1d8a",
+      "size": 6697,
+      "type": "file"
+    }
+  ],
+  "omitted": [],
+  "omittedCount": 0
+}

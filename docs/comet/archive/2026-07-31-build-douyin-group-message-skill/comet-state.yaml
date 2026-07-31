@@ -1,0 +1,22 @@
+schema: comet.native.v3
+minimum_runtime_version: 3
+revision: 5
+name: build-douyin-group-message-skill
+language: zh-CN
+phase: archive
+brief: brief.md
+approval: confirmed
+approved_contract_hash: 2cd0e0be21bedf6f861d93fb0d3c63d70b8ab567f464406a7ad8817ac8808cae
+spec_changes:
+  - capability: douyin-group-message
+    operation: create
+    source: specs/douyin-group-message/spec.md
+    base_hash: null
+verification_result: pass
+verification_report: verification.md
+implementation_scope: runtime/evidence/scopes/2bafa0143eacb0eddd7878a6f51c433665f20f7887a2cf42c139ebb2171d4150.json
+verification_evidence: runtime/evidence/verifications/4e3a894cc512b5092a2aee70982c8f5939433993788dd2d251ab156d6807ee15.json
+partial_allowance: null
+archived: true
+created_at: 2026-07-30
+run_id: de9ebd70-a41e-4530-9a00-a52440865cf6

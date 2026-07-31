@@ -1,0 +1,27 @@
+{
+  "schema": "comet.native.transaction.v2",
+  "id": "d536a4a8-bced-4a06-9d09-19e337978319",
+  "kind": "archive",
+  "status": "committed",
+  "change": "prewarm-douyin-message-workflows",
+  "createdAt": "2026-07-31T13:51:14.396Z",
+  "preflightHash": "a0953facd975c97a14ee6c75278c203140b73a8d4ae3e7a73e3cf849d9f93111",
+  "operations": [
+    {
+      "id": "spec-1-message-workflow-prewarm",
+      "type": "write",
+      "target": "specs/message-workflow-prewarm/spec.md",
+      "staged": "runtime/transactions/d536a4a8-bced-4a06-9d09-19e337978319/staged/specs/message-workflow-prewarm/spec.md",
+      "expectedTargetHash": null,
+      "stagedHash": "c5aa05a97912ff6eb667c010c39c6b9bde5e3309254593f8d0c9af6e39cf9407"
+    },
+    {
+      "id": "archive-change",
+      "type": "move",
+      "source": "changes/prewarm-douyin-message-workflows",
+      "target": "archive/2026-07-31-prewarm-douyin-message-workflows",
+      "expectedSourceHash": "9cccc058e2a9840c1c92f8893fdefa73889f6bd9ad181d76273a83112c73d844",
+      "expectedTargetHash": null
+    }
+  ]
+}

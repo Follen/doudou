@@ -1,0 +1,73 @@
+[
+  {
+    "acceptance_id": "acceptance-0eb1da02cd53304a33a05aa2caf96d933a40e81d711ba434e241c3bec3e3387a",
+    "evidence_refs": [
+      "douyin-message/src/adapter.js",
+      "douyin-message/test/contract.test.js"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-3b6a0a18c67826cb1ae883764f7d30e4b391cb42f60872a30b05c733e309eed3",
+    "evidence_refs": [
+      "douyin-message/src/commands.js",
+      "douyin-message/test/cli.test.js",
+      "douyin-message/test/contract.test.js"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-3e43761ab8ea1d3a1369366e9a61ef958f8db27357a45c633f7f9df66d649753",
+    "evidence_refs": [],
+    "skipped_reason": "未执行需要真实页面发送的有头协议 capture；交付验证明确不发送真实消息。"
+  },
+  {
+    "acceptance_id": "acceptance-497d539d44e7c8d347ff1d00c5c1f3f316e7cda60f7a42670c27263285d9ddff",
+    "evidence_refs": [
+      "douyin-message/src/doctor.js",
+      "douyin-message/test/cli.test.js"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-610138697913313574462ca12c6c67562b203ce6944b4e737c2accf50f897eb5",
+    "evidence_refs": [
+      "douyin-message/src/fingerprint.js",
+      "douyin-message/src/profile.js",
+      "douyin-message/test/fingerprint.test.js",
+      "douyin-message/test/profile.test.js"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-b612cc84070a6c9f191cd97045249fb75ead1a3515688648ccbfa1df18af34a7",
+    "evidence_refs": [],
+    "skipped_reason": "未执行真实普通发送或引用回复；自动化仅验证预览、plan 完整性、Protobuf 改写和回执判定。"
+  },
+  {
+    "acceptance_id": "acceptance-bf323c937a295f28af05503141a6b8915c33f07fa1835bc37dd12b330e86e76c",
+    "evidence_refs": [
+      "douyin-message/src/page-doctor.js",
+      "douyin-message/test/contract.test.js"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-e8c32516204da41de7fbd53c863775cb37fb5f88deeb0d4ebf4fcc5967332e4e",
+    "evidence_refs": [
+      "douyin-message/npm-shrinkwrap.json",
+      "douyin-message/src/doctor.js",
+      "douyin-message/test/cli.test.js"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-e9320dc40df09ecbb1e8e7dadc546638c05825a2c97e4ff9d4fb5c58fc2b9942",
+    "evidence_refs": [
+      "douyin-message/SKILL.md",
+      "douyin-message/package.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-f8560d7a19d9ed3f37968d633e9e35a8331092cdbcec46dc71959429449e8be1",
+    "evidence_refs": [
+      "douyin-message/src/commands.js",
+      "douyin-message/src/storage.js",
+      "douyin-message/test/storage.test.js"
+    ]
+  }
+]

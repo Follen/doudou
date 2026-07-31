@@ -1,0 +1,128 @@
+{
+  "schema": "comet.native.verification-evidence.v1",
+  "change": "protocol-cli-messaging",
+  "sourceRevision": 3,
+  "result": "pass",
+  "freshness": "partial",
+  "contractHash": "a43a4a3162171a1d95d1e3e3c12b3ae32fe84b84b384455c31634fe08c31a008",
+  "acceptanceCriteriaHash": "b3330be20fe00eeeddf09760396dae73d66edcb1a565a5fb3a11b840230f0290",
+  "implementationScopeRef": "runtime/evidence/scopes/5caf0e1e98c1d45bc1024f67d6e898759d8e2379bc298fa52d79224ba0b654e3.json",
+  "implementationScopeHash": "5caf0e1e98c1d45bc1024f67d6e898759d8e2379bc298fa52d79224ba0b654e3",
+  "reportRef": "verification.md",
+  "reportHash": "4799040eb86cf9079301d8311fe1a27da082267ac91a97ad491e6fc0194fe536",
+  "acceptanceTrace": {
+    "schema": "comet.native.acceptance-trace.v1",
+    "nativeRootRef": "docs/comet",
+    "criteriaHash": "b3330be20fe00eeeddf09760396dae73d66edcb1a565a5fb3a11b840230f0290",
+    "total": 10,
+    "evidenced": 8,
+    "skipped": 2,
+    "entries": [
+      {
+        "acceptanceId": "acceptance-0eb1da02cd53304a33a05aa2caf96d933a40e81d711ba434e241c3bec3e3387a",
+        "kind": "brief-example",
+        "source": "brief.md",
+        "evidenceRefs": [
+          "douyin-message/src/adapter.js",
+          "douyin-message/test/contract.test.js"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-3b6a0a18c67826cb1ae883764f7d30e4b391cb42f60872a30b05c733e309eed3",
+        "kind": "brief-example",
+        "source": "brief.md",
+        "evidenceRefs": [
+          "douyin-message/src/commands.js",
+          "douyin-message/test/cli.test.js",
+          "douyin-message/test/contract.test.js"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-3e43761ab8ea1d3a1369366e9a61ef958f8db27357a45c633f7f9df66d649753",
+        "kind": "brief-example",
+        "source": "brief.md",
+        "evidenceRefs": [],
+        "skippedReason": "未执行需要真实页面发送的有头协议 capture；交付验证明确不发送真实消息。"
+      },
+      {
+        "acceptanceId": "acceptance-497d539d44e7c8d347ff1d00c5c1f3f316e7cda60f7a42670c27263285d9ddff",
+        "kind": "brief-example",
+        "source": "brief.md",
+        "evidenceRefs": [
+          "douyin-message/src/doctor.js",
+          "douyin-message/test/cli.test.js"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-610138697913313574462ca12c6c67562b203ce6944b4e737c2accf50f897eb5",
+        "kind": "brief-example",
+        "source": "brief.md",
+        "evidenceRefs": [
+          "douyin-message/src/fingerprint.js",
+          "douyin-message/src/profile.js",
+          "douyin-message/test/fingerprint.test.js",
+          "douyin-message/test/profile.test.js"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-b612cc84070a6c9f191cd97045249fb75ead1a3515688648ccbfa1df18af34a7",
+        "kind": "brief-example",
+        "source": "brief.md",
+        "evidenceRefs": [],
+        "skippedReason": "未执行真实普通发送或引用回复；自动化仅验证预览、plan 完整性、Protobuf 改写和回执判定。"
+      },
+      {
+        "acceptanceId": "acceptance-bf323c937a295f28af05503141a6b8915c33f07fa1835bc37dd12b330e86e76c",
+        "kind": "brief-example",
+        "source": "brief.md",
+        "evidenceRefs": [
+          "douyin-message/src/page-doctor.js",
+          "douyin-message/test/contract.test.js"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-e8c32516204da41de7fbd53c863775cb37fb5f88deeb0d4ebf4fcc5967332e4e",
+        "kind": "brief-example",
+        "source": "brief.md",
+        "evidenceRefs": [
+          "douyin-message/npm-shrinkwrap.json",
+          "douyin-message/src/doctor.js",
+          "douyin-message/test/cli.test.js"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-e9320dc40df09ecbb1e8e7dadc546638c05825a2c97e4ff9d4fb5c58fc2b9942",
+        "kind": "brief-example",
+        "source": "brief.md",
+        "evidenceRefs": [
+          "douyin-message/SKILL.md",
+          "douyin-message/package.json"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-f8560d7a19d9ed3f37968d633e9e35a8331092cdbcec46dc71959429449e8be1",
+        "kind": "brief-example",
+        "source": "brief.md",
+        "evidenceRefs": [
+          "douyin-message/src/commands.js",
+          "douyin-message/src/storage.js",
+          "douyin-message/test/storage.test.js"
+        ],
+        "skippedReason": null
+      }
+    ],
+    "traceHash": "b24e4fb047937403f690eaf44249b9137489bfce160fa50c5a074ccc4f64d2ad"
+  },
+  "partialAllowanceRef": "runtime/evidence/allowances/b7b9abc5f0ed0fb5bee91fc88b9060af3f4a94950f5e717e165f3f524a092648.json",
+  "partialAllowanceHash": "b7b9abc5f0ed0fb5bee91fc88b9060af3f4a94950f5e717e165f3f524a092648",
+  "receiptRef": "runtime/evidence/check-receipts/443952534ce2560af4b11ec2c84175198bfa2753085493d11f8807068c4445a5.json",
+  "createdAt": "2026-07-31T12:38:29.102Z",
+  "envelopeHash": "1bd156cf72f06f7537747aa655a4d310ef1cdd0cc8de62465e8080a2e6ac971d"
+}

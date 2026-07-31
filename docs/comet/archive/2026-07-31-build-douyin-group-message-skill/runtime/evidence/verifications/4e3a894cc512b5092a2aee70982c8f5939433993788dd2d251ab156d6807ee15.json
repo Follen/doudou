@@ -1,0 +1,117 @@
+{
+  "schema": "comet.native.verification-evidence.v1",
+  "change": "build-douyin-group-message-skill",
+  "sourceRevision": 3,
+  "result": "pass",
+  "freshness": "complete",
+  "contractHash": "2cd0e0be21bedf6f861d93fb0d3c63d70b8ab567f464406a7ad8817ac8808cae",
+  "acceptanceCriteriaHash": "26ec78db68b81f842a55fedd298ab3e7f791e13f4d8638115a93aae4a7976ec6",
+  "implementationScopeRef": "runtime/evidence/scopes/2bafa0143eacb0eddd7878a6f51c433665f20f7887a2cf42c139ebb2171d4150.json",
+  "implementationScopeHash": "2bafa0143eacb0eddd7878a6f51c433665f20f7887a2cf42c139ebb2171d4150",
+  "reportRef": "verification.md",
+  "reportHash": "fa694b3a971161650c1c389c7814c430de637e508846e10abe5ad2beaa4b2086",
+  "acceptanceTrace": {
+    "schema": "comet.native.acceptance-trace.v1",
+    "nativeRootRef": "docs/comet",
+    "criteriaHash": "26ec78db68b81f842a55fedd298ab3e7f791e13f4d8638115a93aae4a7976ec6",
+    "total": 11,
+    "evidenced": 3,
+    "skipped": 8,
+    "entries": [
+      {
+        "acceptanceId": "acceptance-00ecb73c6537c589193b446389a3e23fb265d1a224df8145854acc4383fcc421",
+        "kind": "brief-example",
+        "source": "brief.md",
+        "evidenceRefs": [],
+        "skippedReason": "未运行真实抖音登录与回复发送；现有自动化仅覆盖回复预览和审计写入。"
+      },
+      {
+        "acceptanceId": "acceptance-36acfad4bcfbe3e7e3be43e20098cf8bbdfa11a9757e1b247613c81015e12558",
+        "kind": "brief-example",
+        "source": "brief.md",
+        "evidenceRefs": [],
+        "skippedReason": "未连接真实抖音账号，未执行在线群聊发现与编号展示。"
+      },
+      {
+        "acceptanceId": "acceptance-4746fb3d407d35776a9a59aab9249ac575d958ab0236a81bbe010fbb1f718fd7",
+        "kind": "brief-example",
+        "source": "brief.md",
+        "evidenceRefs": [
+          "SKILL.md",
+          "src/adapter.js",
+          "src/commands.js"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-5c245dbef3a5721e98e72c6c626c13131934bcf87f9e8029ce26b305177502b1",
+        "kind": "brief-example",
+        "source": "brief.md",
+        "evidenceRefs": [
+          "src/adapter.js",
+          "src/fingerprint.js",
+          "test/fingerprint.test.js"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-6f7620d11176da1f00718ec11efe4866e2ae7a6c42c77a2ed6506a45817ee042",
+        "kind": "brief-example",
+        "source": "brief.md",
+        "evidenceRefs": [],
+        "skippedReason": "未在当前验证轮次执行人工登录窗口与真实账号验证。"
+      },
+      {
+        "acceptanceId": "acceptance-8066677a27481782a0be992b2212782285ea5114d6e0d0df0b255cacb737c0a4",
+        "kind": "brief-example",
+        "source": "brief.md",
+        "evidenceRefs": [],
+        "skippedReason": "未连接真实抖音账号，未执行在线历史消息采集。"
+      },
+      {
+        "acceptanceId": "acceptance-917d1d2065e4a9f9933c09ed9c4e2d553fc19fb3d624c8f0cf558b29ca0296fc",
+        "kind": "brief-example",
+        "source": "brief.md",
+        "evidenceRefs": [
+          "src/profile.js",
+          "test/profile.test.js"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-98448b02cf10914fc4c76e550ef93d33983fcf43ec919d69d9cba2e40bc6bf3f",
+        "kind": "brief-example",
+        "source": "brief.md",
+        "evidenceRefs": [],
+        "skippedReason": "未连接真实抖音页面执行 bundle、字段和 DOM 漂移诊断。"
+      },
+      {
+        "acceptanceId": "acceptance-ac3f2e07f9c2665b3cc1ddc79ab5dce534c6f580c2d692504fd3f5db4860d43b",
+        "kind": "brief-example",
+        "source": "brief.md",
+        "evidenceRefs": [],
+        "skippedReason": "未连接真实抖音账号，未执行在线群聊刷新。"
+      },
+      {
+        "acceptanceId": "acceptance-b7d7d7eeb1bdf31bafc7b54cd05cd603dd1493c181cdbe47e4e1b16db7c445f3",
+        "kind": "brief-example",
+        "source": "brief.md",
+        "evidenceRefs": [],
+        "skippedReason": "未连接真实抖音账号，未执行多群在线采集进度。"
+      },
+      {
+        "acceptanceId": "acceptance-f2bbf27fe7a84c6eee4a7c4422331a777be67f0e649f4c474c432eb6ace12141",
+        "kind": "brief-example",
+        "source": "brief.md",
+        "evidenceRefs": [],
+        "skippedReason": "未运行真实账号登录失效与恢复流程。"
+      }
+    ],
+    "traceHash": "3cee137cb5011c263e8edc3bd7ebc8e9b8d12041ffa2a738d8700459e96abe59"
+  },
+  "partialAllowanceRef": null,
+  "partialAllowanceHash": null,
+  "receiptRef": null,
+  "createdAt": "2026-07-31T09:50:14.399Z",
+  "envelopeHash": "4e3a894cc512b5092a2aee70982c8f5939433993788dd2d251ab156d6807ee15"
+}

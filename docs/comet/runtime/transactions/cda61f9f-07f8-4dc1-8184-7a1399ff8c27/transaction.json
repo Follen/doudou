@@ -1,0 +1,28 @@
+{
+  "schema": "comet.native.transaction.v2",
+  "id": "cda61f9f-07f8-4dc1-8184-7a1399ff8c27",
+  "kind": "archive",
+  "status": "committed",
+  "change": "protocol-cli-messaging",
+  "createdAt": "2026-07-31T12:38:43.940Z",
+  "preflightHash": "5ab4cfec753f52828c7720d3710f64ac7dcf6cf2a7cf22414db569d90c1b2f1c",
+  "operations": [
+    {
+      "id": "spec-1-douyin-group-message",
+      "type": "write",
+      "target": "specs/douyin-group-message/spec.md",
+      "staged": "runtime/transactions/cda61f9f-07f8-4dc1-8184-7a1399ff8c27/staged/specs/douyin-group-message/spec.md",
+      "backup": "runtime/transactions/cda61f9f-07f8-4dc1-8184-7a1399ff8c27/backups/specs/douyin-group-message/spec.md",
+      "expectedTargetHash": "c9281baacf3b460dc383a37f30adc68a6e2e8289fe0423e52e5da53d023344c3",
+      "stagedHash": "2cb5751d31e7769e939001be366c60939ececc90a526e89b3a3178f047f8727f"
+    },
+    {
+      "id": "archive-change",
+      "type": "move",
+      "source": "changes/protocol-cli-messaging",
+      "target": "archive/2026-07-31-protocol-cli-messaging",
+      "expectedSourceHash": "408402e1c682abc9c66d22095e531610338c79f18f60924d8fd20a657ea73de1",
+      "expectedTargetHash": null
+    }
+  ]
+}

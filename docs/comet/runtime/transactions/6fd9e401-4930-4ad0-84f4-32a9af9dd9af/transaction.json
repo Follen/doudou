@@ -1,0 +1,27 @@
+{
+  "schema": "comet.native.transaction.v2",
+  "id": "6fd9e401-4930-4ad0-84f4-32a9af9dd9af",
+  "kind": "archive",
+  "status": "committed",
+  "change": "chat-protocol-first",
+  "createdAt": "2026-07-31T18:28:02.563Z",
+  "preflightHash": "c8ef9ffec82b8145f5b638fd34ecf756fc0c84a8b0ee152eeeba887cac58f631",
+  "operations": [
+    {
+      "id": "spec-1-chat-protocol-first",
+      "type": "write",
+      "target": "specs/chat-protocol-first/spec.md",
+      "staged": "runtime/transactions/6fd9e401-4930-4ad0-84f4-32a9af9dd9af/staged/specs/chat-protocol-first/spec.md",
+      "expectedTargetHash": null,
+      "stagedHash": "6ad48b33283005c3329619a4e4e6034fc9002bbac84bbd7736cfc2cb9954a028"
+    },
+    {
+      "id": "archive-change",
+      "type": "move",
+      "source": "changes/chat-protocol-first",
+      "target": "archive/2026-07-31-chat-protocol-first",
+      "expectedSourceHash": "2adb4ae9433691450b3ab675395bfe87932da8eb3f9f290fac5d31eb0972fe4e",
+      "expectedTargetHash": null
+    }
+  ]
+}

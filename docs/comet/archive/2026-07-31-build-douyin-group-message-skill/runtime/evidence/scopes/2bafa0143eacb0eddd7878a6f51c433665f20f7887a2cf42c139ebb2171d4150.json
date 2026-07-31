@@ -1,0 +1,467 @@
+{
+  "schema": "comet.native.implementation-scope.v2",
+  "contractHash": "2cd0e0be21bedf6f861d93fb0d3c63d70b8ab567f464406a7ad8817ac8808cae",
+  "baselineProjectionRef": "runtime/evidence/snapshots/ffa2a40aa11721898f5f53a6d3fb90308630cc8d994a5d89e4679cb00d4a88ea.json",
+  "baselineProjectionHash": "ffa2a40aa11721898f5f53a6d3fb90308630cc8d994a5d89e4679cb00d4a88ea",
+  "currentProjectionRef": "runtime/evidence/snapshots/d97421100b039e32b899a9ff85214fcbfa43d0d0b00c4174e8bdd384ac2fefa2.json",
+  "currentProjectionHash": "d97421100b039e32b899a9ff85214fcbfa43d0d0b00c4174e8bdd384ac2fefa2",
+  "complete": true,
+  "declaredArtifacts": [
+    {
+      "path": ".gitignore",
+      "kind": "file"
+    },
+    {
+      "path": "SKILL.md",
+      "kind": "file"
+    },
+    {
+      "path": "agents/openai.yaml",
+      "kind": "file"
+    },
+    {
+      "path": "bin/douyin-group-message.js",
+      "kind": "file"
+    },
+    {
+      "path": "dist/douyin-group-message-1.0.0.tgz",
+      "kind": "file"
+    },
+    {
+      "path": "package-lock.json",
+      "kind": "file"
+    },
+    {
+      "path": "package.json",
+      "kind": "file"
+    },
+    {
+      "path": "scripts/package-skill.js",
+      "kind": "file"
+    },
+    {
+      "path": "src/adapter.js",
+      "kind": "file"
+    },
+    {
+      "path": "src/cli.js",
+      "kind": "file"
+    },
+    {
+      "path": "src/commands.js",
+      "kind": "file"
+    },
+    {
+      "path": "src/core.js",
+      "kind": "file"
+    },
+    {
+      "path": "src/doctor.js",
+      "kind": "file"
+    },
+    {
+      "path": "src/fingerprint.js",
+      "kind": "file"
+    },
+    {
+      "path": "src/page-doctor.js",
+      "kind": "file"
+    },
+    {
+      "path": "src/profile.js",
+      "kind": "file"
+    },
+    {
+      "path": "src/schemas.js",
+      "kind": "file"
+    },
+    {
+      "path": "src/storage.js",
+      "kind": "file"
+    },
+    {
+      "path": "test/cli.test.js",
+      "kind": "file"
+    },
+    {
+      "path": "test/contract.test.js",
+      "kind": "file"
+    },
+    {
+      "path": "test/core.test.js",
+      "kind": "file"
+    },
+    {
+      "path": "test/fingerprint.test.js",
+      "kind": "file"
+    },
+    {
+      "path": "test/profile.test.js",
+      "kind": "file"
+    },
+    {
+      "path": "test/storage.test.js",
+      "kind": "file"
+    }
+  ],
+  "changes": [
+    {
+      "path": ".gitignore",
+      "kind": "modified",
+      "before": {
+        "hash": "6efb3a7dd8dc21385f4400e4079d939d36b11f71fbfaad5d54875ba611c302f8",
+        "size": 322
+      },
+      "after": {
+        "hash": "cd547f9e37baea1f4d468f79140b002cf8b2d28b0a5b7e3b7a7356be52dc7e6c",
+        "size": 410
+      },
+      "attributedTo": [
+        {
+          "path": ".gitignore",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "SKILL.md",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "4ec9896ef93bcad9b5314a09f7376f54be79ca1557562ea50b93afd801846518",
+        "size": 5012
+      },
+      "attributedTo": [
+        {
+          "path": "SKILL.md",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "agents/openai.yaml",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "3672ac6c7ff7c6d98e3569492a033ec2b2a9343f62affb1a4163b19f164ff3be",
+        "size": 267
+      },
+      "attributedTo": [
+        {
+          "path": "agents/openai.yaml",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "bin/douyin-group-message.js",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "2ead0bd37f8f09721067dfe1eaa4be8b10c7a7902ddc4ffb9100e8c2abe92579",
+        "size": 517
+      },
+      "attributedTo": [
+        {
+          "path": "bin/douyin-group-message.js",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "package-lock.json",
+      "kind": "modified",
+      "before": {
+        "hash": "eca034510ae46da8a7723615a22ea13d0e57d2f094df67ce82277b207c94af47",
+        "size": 1690
+      },
+      "after": {
+        "hash": "9e73ac54cda48272e822afd53f12426e3eb147fbbf3f792f9b250992a615dce4",
+        "size": 1826
+      },
+      "attributedTo": [
+        {
+          "path": "package-lock.json",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "package.json",
+      "kind": "modified",
+      "before": {
+        "hash": "90f4c21767a1b88dbe8e6465b2d53a609ff7b32f5d526f5a9270ac4e25cf2668",
+        "size": 202
+      },
+      "after": {
+        "hash": "997096b318e9b1fad0ee36c734f973f2f7badb998bf08110be913980ff568f78",
+        "size": 812
+      },
+      "attributedTo": [
+        {
+          "path": "package.json",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "scripts/package-skill.js",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "c44f9d6bf29a16b5f34b3ab29fb94720e4bf420c53c0cd3ac51bd12516e14b02",
+        "size": 1995
+      },
+      "attributedTo": [
+        {
+          "path": "scripts/package-skill.js",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "src/adapter.js",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "18d4cdde2f21eb13db5aeba1c522df9e8a7462e2530b49ebc8f4f0176d8d00f9",
+        "size": 25049
+      },
+      "attributedTo": [
+        {
+          "path": "src/adapter.js",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "src/cli.js",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "d69670728e9bb18fc01fc7e57af0d6a7b26abf53ab92433be0b9d5170ac982f4",
+        "size": 2935
+      },
+      "attributedTo": [
+        {
+          "path": "src/cli.js",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "src/commands.js",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "b56fdb12b7cb8e09610a016406eec7ad19bbae7e78f766673cccedaacf2f790d",
+        "size": 27443
+      },
+      "attributedTo": [
+        {
+          "path": "src/commands.js",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "src/core.js",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "ca2cefb5f7534cf4007a2c75db4b5c76295c938dd43624130f56deb144f2fadb",
+        "size": 5725
+      },
+      "attributedTo": [
+        {
+          "path": "src/core.js",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "src/doctor.js",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "8b0583c21417243deb3f3b4cebc9f3760e9f94a9a2178e42d2a9da5c5bb99f99",
+        "size": 5426
+      },
+      "attributedTo": [
+        {
+          "path": "src/doctor.js",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "src/fingerprint.js",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "c88abba1ccd9a33325b8630e90e61843975f2de32ce028e14b2d3719c9b58e17",
+        "size": 25053
+      },
+      "attributedTo": [
+        {
+          "path": "src/fingerprint.js",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "src/page-doctor.js",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "db92a2bf53a7c8b48c86812a02bd5d99d198277d67310b1450be4378a3a3d71f",
+        "size": 11631
+      },
+      "attributedTo": [
+        {
+          "path": "src/page-doctor.js",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "src/profile.js",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "ee868047e4202b9399a0fbcbbbc0fa0f452c5bf160e0faa06d65614681fa641e",
+        "size": 8622
+      },
+      "attributedTo": [
+        {
+          "path": "src/profile.js",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "src/schemas.js",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "fa1c0cdef41a4365002d4e98482520cf879b87d0857364381963723e706bcf94",
+        "size": 2915
+      },
+      "attributedTo": [
+        {
+          "path": "src/schemas.js",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "src/storage.js",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "431b36d8ecbb64f75ce9b0e21f29b8b78aa4c6a4463aa0bde645155d051e2436",
+        "size": 12103
+      },
+      "attributedTo": [
+        {
+          "path": "src/storage.js",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "test/cli.test.js",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "41995d2c8f3f50702aa6fc5f92a2440a145a2582404fd4f5f0ba6ee6afa788c8",
+        "size": 4538
+      },
+      "attributedTo": [
+        {
+          "path": "test/cli.test.js",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "test/contract.test.js",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "23507a1bb7a70a076f0faed02f5cc30632f768ffd435ad155a5b2eac6bcb49a7",
+        "size": 3265
+      },
+      "attributedTo": [
+        {
+          "path": "test/contract.test.js",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "test/core.test.js",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "f67bcfecc87086c7ac464500f6e8f5174763ae802359931795962ceda3522743",
+        "size": 1508
+      },
+      "attributedTo": [
+        {
+          "path": "test/core.test.js",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "test/fingerprint.test.js",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "773869c59e0dc17160a1d75d0b2ad831006b30ee62e8c0c952687293c3a3940e",
+        "size": 6179
+      },
+      "attributedTo": [
+        {
+          "path": "test/fingerprint.test.js",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "test/profile.test.js",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "30b33bd12470e76237322e646be328fa612d4872c1123876541ebd3a4b8b23eb",
+        "size": 2573
+      },
+      "attributedTo": [
+        {
+          "path": "test/profile.test.js",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "test/storage.test.js",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "2d5b992b9c43844f9a00f50b4d24a0cc7c542718822b2a6d6130ebd49771dd1b",
+        "size": 3779
+      },
+      "attributedTo": [
+        {
+          "path": "test/storage.test.js",
+          "kind": "file"
+        }
+      ]
+    }
+  ],
+  "unattributed": [],
+  "unresolvedScopes": [],
+  "noCodeReason": null,
+  "scopeHash": "2bafa0143eacb0eddd7878a6f51c433665f20f7887a2cf42c139ebb2171d4150"
+}

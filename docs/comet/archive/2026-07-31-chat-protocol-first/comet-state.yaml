@@ -1,0 +1,22 @@
+schema: comet.native.v3
+minimum_runtime_version: 3
+revision: 5
+name: chat-protocol-first
+language: zh-CN
+phase: archive
+brief: brief.md
+approval: confirmed
+approved_contract_hash: 3e2e1e1906c11ae4c4f6ebfb79cd3d6d9422c0018c576d23aed3eca88fd6d1e4
+spec_changes:
+  - capability: chat-protocol-first
+    operation: create
+    source: specs/chat-protocol-first/spec.md
+    base_hash: null
+verification_result: pass
+verification_report: verification.md
+implementation_scope: runtime/evidence/scopes/3d7631843f1d06924424c09368815652786eed229285763b1ea02a4b923cefbd.json
+verification_evidence: runtime/evidence/verifications/eb41bb8f5459d262094cea89c40c677c2f4f23b75f61d6f65f1ba0632d6f3e76.json
+partial_allowance: null
+archived: true
+created_at: 2026-07-31
+run_id: 1729cc75-e8c0-4c72-a0c8-4403448003d3

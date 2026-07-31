@@ -1,0 +1,22 @@
+schema: comet.native.v3
+minimum_runtime_version: 3
+revision: 5
+name: protocol-cli-messaging
+language: zh-CN
+phase: archive
+brief: brief.md
+approval: confirmed
+approved_contract_hash: a43a4a3162171a1d95d1e3e3c12b3ae32fe84b84b384455c31634fe08c31a008
+spec_changes:
+  - capability: douyin-group-message
+    operation: replace
+    source: specs/douyin-group-message/spec.md
+    base_hash: c9281baacf3b460dc383a37f30adc68a6e2e8289fe0423e52e5da53d023344c3
+verification_result: pass
+verification_report: verification.md
+implementation_scope: runtime/evidence/scopes/5caf0e1e98c1d45bc1024f67d6e898759d8e2379bc298fa52d79224ba0b654e3.json
+verification_evidence: runtime/evidence/verifications/1bd156cf72f06f7537747aa655a4d310ef1cdd0cc8de62465e8080a2e6ac971d.json
+partial_allowance: runtime/evidence/allowances/b7b9abc5f0ed0fb5bee91fc88b9060af3f4a94950f5e717e165f3f524a092648.json
+archived: true
+created_at: 2026-07-31
+run_id: e2bfd5c4-16e7-4178-9be9-903a7720a1b0

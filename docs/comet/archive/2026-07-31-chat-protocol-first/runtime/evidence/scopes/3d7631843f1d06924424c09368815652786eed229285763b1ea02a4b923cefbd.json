@@ -1,0 +1,147 @@
+{
+  "schema": "comet.native.implementation-scope.v2",
+  "contractHash": "3e2e1e1906c11ae4c4f6ebfb79cd3d6d9422c0018c576d23aed3eca88fd6d1e4",
+  "baselineProjectionRef": "runtime/evidence/snapshots/6ef6256c70722f719b779a784f4e32e2290c57b06414e6f8bbc70227930f3be4.json",
+  "baselineProjectionHash": "6ef6256c70722f719b779a784f4e32e2290c57b06414e6f8bbc70227930f3be4",
+  "currentProjectionRef": "runtime/evidence/snapshots/70b624c1ded033bd267dfc4c498c5a75dc7c908ddb0aef71e2daed301be16993.json",
+  "currentProjectionHash": "70b624c1ded033bd267dfc4c498c5a75dc7c908ddb0aef71e2daed301be16993",
+  "complete": true,
+  "declaredArtifacts": [
+    {
+      "path": "douyin-message",
+      "kind": "directory"
+    }
+  ],
+  "changes": [
+    {
+      "path": "douyin-message/SKILL.md",
+      "kind": "modified",
+      "before": {
+        "hash": "119ff339fbc49d5753e3a0954a046f6e36a236459a874e7dc8922acf4ff76688",
+        "size": 6592
+      },
+      "after": {
+        "hash": "73cd28dfa9ab6737c0634cc8e08365a62e1a3c18a161bb13b31dbf49532ce88d",
+        "size": 6735
+      },
+      "attributedTo": [
+        {
+          "path": "douyin-message",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "douyin-message/src/adapter.js",
+      "kind": "modified",
+      "before": {
+        "hash": "fe3e776ba93c5c39568c0f5fb78a93eda3a7adea6273d9aa7ad199cf8944cf47",
+        "size": 54309
+      },
+      "after": {
+        "hash": "198852ae9e2a8669f286fc7da873d83940630e3bf99e14b25e1ff1bec7309515",
+        "size": 53723
+      },
+      "attributedTo": [
+        {
+          "path": "douyin-message",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "douyin-message/src/commands.js",
+      "kind": "modified",
+      "before": {
+        "hash": "f820ff94e5559606e2b82d40847de1ee47265e9c5d726401eafc566f33719c55",
+        "size": 38526
+      },
+      "after": {
+        "hash": "f4b1ba9d60e880c08145d2344c88d976cfb424f3042f2c3385ae01df3a81f6b9",
+        "size": 38403
+      },
+      "attributedTo": [
+        {
+          "path": "douyin-message",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "douyin-message/src/page-doctor.js",
+      "kind": "modified",
+      "before": {
+        "hash": "50b8fb0bdbe8bf94b430576cba14191d6c5216889cc2d8d26814d58b61fd693d",
+        "size": 11703
+      },
+      "after": {
+        "hash": "983633ab03490ad5f0081e1dcbe5d135d09afb7ad96e52b9bb8af4e8166e530c",
+        "size": 11703
+      },
+      "attributedTo": [
+        {
+          "path": "douyin-message",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "douyin-message/src/protocol.js",
+      "kind": "modified",
+      "before": {
+        "hash": "3d0b2bd1bf40e347ee103a08fa57bb46da93864ba7babd7c67ee9481f423e799",
+        "size": 15085
+      },
+      "after": {
+        "hash": "008515a16d2f77196445bca6ea272b7501b380a0d2a75b86f40813689b3e67ef",
+        "size": 16940
+      },
+      "attributedTo": [
+        {
+          "path": "douyin-message",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "douyin-message/src/warmup.js",
+      "kind": "modified",
+      "before": {
+        "hash": "c5d1b23370b85b2cb122648d3d196b971189ff515a1633af4cee1ebe9ab11423",
+        "size": 4900
+      },
+      "after": {
+        "hash": "50b669d8df5355e24c5a073f458571c144a48bbdefe4db033f963ae318809d8a",
+        "size": 5045
+      },
+      "attributedTo": [
+        {
+          "path": "douyin-message",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "douyin-message/test/contract.test.js",
+      "kind": "modified",
+      "before": {
+        "hash": "5a12bd6e2bcac01f4e09ad592c1b50ad36217ac9190c217ceed5e9becbbf2cac",
+        "size": 18771
+      },
+      "after": {
+        "hash": "e6de2c6c1f3a8ebfb808d3e362917733849912f414557ac431aa4dacad3249e5",
+        "size": 19595
+      },
+      "attributedTo": [
+        {
+          "path": "douyin-message",
+          "kind": "directory"
+        }
+      ]
+    }
+  ],
+  "unattributed": [],
+  "unresolvedScopes": [],
+  "noCodeReason": null,
+  "scopeHash": "3d7631843f1d06924424c09368815652786eed229285763b1ea02a4b923cefbd"
+}

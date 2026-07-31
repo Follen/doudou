@@ -1,0 +1,86 @@
+{
+  "schema": "comet.native.verification-evidence.v1",
+  "change": "chat-protocol-first",
+  "sourceRevision": 3,
+  "result": "pass",
+  "freshness": "complete",
+  "contractHash": "3e2e1e1906c11ae4c4f6ebfb79cd3d6d9422c0018c576d23aed3eca88fd6d1e4",
+  "acceptanceCriteriaHash": "4a15556d431bed2d4f85a332c081af12d34535c1bc06ea2f3a1e822a4a652154",
+  "implementationScopeRef": "runtime/evidence/scopes/3d7631843f1d06924424c09368815652786eed229285763b1ea02a4b923cefbd.json",
+  "implementationScopeHash": "3d7631843f1d06924424c09368815652786eed229285763b1ea02a4b923cefbd",
+  "reportRef": "verification.md",
+  "reportHash": "4098288e4bf67eda967b30fd7ca800e82e5b2349b344bb9da602528e4f86a7d4",
+  "acceptanceTrace": {
+    "schema": "comet.native.acceptance-trace.v1",
+    "nativeRootRef": "docs/comet",
+    "criteriaHash": "4a15556d431bed2d4f85a332c081af12d34535c1bc06ea2f3a1e822a4a652154",
+    "total": 6,
+    "evidenced": 6,
+    "skipped": 0,
+    "entries": [
+      {
+        "acceptanceId": "acceptance-430aa73efb13048883326068b8855c798c366ac8d1c555ae2cf6b4b330179804",
+        "kind": "brief-example",
+        "source": "brief.md",
+        "evidenceRefs": [
+          "douyin-message/src/protocol.js"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-4857f013fd1fb130cb771a6b011177b124a9f2b3d3d39622bbf627bffdee615e",
+        "kind": "brief-example",
+        "source": "brief.md",
+        "evidenceRefs": [
+          "douyin-message/src/adapter.js",
+          "douyin-message/test/contract.test.js"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-73e8de7611a5fbc6a6c80622b268d69b2c562227931f46b2681fc055b2d0455f",
+        "kind": "brief-example",
+        "source": "brief.md",
+        "evidenceRefs": [
+          "douyin-message/src/adapter.js",
+          "douyin-message/src/warmup.js"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-ad4edd39724dc8e81cb4bdfcfefb5b5015dae51f2b1933d73723cfaa73dcb0d5",
+        "kind": "brief-example",
+        "source": "brief.md",
+        "evidenceRefs": [
+          "douyin-message/src/protocol.js"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-c1e4900e4baedd9374425e839a640a1996306a8e99f5fb1e7080edef5ab2fbda",
+        "kind": "brief-example",
+        "source": "brief.md",
+        "evidenceRefs": [
+          "douyin-message/src/protocol.js",
+          "douyin-message/test/contract.test.js"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-d25d272020b43dbd9f401a94889d9a7dec34ff8f0e057a9d9aedaa4a55d25279",
+        "kind": "brief-example",
+        "source": "brief.md",
+        "evidenceRefs": [
+          "douyin-message/src/protocol.js"
+        ],
+        "skippedReason": null
+      }
+    ],
+    "traceHash": "0afe9bfb1b0b5f964b3ac728f868f25288ce148a2c7fa343ead846c94e7ee582"
+  },
+  "partialAllowanceRef": null,
+  "partialAllowanceHash": null,
+  "receiptRef": "runtime/evidence/check-receipts/323aab80fcb99fb751fc42d9e9986a901b6073924624b4aca4e9d4f7824adbde.json",
+  "createdAt": "2026-07-31T18:27:42.100Z",
+  "envelopeHash": "eb41bb8f5459d262094cea89c40c677c2f4f23b75f61d6f65f1ba0632d6f3e76"
+}

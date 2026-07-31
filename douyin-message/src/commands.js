@@ -21,7 +21,7 @@ const { loadFingerprint } = require("./fingerprint");
 const { createProfile, listProfiles, loadProfile, updateProfile, withProfileLock } = require("./profile");
 const { runPageDoctor } = require("./page-doctor");
 const { appendReplyEvent, createRun, findMessage, listInterruptedRuns, mergeMessages, readConversationMessages, readConversationsIndex, readGroupsIndex, updateRun, writeConversationsIndex, writeGroupsIndex } = require("./storage");
-const { sendProtocolMessage } = require("./protocol");
+const { sendProtocolMessage, sendProtocolMessages } = require("./protocol");
 const { defaultMessageWindow, resolveConversationTarget, resolveMessageTarget } = require("./resolver");
 const { runWarmup } = require("./warmup");
 
@@ -88,12 +88,13 @@ async function requireValidLogin(session, projectRoot, profileId) {
   await updateProfile(projectRoot, profileId, { login_status: "valid", last_login_verified_at: now(), last_error_code: null });
 }
 
-async function performWarmup(context, profileId, { allowStale }) {
-  emit("warmup_started", { profile_id: profileId, allow_stale: allowStale, cache_max_age_ms: 7200000 });
+async function performWarmup(context, profileId, { allowStale, preferCache = false }) {
+  emit("warmup_started", { profile_id: profileId, allow_stale: allowStale, prefer_cache: preferCache, cache_max_age_ms: 7200000 });
   const result = await runWarmup({
     projectRoot: context.projectRoot,
     profileId,
     allowStale,
+    preferCache,
     terminateOwner: Boolean(context.args.terminate_owner),
   });
   emit("warmup_completed", {
@@ -588,7 +589,7 @@ async function commandReplyBatch(context) {
 async function protocolPreview(context, mode) {
   const profileId = requireString(context.args, "profile");
   const text = requireString(context.args, "text");
-  const warmup = await performWarmup(context, profileId, { allowStale: !context.args.confirm });
+  const warmup = await performWarmup(context, profileId, { allowStale: !context.args.confirm, preferCache: !context.args.confirm });
   const requestedConversation = context.args.conversation_id || context.args.recipient || context.args.conversation;
   const resolution = resolveConversationTarget(warmup.index, requestedConversation);
   const conversation = resolution.conversation;
@@ -639,7 +640,6 @@ async function executeProtocolCommand(context, mode) {
     return;
   }
   if (context.args.plan_id !== plan.planId) throw new AppError("PROTOCOL_PLAN_MISMATCH", "--plan-id must match the current protocol-send preview.", { expected: plan.planId, received: context.args.plan_id || null });
-  await assertEnvironment(context.projectRoot);
   const result = await sendProtocolMessage({
     dataRoot: context.projectRoot,
     profileId: plan.profileId,
@@ -662,6 +662,137 @@ async function executeProtocolCommand(context, mode) {
 
 async function commandProtocolSend(context) {
   return executeProtocolCommand(context, "plain");
+}
+
+function parseProtocolBatchTargets(context) {
+  const raw = context.args.conversation_ids || context.args.recipients;
+  if (typeof raw !== "string" || !raw.trim()) {
+    throw new AppError("MISSING_ARGUMENT", "Protocol send-batch requires --conversation-ids or --recipients.", { arguments: ["conversation-ids", "recipients"] });
+  }
+  const targets = raw.split(",").map((item) => item.trim()).filter(Boolean);
+  if (targets.length === 0) throw new AppError("MISSING_ARGUMENT", "Protocol send-batch has no recipients.");
+  if (targets.length > 100) throw new AppError("PROTOCOL_BATCH_TOO_LARGE", "Protocol send-batch supports at most 100 recipients.", { count: targets.length, max: 100 });
+  return targets;
+}
+
+async function protocolBatchPreview(context) {
+  const profileId = requireString(context.args, "profile");
+  const text = requireString(context.args, "text");
+  const targets = parseProtocolBatchTargets(context);
+  const warmup = await performWarmup(context, profileId, { allowStale: !context.args.confirm, preferCache: !context.args.confirm });
+  const seen = new Set();
+  const tasks = targets.map((target, index) => {
+    const resolution = resolveConversationTarget(warmup.index, target);
+    const conversation = resolution.conversation;
+    if (seen.has(conversation.conversation_id)) {
+      throw new AppError("DUPLICATE_BATCH_RECIPIENT", "The same conversation appears more than once in the batch.", {
+        task_index: index + 1,
+        conversation_id: conversation.conversation_id,
+      });
+    }
+    seen.add(conversation.conversation_id);
+    return {
+      conversationId: conversation.conversation_id,
+      text,
+      conversation,
+      matchedBy: resolution.matched_by,
+    };
+  });
+  const planId = `protocol-batch-plan-${sha256(JSON.stringify({
+    profileId,
+    tasks: tasks.map((task) => ({ conversationId: task.conversationId, text: task.text })),
+    intervalMs: 5000,
+  })).slice(0, 16)}`;
+  return {
+    profileId,
+    text,
+    tasks,
+    warmup,
+    planId,
+    preview: {
+      mode: "plain_batch",
+      profile_id: profileId,
+      count: tasks.length,
+      interval_ms: 5000,
+      sequential: true,
+      stop_on_failure: true,
+      warmup_source: warmup.warmup_source,
+      tasks: tasks.map((task, index) => ({
+        task_index: index + 1,
+        conversation_id: task.conversation.conversation_id,
+        conversation_type: task.conversation.conversation_type,
+        kind: task.conversation.kind,
+        conversation_name: task.conversation.display_name,
+        conversation_matched_by: task.matchedBy,
+        text: task.text,
+      })),
+    },
+  };
+}
+
+function formatProtocolBatchResult(projectRoot, item) {
+  const base = {
+    task_index: item.task_index,
+    status: item.status,
+    conversation_id: item.conversation.conversation_id,
+    conversation_name: item.conversation.display_name,
+  };
+  if (item.status === "sent") return {
+    ...base,
+    directory: relative(projectRoot, item.directory),
+    receipt: item.receipt,
+    verification: item.verification,
+  };
+  return { ...base, error_code: item.error_code, message: item.message || null };
+}
+
+async function commandProtocolSendBatch(context) {
+  if (context.args.confirm && !/^protocol-batch-plan-[0-9a-f]{16}$/.test(String(context.args.plan_id || ""))) {
+    throw new AppError("PROTOCOL_PLAN_MISMATCH", "--plan-id must be the batch plan returned by the current preview.", { received: context.args.plan_id || null });
+  }
+  const plan = await protocolBatchPreview(context);
+  if (!context.args.confirm) {
+    emit("result", { command: "protocol send-batch", result: {
+      status: "confirmation_required",
+      plan_id: plan.planId,
+      preview: plan.preview,
+      retry_arguments: ["--confirm", "--plan-id", plan.planId],
+    } });
+    return;
+  }
+  if (context.args.plan_id !== plan.planId) {
+    throw new AppError("PROTOCOL_PLAN_MISMATCH", "--plan-id must match the current protocol batch preview.", { expected: plan.planId, received: context.args.plan_id || null });
+  }
+  const batch = await sendProtocolMessages({
+    dataRoot: context.projectRoot,
+    profileId: plan.profileId,
+    tasks: plan.tasks,
+    terminateOwner: Boolean(context.args.terminate_owner),
+    intervalMs: 5000,
+    onProgress: async (progress) => emit("protocol_send_progress", {
+      current: progress.current,
+      total: progress.total,
+      status: progress.status,
+      wait_ms: progress.wait_ms || null,
+      conversation_id: progress.conversation?.conversation_id || null,
+      conversation_name: progress.conversation?.display_name || null,
+    }),
+  });
+  const results = batch.results.map((item) => formatProtocolBatchResult(context.projectRoot, item));
+  if (!batch.completed) {
+    throw new AppError("PROTOCOL_BATCH_STOPPED", "Protocol batch stopped after a send failed.", {
+      plan_id: plan.planId,
+      interval_ms: batch.interval_ms,
+      results,
+    });
+  }
+  emit("result", { command: "protocol send-batch", result: {
+    status: "sent",
+    plan_id: plan.planId,
+    count: results.length,
+    interval_ms: batch.interval_ms,
+    results,
+  } });
 }
 
 async function commandProtocolReply(context) {
@@ -738,6 +869,7 @@ module.exports = {
   commandProtocolCapture,
   commandProtocolReply,
   commandProtocolSend,
+  commandProtocolSendBatch,
   commandReply,
   commandReplyBatch,
   commandSetup,

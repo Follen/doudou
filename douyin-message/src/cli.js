@@ -21,6 +21,7 @@ Usage:
   douyin-message messages collect --profile NAME (--conversation NAME|--conversations ID,ID) [--from RFC3339 --to RFC3339]
   douyin-message protocol capture --profile NAME
   douyin-message protocol send --profile NAME (--recipient NAME|--conversation-id ID) --text TEXT [--confirm]
+  douyin-message protocol send-batch --profile NAME (--recipients NAME,NAME|--conversation-ids ID,ID) --text TEXT [--confirm --plan-id ID]
   douyin-message protocol reply --profile NAME (--recipient NAME|--conversation-id ID) (--message-text TEXT|--message-id ID) --text TEXT [--from RFC3339 --to RFC3339] [--confirm]
   douyin-message page-doctor --profile NAME [--baseline FILE]
 
@@ -74,6 +75,7 @@ async function runCli(argv) {
     ["page-doctor", commands.commandPageDoctor],
     ["protocol:capture", commands.commandProtocolCapture],
     ["protocol:send", commands.commandProtocolSend],
+    ["protocol:send-batch", commands.commandProtocolSendBatch],
     ["protocol:reply", commands.commandProtocolReply],
   ]);
   const key = new Set(["profile", "groups", "conversations", "messages", "protocol"]).has(command) ? `${command}:${subcommand || ""}` : command;

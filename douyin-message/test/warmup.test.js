@@ -6,7 +6,7 @@ const os = require("node:os");
 const path = require("node:path");
 const test = require("node:test");
 const { readLatestWarmup, writeWarmupSnapshot } = require("../src/storage");
-const { WARMUP_CACHE_MS, readFreshWarmup, summarizeConversations } = require("../src/warmup");
+const { WARMUP_CACHE_MS, readFreshWarmup, runWarmup, summarizeConversations } = require("../src/warmup");
 
 function snapshot(completedAt, overrides = {}) {
   return {
@@ -35,6 +35,16 @@ test("warmup snapshots write dated history and latest pointers", async (t) => {
   assert.equal(JSON.parse(await fsp.readFile(files.filename, "utf8")).completed_at, value.completed_at);
   assert.deepEqual(await readLatestWarmup(root, "work"), value);
   assert.match(files.filename, /warmup[\\/]2026-07-31[\\/]20260731T123456789Z__warmup\.json$/);
+});
+
+test("preview warmup prefers a fresh cache without launching a live session", async (t) => {
+  const root = await fsp.mkdtemp(path.join(os.tmpdir(), "douyin-warmup-cache-"));
+  t.after(() => fsp.rm(root, { recursive: true, force: true }));
+  const value = snapshot(new Date().toISOString());
+  await writeWarmupSnapshot(root, "work", value);
+  const result = await runWarmup({ projectRoot: root, profileId: "work", allowStale: true, preferCache: true });
+  assert.equal(result.warmup_source, "fresh_cache");
+  assert.deepEqual(result.snapshot, value);
 });
 
 test("warmup summaries keep direct and group counts separate", () => {

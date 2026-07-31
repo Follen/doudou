@@ -112,6 +112,17 @@ node <skill>/bin/douyin-message.js protocol send \
 
 确认后的发送要求本次实时预热成功，不使用过期缓存执行写操作。
 
+同一段文本发送到多个现有会话时，使用批量命令，不要循环调用单条发送：
+
+```bash
+node <skill>/bin/douyin-message.js protocol send-batch \
+  --profile work \
+  --conversation-ids "会话ID1,会话ID2" \
+  --text "消息内容"
+```
+
+批量命令先返回整批预览，确认后只实时预热一次，并在同一个无头浏览器会话中严格串行发送。相邻两条固定间隔 5 秒；每条消息独立生成签名并校验服务器回执。任一条失败会停止后续发送，并区分已发送、失败和跳过的目标。
+
 ### 6. 引用回复
 
 引用回复依赖已经采集到本地的目标消息：

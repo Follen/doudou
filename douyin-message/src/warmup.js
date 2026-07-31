@@ -31,6 +31,17 @@ function readFreshWarmup(snapshot, clock = Date.now()) {
   return { snapshot, index: snapshot.conversations_index, age_ms: ageMs };
 }
 
+function cachedWarmupResult(projectRoot, profileId, cached, source, liveError = null) {
+  return {
+    warmup_source: source,
+    snapshot: cached.snapshot,
+    index: cached.index,
+    age_ms: cached.age_ms,
+    live_error: liveError,
+    files: { latest: relative(projectRoot, path.join(projectRoot, "message", "profiles", profileId, "warmup", "latest.json")) },
+  };
+}
+
 async function liveWarmup({ projectRoot, profileId, terminateOwner = false }) {
   const doctor = await runDoctor({ projectRoot, launchProbe: true });
   if (doctor.status !== "ok") throw new AppError("DOCTOR_FAILED", "Environment doctor did not pass before warmup.", { status: doctor.status, issues: doctor.issues });
@@ -91,6 +102,10 @@ async function liveWarmup({ projectRoot, profileId, terminateOwner = false }) {
 }
 
 async function runWarmup(options) {
+  if (options.preferCache) {
+    const cached = readFreshWarmup(await readLatestWarmup(options.projectRoot, options.profileId));
+    if (cached) return cachedWarmupResult(options.projectRoot, options.profileId, cached, "fresh_cache");
+  }
   try {
     return await liveWarmup(options);
   } catch (error) {
@@ -103,14 +118,7 @@ async function runWarmup(options) {
         cache_max_age_ms: WARMUP_CACHE_MS,
       });
     }
-    return {
-      warmup_source: "stale_cache",
-      snapshot: cached.snapshot,
-      index: cached.index,
-      age_ms: cached.age_ms,
-      live_error: { code: error.code || "WARMUP_LIVE_FAILED", message: error.message },
-      files: { latest: relative(options.projectRoot, path.join(options.projectRoot, "message", "profiles", options.profileId, "warmup", "latest.json")) },
-    };
+    return cachedWarmupResult(options.projectRoot, options.profileId, cached, "stale_cache", { code: error.code || "WARMUP_LIVE_FAILED", message: error.message });
   }
 }
 

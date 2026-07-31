@@ -265,11 +265,113 @@ async function waitForValidLogin(session, attempts = 12) {
   return login;
 }
 
-async function sendProtocolMessage({ dataRoot, profileId, conversationId, text, target = null, terminateOwner = false }) {
+async function sendProtocolMessageInSession({ session, dataRoot, profileId, conversation, text, target = null }) {
+  let intercepted;
+  let routeFailure;
+  await openConversation(session, conversation);
+  await session.page.route("**/v1/message/send*", async (route) => {
+    try {
+      const request = route.request();
+      const originalBody = request.postDataBuffer();
+      if (!originalBody) throw new AppError("SIGNED_REQUEST_BODY_MISSING", "The SDK-generated send request has no body.");
+      const built = rewriteSignedSendRequest(originalBody, text, { target });
+      if (built.conversationId !== String(conversation.conversation_id) || built.conversationType !== Number(conversation.conversation_type)) {
+        throw new AppError("SIGNED_REQUEST_CONVERSATION_MISMATCH", "The SDK-generated request does not match the selected conversation.");
+      }
+      intercepted = { url: request.url(), method: request.method(), originalBody, ...built };
+      await route.abort();
+    } catch (error) {
+      routeFailure = error;
+      await route.abort().catch(() => {});
+    }
+  }, { times: 1 });
+
+  const composer = await firstVisible(session.page, SELECTORS.composer);
+  const send = await firstVisible(session.page, SELECTORS.send);
+  if (!composer) throw new AppError("COMPOSER_CONTRACT_DRIFT", "The message composer was not found.");
+  await composer.fill(`protocol-bootstrap-${Date.now()}`);
+  if (send) await send.click();
+  else await composer.press("Enter");
+  for (let attempt = 0; attempt < 30 && !intercepted && !routeFailure; attempt += 1) await session.page.waitForTimeout(100);
+  if (routeFailure) throw routeFailure;
+  if (!intercepted) throw new AppError("SIGNED_SEND_NOT_CAPTURED", "The SDK bootstrap request was not captured before the timeout.");
+  const response = await pageContextSend(session.page, intercepted.url, intercepted.body);
+  const responseBody = response.body;
+  const sentAt = now();
+  const directory = path.join(dataRoot, "message", "profiles", safeSegment(profileId), "sends", sentAt.slice(0, 10), `${artifactTimestamp(sentAt)}__${safeSegment(intercepted.clientMessageId)}`);
+  await ensureDir(directory);
+  await Promise.all([
+    fsp.writeFile(path.join(directory, "01-sdk-signed-request.bin"), intercepted.originalBody),
+    fsp.writeFile(path.join(directory, "02-cli-request.bin"), intercepted.body),
+    fsp.writeFile(path.join(directory, "03-server-response.bin"), responseBody),
+  ]);
+  const parsed = parseSendResponse(responseBody);
+  const checks = {
+    http_200: response.status === 200,
+    protobuf_status_ok: !parsed.gateway && parsed.status_code === 0,
+    server_result_ok: !parsed.gateway && parsed.server_result_code === 0,
+    client_message_id_matches: !parsed.gateway && parsed.client_message_id === intercepted.clientMessageId,
+    conversation_matches: intercepted.conversationId === String(conversation.conversation_id),
+  };
+  const passed = Object.values(checks).every(Boolean);
+  const receipt = {
+    schema: "douyin-message.protocol-send-receipt.v1",
+    sent_at: sentAt,
+    mode: target ? "reference_reply" : "plain",
+    profile_id: profileId,
+    conversation: {
+      conversation_id_sha256: hashOrNull(conversation.conversation_id),
+      conversation_type: conversation.conversation_type,
+      kind: conversation.kind,
+    },
+    target_message_id_sha256: hashOrNull(target?.message_id),
+    text: { sha256: sha256(text), bytes: Buffer.byteLength(text, "utf8") },
+    endpoint: redactEndpoint(intercepted.url),
+    method: intercepted.method,
+    headless: true,
+    client_message_id_sha256: hashOrNull(intercepted.clientMessageId),
+    server_message_id_sha256: hashOrNull(parsed.server_message_id),
+    http_status: response.status,
+    http_status_text: response.statusText,
+    response: redactSendResponse(parsed),
+    files: {
+      sdk_signed_request: "01-sdk-signed-request.bin",
+      cli_request: "02-cli-request.bin",
+      server_response: "03-server-response.bin",
+      verification: "05-verification.json",
+    },
+    sha256: {
+      sdk_signed_request: sha256(intercepted.originalBody),
+      cli_request: sha256(intercepted.body),
+      server_response: sha256(responseBody),
+    },
+  };
+  const verification = {
+    schema: "douyin-message.protocol-send-verification.v1",
+    verified_at: now(),
+    passed,
+    checks,
+    conclusion: passed ? "Server accepted the message and echoed the SDK client message ID." : "One or more transport or Protobuf receipt checks failed.",
+  };
+  await Promise.all([
+    fsp.writeFile(path.join(directory, "04-receipt.json"), `${JSON.stringify(receipt, null, 2)}\n`),
+    fsp.writeFile(path.join(directory, "05-verification.json"), `${JSON.stringify(verification, null, 2)}\n`),
+  ]);
+  if (!passed) throw new AppError("PROTOCOL_SEND_VERIFICATION_FAILED", verification.conclusion, { directory, checks, receipt });
+  return { directory, receipt, verification };
+}
+
+async function sendProtocolMessages({ dataRoot, profileId, tasks, terminateOwner = false, intervalMs = 5000, onProgress = null }) {
+  if (!Array.isArray(tasks) || tasks.length === 0) throw new AppError("INVALID_PROTOCOL_BATCH", "Protocol batch requires at least one task.");
+  if (tasks.length > 100) throw new AppError("PROTOCOL_BATCH_TOO_LARGE", "Protocol batch supports at most 100 tasks.", { count: tasks.length, max: 100 });
+  if (!Number.isInteger(intervalMs) || intervalMs < 5000) throw new AppError("INVALID_SEND_INTERVAL", "Protocol batch interval must be at least 5000 milliseconds.", { interval_ms: intervalMs });
   return withProfileLock(dataRoot, profileId, { terminateOwner }, async () => {
     const index = await readConversationsIndex(dataRoot, profileId);
-    const conversation = index.conversations.find((item) => item.conversation_id === String(conversationId));
-    if (!conversation) throw new AppError("CONVERSATION_NOT_FOUND", `Conversation not found: ${conversationId}.`);
+    const prepared = tasks.map((task, taskIndex) => {
+      const conversation = index.conversations.find((item) => item.conversation_id === String(task.conversationId));
+      if (!conversation) throw new AppError("CONVERSATION_NOT_FOUND", `Conversation not found: ${task.conversationId}.`, { task_index: taskIndex + 1 });
+      return { ...task, conversation };
+    });
     const { paths } = await loadProfile(dataRoot, profileId);
     const fingerprint = await loadFingerprint(paths.fingerprint, { profileId });
     const session = await launchSession({
@@ -279,112 +381,58 @@ async function sendProtocolMessage({ dataRoot, profileId, conversationId, text, 
       fingerprint,
       fingerprintPath: paths.fingerprint,
     });
-    let intercepted;
-    let responseBody;
-    let responseMeta;
-    let routeFailure;
+    const results = [];
+    let failure = null;
     try {
       await openChat(session);
       const login = await waitForValidLogin(session);
       if (!login.valid) throw new AppError(login.reason_code || "LOGIN_REQUIRED", "Profile login is not valid.", { profile_id: profileId });
-      await openConversation(session, conversation);
-      await session.page.route("**/v1/message/send*", async (route) => {
+      for (let index = 0; index < prepared.length; index += 1) {
+        const item = prepared[index];
+        await onProgress?.({ current: index + 1, total: prepared.length, status: "sending", conversation: item.conversation });
         try {
-          const request = route.request();
-          const originalBody = request.postDataBuffer();
-          if (!originalBody) throw new AppError("SIGNED_REQUEST_BODY_MISSING", "The SDK-generated send request has no body.");
-          const built = rewriteSignedSendRequest(originalBody, text, { target });
-          if (built.conversationId !== String(conversationId) || built.conversationType !== Number(conversation.conversation_type)) {
-            throw new AppError("SIGNED_REQUEST_CONVERSATION_MISMATCH", "The SDK-generated request does not match the selected conversation.");
-          }
-          intercepted = { url: request.url(), method: request.method(), originalBody, ...built };
-          await route.abort();
+          const result = await sendProtocolMessageInSession({
+            session,
+            dataRoot,
+            profileId,
+            conversation: item.conversation,
+            text: item.text,
+            target: item.target || null,
+          });
+          results.push({ task_index: index + 1, status: "sent", conversation: item.conversation, ...result });
+          await onProgress?.({ current: index + 1, total: prepared.length, status: "sent", conversation: item.conversation, result });
         } catch (error) {
-          routeFailure = error;
-          await route.abort().catch(() => {});
+          failure = error;
+          results.push({ task_index: index + 1, status: "failed", conversation: item.conversation, error_code: error.code || "SEND_FAILED", message: error.message });
+          await onProgress?.({ current: index + 1, total: prepared.length, status: "failed", conversation: item.conversation, error });
+          for (let later = index + 1; later < prepared.length; later += 1) {
+            results.push({ task_index: later + 1, status: "skipped", conversation: prepared[later].conversation, error_code: "BATCH_STOPPED" });
+          }
+          break;
         }
-      }, { times: 1 });
-
-      const composer = await firstVisible(session.page, SELECTORS.composer);
-      const send = await firstVisible(session.page, SELECTORS.send);
-      if (!composer) throw new AppError("COMPOSER_CONTRACT_DRIFT", "The message composer was not found.");
-      await composer.fill(`protocol-bootstrap-${Date.now()}`);
-      if (send) await send.click();
-      else await composer.press("Enter");
-      for (let attempt = 0; attempt < 30 && !intercepted && !routeFailure; attempt += 1) await session.page.waitForTimeout(100);
-      if (routeFailure) throw routeFailure;
-      if (!intercepted) throw new AppError("SIGNED_SEND_NOT_CAPTURED", "The SDK bootstrap request was not captured before the timeout.");
-      const response = await pageContextSend(session.page, intercepted.url, intercepted.body);
-      responseBody = response.body;
-      responseMeta = { status: response.status, statusText: response.statusText };
+        if (index < prepared.length - 1) {
+          await onProgress?.({ current: index + 1, total: prepared.length, status: "waiting", wait_ms: intervalMs });
+          await session.page.waitForTimeout(intervalMs);
+        }
+      }
     } finally {
       await session.context.close().catch(() => {});
     }
-
-    if (!intercepted || !responseBody) throw new AppError("SIGNED_SEND_NOT_CAPTURED", "The signed send request or response was not captured.");
-    const sentAt = now();
-    const directory = path.join(dataRoot, "message", "profiles", safeSegment(profileId), "sends", sentAt.slice(0, 10), `${artifactTimestamp(sentAt)}__${safeSegment(intercepted.clientMessageId)}`);
-    await ensureDir(directory);
-    await Promise.all([
-      fsp.writeFile(path.join(directory, "01-sdk-signed-request.bin"), intercepted.originalBody),
-      fsp.writeFile(path.join(directory, "02-cli-request.bin"), intercepted.body),
-      fsp.writeFile(path.join(directory, "03-server-response.bin"), responseBody),
-    ]);
-    const parsed = parseSendResponse(responseBody);
-    const checks = {
-      http_200: responseMeta.status === 200,
-      protobuf_status_ok: !parsed.gateway && parsed.status_code === 0,
-      server_result_ok: !parsed.gateway && parsed.server_result_code === 0,
-      client_message_id_matches: !parsed.gateway && parsed.client_message_id === intercepted.clientMessageId,
-      conversation_matches: intercepted.conversationId === String(conversationId),
-    };
-    const passed = Object.values(checks).every(Boolean);
-    const receipt = {
-      schema: "douyin-message.protocol-send-receipt.v1",
-      sent_at: sentAt,
-      mode: target ? "reference_reply" : "plain",
-      profile_id: profileId,
-      conversation: {
-        conversation_id_sha256: hashOrNull(conversation.conversation_id),
-        conversation_type: conversation.conversation_type,
-        kind: conversation.kind,
-      },
-      target_message_id_sha256: hashOrNull(target?.message_id),
-      text: { sha256: sha256(text), bytes: Buffer.byteLength(text, "utf8") },
-      endpoint: redactEndpoint(intercepted.url),
-      method: intercepted.method,
-      headless: true,
-      client_message_id_sha256: hashOrNull(intercepted.clientMessageId),
-      server_message_id_sha256: hashOrNull(parsed.server_message_id),
-      http_status: responseMeta.status,
-      http_status_text: responseMeta.statusText,
-      response: redactSendResponse(parsed),
-      files: {
-        sdk_signed_request: "01-sdk-signed-request.bin",
-        cli_request: "02-cli-request.bin",
-        server_response: "03-server-response.bin",
-        verification: "05-verification.json",
-      },
-      sha256: {
-        sdk_signed_request: sha256(intercepted.originalBody),
-        cli_request: sha256(intercepted.body),
-        server_response: sha256(responseBody),
-      },
-    };
-    const verification = {
-      schema: "douyin-message.protocol-send-verification.v1",
-      verified_at: now(),
-      passed,
-      checks,
-      conclusion: passed ? "Server accepted the message and echoed the SDK client message ID." : "One or more transport or Protobuf receipt checks failed.",
-    };
-    await Promise.all([
-      fsp.writeFile(path.join(directory, "04-receipt.json"), `${JSON.stringify(receipt, null, 2)}\n`),
-      fsp.writeFile(path.join(directory, "05-verification.json"), `${JSON.stringify(verification, null, 2)}\n`),
-    ]);
-    if (!passed) throw new AppError("PROTOCOL_SEND_VERIFICATION_FAILED", verification.conclusion, { directory, checks, receipt });
-    return { directory, receipt, verification };
+    return { completed: !failure, interval_ms: intervalMs, results, failure };
   });
+}
+
+async function sendProtocolMessage({ dataRoot, profileId, conversationId, text, target = null, terminateOwner = false }) {
+  const batch = await sendProtocolMessages({
+    dataRoot,
+    profileId,
+    tasks: [{ conversationId, text, target }],
+    terminateOwner,
+    intervalMs: 5000,
+  });
+  if (batch.failure) throw batch.failure;
+  const [{ conversation, task_index: taskIndex, status, ...result }] = batch.results;
+  return result;
 }
 
 module.exports = {
@@ -396,4 +444,5 @@ module.exports = {
   redactSendResponse,
   rewriteSignedSendRequest,
   sendProtocolMessage,
+  sendProtocolMessages,
 };

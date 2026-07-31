@@ -108,7 +108,7 @@ test("CLI selects direct conversations and previews protocol sends", async (t) =
   assert.equal(preview.status, "confirmation_required");
   assert.equal(preview.preview.conversation_type, 1);
   assert.equal(preview.preview.kind, "direct");
-  assert.equal(preview.preview.warmup_source, "stale_cache");
+  assert.equal(preview.preview.warmup_source, "fresh_cache");
   const missing = childProcess.spawnSync(process.execPath, [cli, "protocol", "send", "--data-root", root, "--profile", "work", "--recipient", "不存在", "--text", "hello"], { encoding: "utf8" });
   assert.equal(missing.status, 1);
   assert.equal(JSON.parse(missing.stdout.trim().split(/\r?\n/).at(-1)).code, "RECIPIENT_NOT_FOUND");
@@ -118,6 +118,38 @@ test("CLI selects direct conversations and previews protocol sends", async (t) =
   const freshRequired = childProcess.spawnSync(process.execPath, [cli, "protocol", "send", "--data-root", root, "--profile", "work", "--conversation-id", "direct-1", "--text", "hello", "--confirm", "--plan-id", "protocol-plan-0000000000000000"], { encoding: "utf8" });
   assert.equal(freshRequired.status, 1);
   assert.equal(JSON.parse(freshRequired.stdout.trim().split(/\r?\n/).at(-1)).code, "PROFILE_NOT_FOUND");
+});
+
+test("protocol send-batch previews one sequential plan with a five-second interval", async (t) => {
+  const root = await fsp.mkdtemp(path.join(os.tmpdir(), "douyin-send-batch-"));
+  t.after(() => fsp.rm(root, { recursive: true, force: true }));
+  await seedWarmup(root, "work", [
+    { conversation_id: "group-1", conversation_short_id: "101", conversation_type: 2, kind: "group", display_name: "群一" },
+    { conversation_id: "group-2", conversation_short_id: "102", conversation_type: 2, kind: "group", display_name: "群二" },
+  ]);
+  const previewed = childProcess.spawnSync(process.execPath, [
+    cli,
+    "protocol",
+    "send-batch",
+    "--data-root",
+    root,
+    "--profile",
+    "work",
+    "--conversation-ids",
+    "group-1,group-2",
+    "--text",
+    "hello",
+  ], { encoding: "utf8" });
+  assert.equal(previewed.status, 0, previewed.stdout + previewed.stderr);
+  const result = previewed.stdout.trim().split(/\r?\n/).map(JSON.parse).at(-1).result;
+  assert.equal(result.status, "confirmation_required");
+  assert.match(result.plan_id, /^protocol-batch-plan-[0-9a-f]{16}$/);
+  assert.equal(result.preview.count, 2);
+  assert.equal(result.preview.interval_ms, 5000);
+  assert.equal(result.preview.sequential, true);
+  assert.equal(result.preview.stop_on_failure, true);
+  assert.equal(result.preview.warmup_source, "fresh_cache");
+  assert.deepEqual(result.preview.tasks.map((task) => task.conversation_id), ["group-1", "group-2"]);
 });
 
 test("single reply first returns a preview and appends a planned audit event", async (t) => {

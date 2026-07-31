@@ -73,6 +73,14 @@ Plain send:
 node <skill-directory>/bin/douyin-message.js protocol send --profile <name> --recipient <existing-name> --text <text>
 ```
 
+Send the same text to multiple existing conversations:
+
+```text
+node <skill-directory>/bin/douyin-message.js protocol send-batch --profile <name> --conversation-ids <id,id> --text <text>
+```
+
+Batch send returns one complete preview and requires one confirmation. After confirmation it performs one live warmup, holds one Profile lock, reuses one headless browser session, and sends strictly in plan order. It waits exactly 5 seconds between successful sends. Each send still obtains a fresh SDK-signed request and verifies its own server receipt. Any failed or unverifiable send stops the remaining tasks; report sent, failed and skipped entries from the returned results. Do not implement batch delivery by looping over `protocol send` commands.
+
 Reference reply to one collected message:
 
 ```text
@@ -81,7 +89,7 @@ node <skill-directory>/bin/douyin-message.js protocol reply --profile <name> --r
 
 Reply keyword matching ignores case and collapses consecutive spaces, tabs and newlines. One match proceeds to preview; multiple matches return numbered message candidates. `--conversation-id` and `--message-id` remain available for exact selection.
 
-Both commands first return `confirmation_required`. Show the exact preview and obtain explicit confirmation. Then rerun with the returned `--confirm --plan-id <id>`. The CLI enters `/chat`, lets the page IM SDK construct and cancel one fresh signed bootstrap request, replaces only the Protobuf send body, and submits the final request with page-context `fetch`. It verifies HTTP status, server result, client ID echo and selected conversation. Receipts retain only redacted endpoint metadata and hashes; do not claim a send from visible DOM text.
+Send and reply commands first return `confirmation_required`. Show the exact preview and obtain explicit confirmation. Then rerun with the returned `--confirm --plan-id <id>`. Preview generation prefers a successful warmup snapshot no older than two hours; confirmed writes perform one live warmup for the command. The CLI enters `/chat`, lets the page IM SDK construct and cancel one fresh signed bootstrap request, replaces only the Protobuf send body, and submits the final request with page-context `fetch`. It verifies HTTP status, server result, client ID echo and selected conversation. Receipts retain only redacted endpoint metadata and hashes; do not claim a send from visible DOM text.
 
 ## Capture Drift
 

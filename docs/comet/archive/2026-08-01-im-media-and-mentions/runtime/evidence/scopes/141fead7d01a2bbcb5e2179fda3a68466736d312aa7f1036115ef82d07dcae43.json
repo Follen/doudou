@@ -1,0 +1,586 @@
+{
+  "schema": "comet.native.implementation-scope.v2",
+  "contractHash": "b7effa597b8f1aff8c5c376191205b259e370f8831a2dee82cdc875fa224271a",
+  "baselineProjectionRef": "runtime/evidence/snapshots/6da5099f74b7f75fe3741e752d8632e24458e3ee8ff17deaebbdb0a28560753b.json",
+  "baselineProjectionHash": "6da5099f74b7f75fe3741e752d8632e24458e3ee8ff17deaebbdb0a28560753b",
+  "currentProjectionRef": "runtime/evidence/snapshots/ef5f0932ed3bb291b677ed1232ab54f1a68e0b26643f4acffc7320dc27fc76be.json",
+  "currentProjectionHash": "ef5f0932ed3bb291b677ed1232ab54f1a68e0b26643f4acffc7320dc27fc76be",
+  "complete": false,
+  "declaredArtifacts": [
+    {
+      "path": "douyin-message/src/im-client.js",
+      "kind": "file"
+    },
+    {
+      "path": "douyin-message/src/protocol.js",
+      "kind": "file"
+    },
+    {
+      "path": "douyin-message/test/contract.test.js",
+      "kind": "file"
+    }
+  ],
+  "changes": [
+    {
+      "path": "douyin-message/SKILL.md",
+      "kind": "modified",
+      "before": {
+        "hash": "c7f6895309cf779778fb917ad7f97d913669e0096d2a237787f248ffbce163c9",
+        "size": 8317
+      },
+      "after": {
+        "hash": "8812a41beecc04b4daff0caee54d54a70b9752aecbf2632e28712785fc9154ab",
+        "size": 8574
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "douyin-message/references/layout.md",
+      "kind": "modified",
+      "before": {
+        "hash": "629f725dbae13f6ab4b5a529285754965bd68512e1884ba2d28eef5e032c16d8",
+        "size": 3157
+      },
+      "after": {
+        "hash": "a70b3e42f3f1d12fd69e673028ead1fead1f800550aa80a3bab1df0ffa320ed5",
+        "size": 3326
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "douyin-message/references/protobuf-message-fields.md",
+      "kind": "modified",
+      "before": {
+        "hash": "e8ff69bc07772fe6403fcc44ae8f7e625782b6551cea3600e88441fff6f8aab7",
+        "size": 4041
+      },
+      "after": {
+        "hash": "dfa65e3848f1839c48928b3d5a424586e0202aa9870ca3b57ab6e62d517adf40",
+        "size": 5261
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "douyin-message/src/adapter.js",
+      "kind": "modified",
+      "before": {
+        "hash": "bcaa4730789b83a1b1145149aee7797f418e92556ade8396845150791e764af2",
+        "size": 54424
+      },
+      "after": {
+        "hash": "e9f4a8c8bf2068e1f2d50ed4daffe6846e6511e09b652a0754238d6d5958b678",
+        "size": 43094
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "douyin-message/src/cli.js",
+      "kind": "modified",
+      "before": {
+        "hash": "c00fe1483bb7cd1e4a02ab73390415eec44fb71e2c0d97b60772f0f0586e3911",
+        "size": 4709
+      },
+      "after": {
+        "hash": "80318f2dcb306fb4c8bcbf7bd3c3cf2a18aa81b6a8df71754889ff3dd95dca9a",
+        "size": 4779
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "douyin-message/src/commands.js",
+      "kind": "modified",
+      "before": {
+        "hash": "071057f2c66643f06f532cff9ed593f4382890e667b8b905e1bb051842869610",
+        "size": 44742
+      },
+      "after": {
+        "hash": "76d53eacf0ebb23087edc1115a70f2a1525ecbae844b21f07380d7665a1dad4a",
+        "size": 42159
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "douyin-message/src/core.js",
+      "kind": "modified",
+      "before": {
+        "hash": "d47b0784ae991d86367ad57e600772a2f69a8fa5defd56d70b0657e63aa824f8",
+        "size": 5793
+      },
+      "after": {
+        "hash": "4c64c4585805dd56464f749527c5f32ad86a588b2f2114555f812fec42c18265",
+        "size": 6013
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "douyin-message/src/fingerprint.js",
+      "kind": "modified",
+      "before": {
+        "hash": "6e149ebe251c80f5dd95d121ba3cccf75a6a66eb8e0b60ff4b45f6d57216103c",
+        "size": 25117
+      },
+      "after": {
+        "hash": "7eca175dbfe60757f254a0bd7710c5a9bc2fc64e7ae457cf2e47b05d7fc4ca78",
+        "size": 25355
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "douyin-message/src/im-client.js",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "3378495e8c03e834794858d8b8a3cdfde5f09223bbd48343e06386160ea396bc",
+        "size": 18202
+      },
+      "attributedTo": [
+        {
+          "path": "douyin-message/src/im-client.js",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "douyin-message/src/media.js",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "36604fd0009fc07327197147f7dd7d7f899771842dc10cd2f04bcbb3c60d3287",
+        "size": 14241
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "douyin-message/src/mentions.js",
+      "kind": "removed",
+      "before": {
+        "hash": "2beb67cee8dcc04eebbaf89aba2f0cb4efff2bfaa28f9e87d43ddf5edfecbb41",
+        "size": 3978
+      },
+      "after": null,
+      "attributedTo": []
+    },
+    {
+      "path": "douyin-message/src/page-doctor.js",
+      "kind": "modified",
+      "before": {
+        "hash": "983633ab03490ad5f0081e1dcbe5d135d09afb7ad96e52b9bb8af4e8166e530c",
+        "size": 11703
+      },
+      "after": {
+        "hash": "5347f0e812899acbf334660966612526d565f506fa3a381b20e05b9beb6ff6ee",
+        "size": 11598
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "douyin-message/src/protocol.js",
+      "kind": "modified",
+      "before": {
+        "hash": "086e846d5cf64bfc4ee641941c875ff49932c289fef732390a67cd1917b85bcf",
+        "size": 20354
+      },
+      "after": {
+        "hash": "e02ef5d41f1ca115d4f10d2eaa4651d03a9969e68de50af8bc3f79a9b7854a48",
+        "size": 15275
+      },
+      "attributedTo": [
+        {
+          "path": "douyin-message/src/protocol.js",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "douyin-message/src/storage.js",
+      "kind": "modified",
+      "before": {
+        "hash": "cef406997261c7b13a776628b875f70f12b837c247b2bf7bf09d178ce9d611dc",
+        "size": 20174
+      },
+      "after": {
+        "hash": "8f121e462b4e9b95013014e8827ebe36b96fbbf3dd29ef8265db851bcab5c74e",
+        "size": 20537
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "douyin-message/test/cli.test.js",
+      "kind": "modified",
+      "before": {
+        "hash": "fad4930d8e1dcc988095bce882096e1c7154cd2e7f89af4086c6dd1095a5205f",
+        "size": 11113
+      },
+      "after": {
+        "hash": "62e98c8dc36ef1fbb869c9208de3b4e8b9daeb4649cc42012f1523028d857d77",
+        "size": 14789
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "douyin-message/test/contract.test.js",
+      "kind": "modified",
+      "before": {
+        "hash": "89249cd2858238e8fc8cd8569aeb61aad063cf84a2a758166777a92a49475e1d",
+        "size": 21506
+      },
+      "after": {
+        "hash": "7aeb49f7b5be3400e50ddcb0860c1a74485d8666d68b8dc0d0aa8624faf2ce58",
+        "size": 21226
+      },
+      "attributedTo": [
+        {
+          "path": "douyin-message/test/contract.test.js",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "douyin-message/test/media.test.js",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "bc80e39f20e70cb0f26aba82f327db0987ca9ff4150968ba180b04c4e7fcff44",
+        "size": 3064
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "douyin-message/test/mentions.test.js",
+      "kind": "removed",
+      "before": {
+        "hash": "c99e043342fb8b35bb95656bed175d32335b4eebd1e42ce0579f8c1c62bbc4ca",
+        "size": 3468
+      },
+      "after": null,
+      "attributedTo": []
+    },
+    {
+      "path": "douyin-message/test/storage.test.js",
+      "kind": "modified",
+      "before": {
+        "hash": "a354b3347109cb7922833a9b33c2af7b7fb3bea2a81de4056916839a9e9c1d8a",
+        "size": 6697
+      },
+      "after": {
+        "hash": "0f4edad54db8fc299bf5341d7ec96e8cd6dbfeefcfeab43997928cf9b21ae18a",
+        "size": 7617
+      },
+      "attributedTo": []
+    }
+  ],
+  "unattributed": [
+    {
+      "path": "douyin-message/SKILL.md",
+      "kind": "modified",
+      "before": {
+        "hash": "c7f6895309cf779778fb917ad7f97d913669e0096d2a237787f248ffbce163c9",
+        "size": 8317
+      },
+      "after": {
+        "hash": "8812a41beecc04b4daff0caee54d54a70b9752aecbf2632e28712785fc9154ab",
+        "size": 8574
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "douyin-message/references/layout.md",
+      "kind": "modified",
+      "before": {
+        "hash": "629f725dbae13f6ab4b5a529285754965bd68512e1884ba2d28eef5e032c16d8",
+        "size": 3157
+      },
+      "after": {
+        "hash": "a70b3e42f3f1d12fd69e673028ead1fead1f800550aa80a3bab1df0ffa320ed5",
+        "size": 3326
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "douyin-message/references/protobuf-message-fields.md",
+      "kind": "modified",
+      "before": {
+        "hash": "e8ff69bc07772fe6403fcc44ae8f7e625782b6551cea3600e88441fff6f8aab7",
+        "size": 4041
+      },
+      "after": {
+        "hash": "dfa65e3848f1839c48928b3d5a424586e0202aa9870ca3b57ab6e62d517adf40",
+        "size": 5261
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "douyin-message/src/adapter.js",
+      "kind": "modified",
+      "before": {
+        "hash": "bcaa4730789b83a1b1145149aee7797f418e92556ade8396845150791e764af2",
+        "size": 54424
+      },
+      "after": {
+        "hash": "e9f4a8c8bf2068e1f2d50ed4daffe6846e6511e09b652a0754238d6d5958b678",
+        "size": 43094
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "douyin-message/src/cli.js",
+      "kind": "modified",
+      "before": {
+        "hash": "c00fe1483bb7cd1e4a02ab73390415eec44fb71e2c0d97b60772f0f0586e3911",
+        "size": 4709
+      },
+      "after": {
+        "hash": "80318f2dcb306fb4c8bcbf7bd3c3cf2a18aa81b6a8df71754889ff3dd95dca9a",
+        "size": 4779
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "douyin-message/src/commands.js",
+      "kind": "modified",
+      "before": {
+        "hash": "071057f2c66643f06f532cff9ed593f4382890e667b8b905e1bb051842869610",
+        "size": 44742
+      },
+      "after": {
+        "hash": "76d53eacf0ebb23087edc1115a70f2a1525ecbae844b21f07380d7665a1dad4a",
+        "size": 42159
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "douyin-message/src/core.js",
+      "kind": "modified",
+      "before": {
+        "hash": "d47b0784ae991d86367ad57e600772a2f69a8fa5defd56d70b0657e63aa824f8",
+        "size": 5793
+      },
+      "after": {
+        "hash": "4c64c4585805dd56464f749527c5f32ad86a588b2f2114555f812fec42c18265",
+        "size": 6013
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "douyin-message/src/fingerprint.js",
+      "kind": "modified",
+      "before": {
+        "hash": "6e149ebe251c80f5dd95d121ba3cccf75a6a66eb8e0b60ff4b45f6d57216103c",
+        "size": 25117
+      },
+      "after": {
+        "hash": "7eca175dbfe60757f254a0bd7710c5a9bc2fc64e7ae457cf2e47b05d7fc4ca78",
+        "size": 25355
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "douyin-message/src/media.js",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "36604fd0009fc07327197147f7dd7d7f899771842dc10cd2f04bcbb3c60d3287",
+        "size": 14241
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "douyin-message/src/mentions.js",
+      "kind": "removed",
+      "before": {
+        "hash": "2beb67cee8dcc04eebbaf89aba2f0cb4efff2bfaa28f9e87d43ddf5edfecbb41",
+        "size": 3978
+      },
+      "after": null,
+      "attributedTo": []
+    },
+    {
+      "path": "douyin-message/src/page-doctor.js",
+      "kind": "modified",
+      "before": {
+        "hash": "983633ab03490ad5f0081e1dcbe5d135d09afb7ad96e52b9bb8af4e8166e530c",
+        "size": 11703
+      },
+      "after": {
+        "hash": "5347f0e812899acbf334660966612526d565f506fa3a381b20e05b9beb6ff6ee",
+        "size": 11598
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "douyin-message/src/storage.js",
+      "kind": "modified",
+      "before": {
+        "hash": "cef406997261c7b13a776628b875f70f12b837c247b2bf7bf09d178ce9d611dc",
+        "size": 20174
+      },
+      "after": {
+        "hash": "8f121e462b4e9b95013014e8827ebe36b96fbbf3dd29ef8265db851bcab5c74e",
+        "size": 20537
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "douyin-message/test/cli.test.js",
+      "kind": "modified",
+      "before": {
+        "hash": "fad4930d8e1dcc988095bce882096e1c7154cd2e7f89af4086c6dd1095a5205f",
+        "size": 11113
+      },
+      "after": {
+        "hash": "62e98c8dc36ef1fbb869c9208de3b4e8b9daeb4649cc42012f1523028d857d77",
+        "size": 14789
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "douyin-message/test/media.test.js",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "bc80e39f20e70cb0f26aba82f327db0987ca9ff4150968ba180b04c4e7fcff44",
+        "size": 3064
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "douyin-message/test/mentions.test.js",
+      "kind": "removed",
+      "before": {
+        "hash": "c99e043342fb8b35bb95656bed175d32335b4eebd1e42ce0579f8c1c62bbc4ca",
+        "size": 3468
+      },
+      "after": null,
+      "attributedTo": []
+    },
+    {
+      "path": "douyin-message/test/storage.test.js",
+      "kind": "modified",
+      "before": {
+        "hash": "a354b3347109cb7922833a9b33c2af7b7fb3bea2a81de4056916839a9e9c1d8a",
+        "size": 6697
+      },
+      "after": {
+        "hash": "0f4edad54db8fc299bf5341d7ec96e8cd6dbfeefcfeab43997928cf9b21ae18a",
+        "size": 7617
+      },
+      "attributedTo": []
+    }
+  ],
+  "unresolvedScopes": [
+    {
+      "id": "scope:c0b1e1f94c864a1482e1d580ee3370abdbbd49d19dde29c261375dec22cb4df0",
+      "kind": "unattributed-change",
+      "source": "implementation-scope",
+      "path": "douyin-message/SKILL.md",
+      "reason": "Changed path is not covered by a declared artifact: douyin-message/SKILL.md"
+    },
+    {
+      "id": "scope:8c63c90dd0ba4f2872bac845bc72a98c03ce7da2726ce097033254ebc39f4cf7",
+      "kind": "unattributed-change",
+      "source": "implementation-scope",
+      "path": "douyin-message/references/layout.md",
+      "reason": "Changed path is not covered by a declared artifact: douyin-message/references/layout.md"
+    },
+    {
+      "id": "scope:f28676ce808aefe3fb20f0cc4b16f17e95fac180835f6fdc6491c17f14d78629",
+      "kind": "unattributed-change",
+      "source": "implementation-scope",
+      "path": "douyin-message/references/protobuf-message-fields.md",
+      "reason": "Changed path is not covered by a declared artifact: douyin-message/references/protobuf-message-fields.md"
+    },
+    {
+      "id": "scope:f73c2c6260f60da3d57239187aa7959910fbc9d35589319ed9999efe2a227066",
+      "kind": "unattributed-change",
+      "source": "implementation-scope",
+      "path": "douyin-message/src/adapter.js",
+      "reason": "Changed path is not covered by a declared artifact: douyin-message/src/adapter.js"
+    },
+    {
+      "id": "scope:459530d2a64f4413f5fed5bfb94b9d225d08681b4bbcae7ea27bb35ccbb478de",
+      "kind": "unattributed-change",
+      "source": "implementation-scope",
+      "path": "douyin-message/src/cli.js",
+      "reason": "Changed path is not covered by a declared artifact: douyin-message/src/cli.js"
+    },
+    {
+      "id": "scope:fd07b4ce2af58267a92eb6a0a5e30f2c32e725d503d7b63d4fe018964e2f47c6",
+      "kind": "unattributed-change",
+      "source": "implementation-scope",
+      "path": "douyin-message/src/commands.js",
+      "reason": "Changed path is not covered by a declared artifact: douyin-message/src/commands.js"
+    },
+    {
+      "id": "scope:4f656749bd76a66d9607cbd36f83a476a85216706b06d72f47d6cc5f572917b6",
+      "kind": "unattributed-change",
+      "source": "implementation-scope",
+      "path": "douyin-message/src/core.js",
+      "reason": "Changed path is not covered by a declared artifact: douyin-message/src/core.js"
+    },
+    {
+      "id": "scope:690a4580db40eeb93aacc20f7604c47965ec356dc430e1f6a8fc6a6bcbc0f8c5",
+      "kind": "unattributed-change",
+      "source": "implementation-scope",
+      "path": "douyin-message/src/fingerprint.js",
+      "reason": "Changed path is not covered by a declared artifact: douyin-message/src/fingerprint.js"
+    },
+    {
+      "id": "scope:ba47628641c85f831b918ad84cc3001984ac27d45face0cd23200e7ac2d263df",
+      "kind": "unattributed-change",
+      "source": "implementation-scope",
+      "path": "douyin-message/src/media.js",
+      "reason": "Changed path is not covered by a declared artifact: douyin-message/src/media.js"
+    },
+    {
+      "id": "scope:ffd2543b8db875173da99c013cc391002cb1b9e59da258ee256fe9a76e157607",
+      "kind": "unattributed-change",
+      "source": "implementation-scope",
+      "path": "douyin-message/src/mentions.js",
+      "reason": "Changed path is not covered by a declared artifact: douyin-message/src/mentions.js"
+    },
+    {
+      "id": "scope:fd9c66320309cdb56b681c45d49ea7c6ad06b74136a4783a9b27f566e4e4f208",
+      "kind": "unattributed-change",
+      "source": "implementation-scope",
+      "path": "douyin-message/src/page-doctor.js",
+      "reason": "Changed path is not covered by a declared artifact: douyin-message/src/page-doctor.js"
+    },
+    {
+      "id": "scope:fb4e7d8984bb9c77b9a0c78a68ead4f3cf9f6bda1f9f6af0381582719bc51a8a",
+      "kind": "unattributed-change",
+      "source": "implementation-scope",
+      "path": "douyin-message/src/storage.js",
+      "reason": "Changed path is not covered by a declared artifact: douyin-message/src/storage.js"
+    },
+    {
+      "id": "scope:f9fd06fe9a03a7db52cd7922d56c89fbce187677044afeea8114abcfd376ae8a",
+      "kind": "unattributed-change",
+      "source": "implementation-scope",
+      "path": "douyin-message/test/cli.test.js",
+      "reason": "Changed path is not covered by a declared artifact: douyin-message/test/cli.test.js"
+    },
+    {
+      "id": "scope:a21834222862d74ca57bac50ca910c627b8af596e3a64600bceae054f97d252b",
+      "kind": "unattributed-change",
+      "source": "implementation-scope",
+      "path": "douyin-message/test/media.test.js",
+      "reason": "Changed path is not covered by a declared artifact: douyin-message/test/media.test.js"
+    },
+    {
+      "id": "scope:557f5b60be2ec86783d35528d5107bce9a8171d754efc12fb3796863e7454857",
+      "kind": "unattributed-change",
+      "source": "implementation-scope",
+      "path": "douyin-message/test/mentions.test.js",
+      "reason": "Changed path is not covered by a declared artifact: douyin-message/test/mentions.test.js"
+    },
+    {
+      "id": "scope:251e188b5f88cfac04faf3fc931e1bc5e4113c90a3b185afe5e62ebd9f127446",
+      "kind": "unattributed-change",
+      "source": "implementation-scope",
+      "path": "douyin-message/test/storage.test.js",
+      "reason": "Changed path is not covered by a declared artifact: douyin-message/test/storage.test.js"
+    }
+  ],
+  "noCodeReason": null,
+  "scopeHash": "141fead7d01a2bbcb5e2179fda3a68466736d312aa7f1036115ef82d07dcae43"
+}

@@ -1,0 +1,100 @@
+{
+  "schema": "comet.native.verification-evidence.v1",
+  "change": "im-media-and-mentions",
+  "sourceRevision": 3,
+  "result": "pass",
+  "freshness": "complete",
+  "contractHash": "b7effa597b8f1aff8c5c376191205b259e370f8831a2dee82cdc875fa224271a",
+  "acceptanceCriteriaHash": "4809e2651a1a8a2fa7feb2e876176e57fc986d25d1cd072198dbed2e96673519",
+  "implementationScopeRef": "runtime/evidence/scopes/6aa84c881b36e2fe3d5e49dcba58d349d06cb3c5b1c6fa9249dd4a103433d94d.json",
+  "implementationScopeHash": "6aa84c881b36e2fe3d5e49dcba58d349d06cb3c5b1c6fa9249dd4a103433d94d",
+  "reportRef": "verification.md",
+  "reportHash": "0e7a573a94b67023a39f6bd92cfb46381f53622bd745e4c44ed06430dbe37d89",
+  "acceptanceTrace": {
+    "schema": "comet.native.acceptance-trace.v1",
+    "nativeRootRef": "docs/comet",
+    "criteriaHash": "4809e2651a1a8a2fa7feb2e876176e57fc986d25d1cd072198dbed2e96673519",
+    "total": 6,
+    "evidenced": 6,
+    "skipped": 0,
+    "entries": [
+      {
+        "acceptanceId": "acceptance-4542b75f9ed182f6f5324ca6558b87eaf9a265cd50f9df667530b505895661d7",
+        "kind": "brief-example",
+        "source": "brief.md",
+        "evidenceRefs": [
+          "douyin-message/src/commands.js",
+          "douyin-message/src/im-client.js",
+          "douyin-message/test/cli.test.js",
+          "douyin-message/test/contract.test.js"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-4ea34f9338be7aa211e0c15d5a01641a501a2a5a75c123631745d828d8d1157d",
+        "kind": "brief-example",
+        "source": "brief.md",
+        "evidenceRefs": [
+          "analyze/protocol-media-mentions-verification.md",
+          "douyin-message/src/im-client.js",
+          "douyin-message/src/media.js",
+          "douyin-message/test/media.test.js"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-614f23809894fc692f6aabdbf08bc39fad56e2dc6f590a5556aa1ef25e799c64",
+        "kind": "brief-example",
+        "source": "brief.md",
+        "evidenceRefs": [
+          "analyze/protocol-media-mentions-verification.md",
+          "douyin-message/src/im-client.js",
+          "douyin-message/src/protocol.js",
+          "douyin-message/test/contract.test.js"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-753f35d1fba7d8b3da409c8dbb486f56a8fdafa0630a554947c609b59b951ce0",
+        "kind": "brief-example",
+        "source": "brief.md",
+        "evidenceRefs": [
+          "douyin-message/src/media.js",
+          "douyin-message/src/storage.js",
+          "douyin-message/test/media.test.js",
+          "douyin-message/test/storage.test.js"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-a87baba837a07ef35c5c682424e74d8c20d5cc10dcdb3a543f6c26af2650f7f2",
+        "kind": "brief-example",
+        "source": "brief.md",
+        "evidenceRefs": [
+          "analyze/protocol-media-mentions-verification.md",
+          "douyin-message/src/im-client.js",
+          "douyin-message/test/contract.test.js"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-f839400f2e651bba84235100b5818c3eaa710732697663aabc32b4baa6cc3dc9",
+        "kind": "brief-example",
+        "source": "brief.md",
+        "evidenceRefs": [
+          "analyze/protocol-media-mentions-verification.md",
+          "douyin-message/src/media.js",
+          "douyin-message/src/protocol.js",
+          "douyin-message/test/media.test.js"
+        ],
+        "skippedReason": null
+      }
+    ],
+    "traceHash": "47b5c1e2af395babf86dd2230ce64688570eb1bd7219abc658fa02d17e195da2"
+  },
+  "partialAllowanceRef": null,
+  "partialAllowanceHash": null,
+  "receiptRef": "runtime/evidence/check-receipts/208419d74c11726c21033941b9373ef4482fe77ef692321adbbd1dcc96d32714.json",
+  "createdAt": "2026-08-01T05:06:54.577Z",
+  "envelopeHash": "cda59c8673890b6c3c18daa67a8087e1b5b6d079fa060265bed0c46d5dc079bc"
+}

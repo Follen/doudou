@@ -1,0 +1,243 @@
+{
+  "schema": "comet.native.content-snapshot-projection.v1",
+  "origin": "explicit",
+  "capture": {
+    "provider": "git"
+  },
+  "complete": true,
+  "limits": {
+    "maxFiles": 10000,
+    "maxFileBytes": 268435456,
+    "maxTotalBytes": 268435456,
+    "maxManifestBytes": 1048576,
+    "maxDurationMs": 60000
+  },
+  "policy": {
+    "schema": "comet.native.snapshot-policy.v1",
+    "include": [
+      "**/*"
+    ],
+    "exclude": [],
+    "hash": "cc34dce5671bc1aefad09b658911a71d0434a26a1fbb4d8ba10de57b316f1f2f"
+  },
+  "entries": [
+    {
+      "path": ".gitignore",
+      "hash": "32c3317c1d9471b4e95e1e42868d64c4196c5456a98de12c3bd96aac1da11c73",
+      "size": 129,
+      "type": "file"
+    },
+    {
+      "path": "README.md",
+      "hash": "ccde5f5b293e60579a3f2c647c2115b0c0188ee41327c4a098a0d9d10dbb2e29",
+      "size": 6242,
+      "type": "file"
+    },
+    {
+      "path": "docs/protobuf-message-fields.md",
+      "hash": "b41b6808406840c3837244c007bb8ea4033b09af1743519d28ac4ac6ae8207a0",
+      "size": 3287,
+      "type": "file"
+    },
+    {
+      "path": "doudou/.gitignore",
+      "hash": "76996f411eb571e40adc37ba2b3577c18c3efcc2f69539830131f4031db033be",
+      "size": 117,
+      "type": "file"
+    },
+    {
+      "path": "doudou/SKILL.md",
+      "hash": "625de0aaf4109cc9c3b359d3df0c3a6c2c5d4457b23b450b1a5e607b4e446b0a",
+      "size": 8414,
+      "type": "file"
+    },
+    {
+      "path": "doudou/agents/openai.yaml",
+      "hash": "d4d143a2a6c76d7a3aa134ab3da9b31f0f9286ef2e516f08025f9abc40fcf7c7",
+      "size": 272,
+      "type": "file"
+    },
+    {
+      "path": "doudou/bin/doudou.js",
+      "hash": "2ead0bd37f8f09721067dfe1eaa4be8b10c7a7902ddc4ffb9100e8c2abe92579",
+      "size": 517,
+      "type": "file"
+    },
+    {
+      "path": "doudou/npm-shrinkwrap.json",
+      "hash": "d2fba3b1ac0c1b52f19016c53edc8a4c37e507edbb5a5bd11cae70bb8d5e59e0",
+      "size": 1770,
+      "type": "file"
+    },
+    {
+      "path": "doudou/package.json",
+      "hash": "e1e99babf30cc45d0dd3fa0f89035775e1424e49d1dcef109ec7a78b6a37c17f",
+      "size": 670,
+      "type": "file"
+    },
+    {
+      "path": "doudou/references/layout.md",
+      "hash": "28844cdb41d2c7696dba5e2bd5d4876539d0119dd7bf6ec2267073d057c4a936",
+      "size": 3302,
+      "type": "file"
+    },
+    {
+      "path": "doudou/references/protobuf-message-fields.md",
+      "hash": "dfa65e3848f1839c48928b3d5a424586e0202aa9870ca3b57ab6e62d517adf40",
+      "size": 5261,
+      "type": "file"
+    },
+    {
+      "path": "doudou/scripts/capture-headed-send.js",
+      "hash": "a1cafb20db7a388bfc4ea9eb9bab5f774f7f609d73d73eff8ec8aa9362aa91db",
+      "size": 6340,
+      "type": "file"
+    },
+    {
+      "path": "doudou/src/adapter.js",
+      "hash": "4aa87c59e14cd39dc2d196e32c61dfaf2d726d78dabcc08c4031ee29b5aa1624",
+      "size": 43080,
+      "type": "file"
+    },
+    {
+      "path": "doudou/src/cli.js",
+      "hash": "866e47f50854909302f0533f174033b185146afee40826e7fee94e612c5271cf",
+      "size": 4627,
+      "type": "file"
+    },
+    {
+      "path": "doudou/src/commands.js",
+      "hash": "52f3576b4bcd2510bc5228530917916a4a7e9128c5088c431195b258718c8788",
+      "size": 42137,
+      "type": "file"
+    },
+    {
+      "path": "doudou/src/core.js",
+      "hash": "cb110db95c0f1843252236ca72212dd1eb708317a068af146e4a7c0899f55cbf",
+      "size": 6005,
+      "type": "file"
+    },
+    {
+      "path": "doudou/src/doctor.js",
+      "hash": "f80a0749b782b97ba6b719b43fc5eeeecf0dd69c63cba68e1f50337c62f29b49",
+      "size": 5615,
+      "type": "file"
+    },
+    {
+      "path": "doudou/src/fingerprint.js",
+      "hash": "3c7569576215f867855b50116b6f7472a2d8d344869fbb80f69b352dbd44286e",
+      "size": 25325,
+      "type": "file"
+    },
+    {
+      "path": "doudou/src/im-client.js",
+      "hash": "3378495e8c03e834794858d8b8a3cdfde5f09223bbd48343e06386160ea396bc",
+      "size": 18202,
+      "type": "file"
+    },
+    {
+      "path": "doudou/src/media.js",
+      "hash": "36604fd0009fc07327197147f7dd7d7f899771842dc10cd2f04bcbb3c60d3287",
+      "size": 14241,
+      "type": "file"
+    },
+    {
+      "path": "doudou/src/page-doctor.js",
+      "hash": "1a2d74e54c7b34b71606b38b4a3c2b5d71a0e9f878317da8cbc80c3babc8b1e4",
+      "size": 11528,
+      "type": "file"
+    },
+    {
+      "path": "doudou/src/profile.js",
+      "hash": "6de6019a86f6202f5e3b25ae81c0ac578bed219d0a76f580fddef88833a4e0e9",
+      "size": 9816,
+      "type": "file"
+    },
+    {
+      "path": "doudou/src/protocol.js",
+      "hash": "7cba96a757ef1839bb9d5f3f4e618cac06e66ac5f3216e84a5f862092d9adba5",
+      "size": 15259,
+      "type": "file"
+    },
+    {
+      "path": "doudou/src/resolver.js",
+      "hash": "73a4dbd01687037d100bcae3f4c7d15b73848f057f86a7fb741da3997d0e5035",
+      "size": 3533,
+      "type": "file"
+    },
+    {
+      "path": "doudou/src/schemas.js",
+      "hash": "b17278c6b4796cd8e1e6f190e049fb32bcdd79e35083d75a45b4976469c16179",
+      "size": 3349,
+      "type": "file"
+    },
+    {
+      "path": "doudou/src/storage.js",
+      "hash": "ab6b8ad8e2aef6a63277a2668ffdec26e020c8429f81a609c78f338a39e8cd2f",
+      "size": 20435,
+      "type": "file"
+    },
+    {
+      "path": "doudou/src/warmup.js",
+      "hash": "4d94f0ab229bb51d7539fe0154442aaa4b31e4715275776646e448ccd81f7e29",
+      "size": 5425,
+      "type": "file"
+    },
+    {
+      "path": "doudou/test/cli.test.js",
+      "hash": "aac2875c7c19e94787e877837812b3946930c669cfc84656cf84a96f67a8ad76",
+      "size": 14751,
+      "type": "file"
+    },
+    {
+      "path": "doudou/test/contract.test.js",
+      "hash": "7aeb49f7b5be3400e50ddcb0860c1a74485d8666d68b8dc0d0aa8624faf2ce58",
+      "size": 21226,
+      "type": "file"
+    },
+    {
+      "path": "doudou/test/core.test.js",
+      "hash": "727c6e8eef5ae33c2c33a7b06d25cc0dfb6473824ef8ba3c1a45ecc1ec9bf3c0",
+      "size": 1494,
+      "type": "file"
+    },
+    {
+      "path": "doudou/test/fingerprint.test.js",
+      "hash": "ab3c8f2d9154d5428488450539b1c39d5324a10c946751aeb512d9579b1bc78e",
+      "size": 6179,
+      "type": "file"
+    },
+    {
+      "path": "doudou/test/media.test.js",
+      "hash": "d0010ffc17cb05a67f6d6061783b212e46406a25ee19277c9c90389efa0ed19b",
+      "size": 3064,
+      "type": "file"
+    },
+    {
+      "path": "doudou/test/profile.test.js",
+      "hash": "8806bac8cfc1ce926a610bb14d8bd0199fd554ee32b409c33b9f7a822d17f450",
+      "size": 3523,
+      "type": "file"
+    },
+    {
+      "path": "doudou/test/resolver.test.js",
+      "hash": "4cbaf13ab6aebe861087dc684f3b99a60e6a2f28102732019cb2b8945eadcef5",
+      "size": 2869,
+      "type": "file"
+    },
+    {
+      "path": "doudou/test/storage.test.js",
+      "hash": "bfef588e1c4d214783a1135e960486e03fb9c3839aade94d381683ae66d96545",
+      "size": 7589,
+      "type": "file"
+    },
+    {
+      "path": "doudou/test/warmup.test.js",
+      "hash": "66a4e5ee032ae2466a6bf42f206f70530468d6a93af82eaf3cd99e913e681a96",
+      "size": 2807,
+      "type": "file"
+    }
+  ],
+  "omitted": [],
+  "omittedCount": 0
+}

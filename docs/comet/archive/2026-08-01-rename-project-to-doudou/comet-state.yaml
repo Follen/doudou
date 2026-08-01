@@ -1,0 +1,33 @@
+schema: comet.native.v3
+minimum_runtime_version: 3
+revision: 6
+name: rename-project-to-doudou
+language: zh-CN
+phase: archive
+brief: brief.md
+approval: confirmed
+approved_contract_hash: 8a6db7c85ba07171475cfebfea4ea45f11466ee2c5a6d0e1bfd79047c056381a
+spec_changes:
+  - capability: chat-protocol-first
+    operation: replace
+    source: specs/chat-protocol-first/spec.md
+    base_hash: 7a1bd65d405493a439159c1867cb8e5aaa09f63116c1cc976633143bef02bd6e
+  - capability: doudou
+    operation: create
+    source: specs/doudou/spec.md
+    base_hash: null
+  - capability: douyin-group-message
+    operation: remove
+    base_hash: 57906c8f25ea7b6e63c4280dfb556355be1abc5c9455844d95e684e8e6121f84
+  - capability: message-workflow-prewarm
+    operation: replace
+    source: specs/message-workflow-prewarm/spec.md
+    base_hash: c5aa05a97912ff6eb667c010c39c6b9bde5e3309254593f8d0c9af6e39cf9407
+verification_result: pass
+verification_report: verification.md
+implementation_scope: runtime/evidence/scopes/1d9e93db87310596e60c134025311047724bdec6c9a57b085dd1745afe79b593.json
+verification_evidence: runtime/evidence/verifications/b88bcc0462ba02d3463cc0f3e18600e39434e9475067cbc8a27417c0191f4283.json
+partial_allowance: null
+archived: true
+created_at: 2026-08-01
+run_id: 622f2824-0379-4980-b3ab-ee742508cab2

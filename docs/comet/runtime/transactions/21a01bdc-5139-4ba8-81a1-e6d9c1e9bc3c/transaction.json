@@ -1,0 +1,52 @@
+{
+  "schema": "comet.native.transaction.v2",
+  "id": "21a01bdc-5139-4ba8-81a1-e6d9c1e9bc3c",
+  "kind": "archive",
+  "status": "committed",
+  "change": "rename-project-to-doudou",
+  "createdAt": "2026-08-01T05:43:19.737Z",
+  "preflightHash": "8d20b540654dd9dc060a7908a6dac0237f8f855fd9c9cdddfba8dd1303d3ac2c",
+  "operations": [
+    {
+      "id": "spec-1-chat-protocol-first",
+      "type": "write",
+      "target": "specs/chat-protocol-first/spec.md",
+      "staged": "runtime/transactions/21a01bdc-5139-4ba8-81a1-e6d9c1e9bc3c/staged/specs/chat-protocol-first/spec.md",
+      "backup": "runtime/transactions/21a01bdc-5139-4ba8-81a1-e6d9c1e9bc3c/backups/specs/chat-protocol-first/spec.md",
+      "expectedTargetHash": "7a1bd65d405493a439159c1867cb8e5aaa09f63116c1cc976633143bef02bd6e",
+      "stagedHash": "58ce5ecc18f179878405a4936f6cfafa43fc34785dff4caa86d76b4b2283b317"
+    },
+    {
+      "id": "spec-2-doudou",
+      "type": "write",
+      "target": "specs/doudou/spec.md",
+      "staged": "runtime/transactions/21a01bdc-5139-4ba8-81a1-e6d9c1e9bc3c/staged/specs/doudou/spec.md",
+      "expectedTargetHash": null,
+      "stagedHash": "97fa2b807d6bd8435c918789a79fa9e2afc1cc6edf719522815553b6e2a84796"
+    },
+    {
+      "id": "spec-3-douyin-group-message",
+      "type": "remove",
+      "target": "specs/douyin-group-message/spec.md",
+      "backup": "runtime/transactions/21a01bdc-5139-4ba8-81a1-e6d9c1e9bc3c/backups/specs/douyin-group-message/spec.md",
+      "expectedTargetHash": "57906c8f25ea7b6e63c4280dfb556355be1abc5c9455844d95e684e8e6121f84"
+    },
+    {
+      "id": "spec-4-message-workflow-prewarm",
+      "type": "write",
+      "target": "specs/message-workflow-prewarm/spec.md",
+      "staged": "runtime/transactions/21a01bdc-5139-4ba8-81a1-e6d9c1e9bc3c/staged/specs/message-workflow-prewarm/spec.md",
+      "backup": "runtime/transactions/21a01bdc-5139-4ba8-81a1-e6d9c1e9bc3c/backups/specs/message-workflow-prewarm/spec.md",
+      "expectedTargetHash": "c5aa05a97912ff6eb667c010c39c6b9bde5e3309254593f8d0c9af6e39cf9407",
+      "stagedHash": "e573b97bc36a7a812679f623952307cc5afaf582fbce96f82612c11fd4fe9c2e"
+    },
+    {
+      "id": "archive-change",
+      "type": "move",
+      "source": "changes/rename-project-to-doudou",
+      "target": "archive/2026-08-01-rename-project-to-doudou",
+      "expectedSourceHash": "5fc55439d5131f497b34326c11842ddad747185384fe2c271718433df6779261",
+      "expectedTargetHash": null
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+[
+  {
+    "acceptance_id": "acceptance-0758e472777fe8c598eb5e8fc3714ba9a5d8a6e0b9f6132a42d7ec307a1ab1a9",
+    "evidence_refs": [
+      "README.md",
+      "doudou/SKILL.md",
+      "doudou/bin/doudou.js",
+      "doudou/src/cli.js"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-a703ed31c35aecb34ac2bf23bd1ec0dd159fcad6626e648cc0aa702ea5735f85",
+    "evidence_refs": [
+      "README.md"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-ac796d1b978efc2d055465193cdafac4c2b155a94df7809ef93e4d579c9960e6",
+    "evidence_refs": [
+      "doudou/src/fingerprint.js",
+      "doudou/src/profile.js",
+      "doudou/src/protocol.js",
+      "doudou/src/schemas.js",
+      "doudou/src/storage.js"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-bdf665e9203b9274d93f64f56865705e41f04e0de8881f2d8b18a01aae87d395",
+    "evidence_refs": [
+      "README.md",
+      "doudou/SKILL.md",
+      "doudou/agents/openai.yaml",
+      "doudou/package.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-c17ec144d0dae3345fb45890942a1b1379ebb2a54f0e2968f435bee923b9fdd0",
+    "evidence_refs": [
+      "doudou/bin/doudou.js",
+      "doudou/npm-shrinkwrap.json",
+      "doudou/package.json"
+    ]
+  }
+]

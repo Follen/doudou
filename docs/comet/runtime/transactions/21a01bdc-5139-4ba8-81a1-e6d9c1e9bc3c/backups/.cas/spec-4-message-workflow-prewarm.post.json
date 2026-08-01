@@ -1,0 +1,11 @@
+{
+  "schema": "comet.native.archive-cas.v1",
+  "operationId": "spec-4-message-workflow-prewarm",
+  "role": "post",
+  "hash": "e573b97bc36a7a812679f623952307cc5afaf582fbce96f82612c11fd4fe9c2e",
+  "identity": {
+    "dev": 2421791372,
+    "ino": 2533274793904801,
+    "birthtimeMs": 1785563001136.7268
+  }
+}

@@ -1,0 +1,86 @@
+{
+  "schema": "comet.native.verification-evidence.v1",
+  "change": "rename-project-to-doudou",
+  "sourceRevision": 4,
+  "result": "pass",
+  "freshness": "complete",
+  "contractHash": "8a6db7c85ba07171475cfebfea4ea45f11466ee2c5a6d0e1bfd79047c056381a",
+  "acceptanceCriteriaHash": "ae26d5f89d53fee5bdb177ebd93ea7ea34daf0282ef82eded1cfe6454b2df51f",
+  "implementationScopeRef": "runtime/evidence/scopes/1d9e93db87310596e60c134025311047724bdec6c9a57b085dd1745afe79b593.json",
+  "implementationScopeHash": "1d9e93db87310596e60c134025311047724bdec6c9a57b085dd1745afe79b593",
+  "reportRef": "verification.md",
+  "reportHash": "473ffd260f08085ca35231dffc5270b75eb9f53e1b6704304ae2a4dd6c20e6ef",
+  "acceptanceTrace": {
+    "schema": "comet.native.acceptance-trace.v1",
+    "nativeRootRef": "docs/comet",
+    "criteriaHash": "ae26d5f89d53fee5bdb177ebd93ea7ea34daf0282ef82eded1cfe6454b2df51f",
+    "total": 5,
+    "evidenced": 5,
+    "skipped": 0,
+    "entries": [
+      {
+        "acceptanceId": "acceptance-0758e472777fe8c598eb5e8fc3714ba9a5d8a6e0b9f6132a42d7ec307a1ab1a9",
+        "kind": "brief-example",
+        "source": "brief.md",
+        "evidenceRefs": [
+          "README.md",
+          "doudou/SKILL.md",
+          "doudou/bin/doudou.js",
+          "doudou/src/cli.js"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-a703ed31c35aecb34ac2bf23bd1ec0dd159fcad6626e648cc0aa702ea5735f85",
+        "kind": "brief-example",
+        "source": "brief.md",
+        "evidenceRefs": [
+          "README.md"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-ac796d1b978efc2d055465193cdafac4c2b155a94df7809ef93e4d579c9960e6",
+        "kind": "brief-example",
+        "source": "brief.md",
+        "evidenceRefs": [
+          "doudou/src/fingerprint.js",
+          "doudou/src/profile.js",
+          "doudou/src/protocol.js",
+          "doudou/src/schemas.js",
+          "doudou/src/storage.js"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-bdf665e9203b9274d93f64f56865705e41f04e0de8881f2d8b18a01aae87d395",
+        "kind": "brief-example",
+        "source": "brief.md",
+        "evidenceRefs": [
+          "README.md",
+          "doudou/SKILL.md",
+          "doudou/agents/openai.yaml",
+          "doudou/package.json"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-c17ec144d0dae3345fb45890942a1b1379ebb2a54f0e2968f435bee923b9fdd0",
+        "kind": "brief-example",
+        "source": "brief.md",
+        "evidenceRefs": [
+          "doudou/bin/doudou.js",
+          "doudou/npm-shrinkwrap.json",
+          "doudou/package.json"
+        ],
+        "skippedReason": null
+      }
+    ],
+    "traceHash": "78875922b46d16cc858bf92d5c0100679616f093ba274107d32fbcdbd63dfc33"
+  },
+  "partialAllowanceRef": null,
+  "partialAllowanceHash": null,
+  "receiptRef": "runtime/evidence/check-receipts/325f85238d217da329ac2472fe9e6644425705599609b36eaa0f17a160fe87d1.json",
+  "createdAt": "2026-08-01T05:42:53.367Z",
+  "envelopeHash": "b88bcc0462ba02d3463cc0f3e18600e39434e9475067cbc8a27417c0191f4283"
+}

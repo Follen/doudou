@@ -1,0 +1,37 @@
+{
+  "schema": "comet.native.transaction.v2",
+  "id": "8b349232-01ea-42f9-bfff-714cb1ab8064",
+  "kind": "archive",
+  "status": "committed",
+  "change": "im-media-and-mentions",
+  "createdAt": "2026-08-01T05:07:09.730Z",
+  "preflightHash": "3c651329408537a5b94c71fd82ec186e8ca2402dce2b75d6223f4604475b6d10",
+  "operations": [
+    {
+      "id": "spec-1-chat-protocol-first",
+      "type": "write",
+      "target": "specs/chat-protocol-first/spec.md",
+      "staged": "runtime/transactions/8b349232-01ea-42f9-bfff-714cb1ab8064/staged/specs/chat-protocol-first/spec.md",
+      "backup": "runtime/transactions/8b349232-01ea-42f9-bfff-714cb1ab8064/backups/specs/chat-protocol-first/spec.md",
+      "expectedTargetHash": "6ad48b33283005c3329619a4e4e6034fc9002bbac84bbd7736cfc2cb9954a028",
+      "stagedHash": "7a1bd65d405493a439159c1867cb8e5aaa09f63116c1cc976633143bef02bd6e"
+    },
+    {
+      "id": "spec-2-douyin-group-message",
+      "type": "write",
+      "target": "specs/douyin-group-message/spec.md",
+      "staged": "runtime/transactions/8b349232-01ea-42f9-bfff-714cb1ab8064/staged/specs/douyin-group-message/spec.md",
+      "backup": "runtime/transactions/8b349232-01ea-42f9-bfff-714cb1ab8064/backups/specs/douyin-group-message/spec.md",
+      "expectedTargetHash": "afcd193e153b6966c2ce8a588af02862fb70b896fb9e4570412c388e3af7139b",
+      "stagedHash": "57906c8f25ea7b6e63c4280dfb556355be1abc5c9455844d95e684e8e6121f84"
+    },
+    {
+      "id": "archive-change",
+      "type": "move",
+      "source": "changes/im-media-and-mentions",
+      "target": "archive/2026-08-01-im-media-and-mentions",
+      "expectedSourceHash": "5b4c2323d65efc28e8aaba1cf077cb64cbc00d2b5ae9d64f91e346acbd0c4cf7",
+      "expectedTargetHash": null
+    }
+  ]
+}

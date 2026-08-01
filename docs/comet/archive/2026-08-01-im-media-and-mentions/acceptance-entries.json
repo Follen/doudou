@@ -1,0 +1,55 @@
+[
+  {
+    "acceptance_id": "acceptance-4542b75f9ed182f6f5324ca6558b87eaf9a265cd50f9df667530b505895661d7",
+    "evidence_refs": [
+      "douyin-message/src/im-client.js",
+      "douyin-message/src/commands.js",
+      "douyin-message/test/cli.test.js",
+      "douyin-message/test/contract.test.js"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-4ea34f9338be7aa211e0c15d5a01641a501a2a5a75c123631745d828d8d1157d",
+    "evidence_refs": [
+      "douyin-message/src/media.js",
+      "douyin-message/src/im-client.js",
+      "douyin-message/test/media.test.js",
+      "analyze/protocol-media-mentions-verification.md"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-614f23809894fc692f6aabdbf08bc39fad56e2dc6f590a5556aa1ef25e799c64",
+    "evidence_refs": [
+      "douyin-message/src/im-client.js",
+      "douyin-message/src/protocol.js",
+      "douyin-message/test/contract.test.js",
+      "analyze/protocol-media-mentions-verification.md"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-753f35d1fba7d8b3da409c8dbb486f56a8fdafa0630a554947c609b59b951ce0",
+    "evidence_refs": [
+      "douyin-message/src/media.js",
+      "douyin-message/src/storage.js",
+      "douyin-message/test/media.test.js",
+      "douyin-message/test/storage.test.js"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-a87baba837a07ef35c5c682424e74d8c20d5cc10dcdb3a543f6c26af2650f7f2",
+    "evidence_refs": [
+      "douyin-message/src/im-client.js",
+      "douyin-message/test/contract.test.js",
+      "analyze/protocol-media-mentions-verification.md"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-f839400f2e651bba84235100b5818c3eaa710732697663aabc32b4baa6cc3dc9",
+    "evidence_refs": [
+      "douyin-message/src/media.js",
+      "douyin-message/src/protocol.js",
+      "douyin-message/test/media.test.js",
+      "analyze/protocol-media-mentions-verification.md"
+    ]
+  }
+]

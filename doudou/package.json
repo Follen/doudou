@@ -1,0 +1,32 @@
+{
+  "name": "doudou",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Doudou Codex Skill and CLI for Douyin group and direct-message protocol workflows.",
+  "bin": {
+    "doudou": "bin/doudou.js"
+  },
+  "files": [
+    "SKILL.md",
+    "agents/",
+    "bin/",
+    "src/",
+    "references/",
+    "scripts/",
+    "test/",
+    "npm-shrinkwrap.json"
+  ],
+  "scripts": {
+    "cli": "node bin/doudou.js",
+    "doctor": "node bin/doudou.js doctor",
+    "setup": "node bin/doudou.js setup",
+    "test": "node --test",
+    "doudou:login": "node bin/doudou.js profile login"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "playwright": "1.62.0"
+  }
+}

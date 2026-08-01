@@ -1,0 +1,10 @@
+{"sequence":1,"timestamp":"2026-08-01T05:07:10.355Z","type":"prepared"}
+{"sequence":2,"timestamp":"2026-08-01T05:07:10.740Z","type":"operation-started","operationId":"spec-1-chat-protocol-first"}
+{"sequence":3,"timestamp":"2026-08-01T05:07:10.957Z","type":"operation-completed","operationId":"spec-1-chat-protocol-first"}
+{"sequence":4,"timestamp":"2026-08-01T05:07:10.979Z","type":"operation-started","operationId":"spec-2-douyin-group-message"}
+{"sequence":5,"timestamp":"2026-08-01T05:07:11.184Z","type":"operation-completed","operationId":"spec-2-douyin-group-message"}
+{"sequence":6,"timestamp":"2026-08-01T05:07:11.202Z","type":"operation-started","operationId":"archive-change"}
+{"sequence":7,"timestamp":"2026-08-01T05:07:11.428Z","type":"operation-completed","operationId":"archive-change"}
+{"sequence":8,"timestamp":"2026-08-01T05:07:11.561Z","type":"archive-finalization-started"}
+{"sequence":9,"timestamp":"2026-08-01T05:07:11.619Z","type":"archive-finalized"}
+{"sequence":10,"timestamp":"2026-08-01T05:07:11.701Z","type":"commit"}

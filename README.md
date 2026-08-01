@@ -1,4 +1,4 @@
-# Douyin Message
+# Doudou
 
 一个可交付的 Agent Skill 与 Node.js CLI，用于在项目本地管理抖音登录 Profile，并从 `https://www.douyin.com/chat` 完成群聊和私聊的会话发现、消息采集、普通发送与引用回复。
 
@@ -21,32 +21,32 @@
 
 ## 安装
 
-将仓库中的 `douyin-message/` 安装到 Agent Skill 目录。Windows 示例：
+将仓库中的 `doudou/` 安装到 Agent Skill 目录。Windows 示例：
 
 ```powershell
-git clone https://github.com/Follen/douyin-message.git
-Copy-Item -Recurse -Force .\douyin-message\douyin-message "$HOME\.agents\skills\douyin-message"
+git clone https://github.com/Follen/doudou.git
+Copy-Item -Recurse -Force .\doudou\doudou "$HOME\.agents\skills\doudou"
 ```
 
 Linux/macOS 示例：
 
 ```bash
-git clone https://github.com/Follen/douyin-message.git
-cp -R ./douyin-message/douyin-message "$HOME/.agents/skills/douyin-message"
+git clone https://github.com/Follen/doudou.git
+cp -R ./doudou/doudou "$HOME/.agents/skills/doudou"
 ```
 
 之后在实际业务项目目录运行 CLI。不要切换到 Skill 安装目录，因为当前工作目录就是默认的数据根目录。
 
 ## 快速开始
 
-下面用 `<skill>` 表示已安装的 `~/.agents/skills/douyin-message`，用 `work` 作为 Profile 名称。
+下面用 `<skill>` 表示已安装的 `~/.agents/skills/doudou`，用 `work` 作为 Profile 名称。
 
 ### 1. 环境检测与初始化
 
 ```bash
-node <skill>/bin/douyin-message.js doctor
-node <skill>/bin/douyin-message.js setup
-node <skill>/bin/douyin-message.js doctor
+node <skill>/bin/doudou.js doctor
+node <skill>/bin/doudou.js setup
+node <skill>/bin/doudou.js doctor
 ```
 
 `setup` 会安装锁定版本的 Playwright 依赖和 Chromium。环境已经正常时可以跳过。
@@ -54,8 +54,8 @@ node <skill>/bin/douyin-message.js doctor
 ### 2. 创建 Profile 并登录
 
 ```bash
-node <skill>/bin/douyin-message.js profile create --profile work
-node <skill>/bin/douyin-message.js profile login --profile work
+node <skill>/bin/doudou.js profile create --profile work
+node <skill>/bin/doudou.js profile login --profile work
 ```
 
 登录命令会打开有头浏览器。完成扫码或验证后，CLI 将登录态和指纹基线保存在当前项目的 `profile/work/`。
@@ -63,9 +63,9 @@ node <skill>/bin/douyin-message.js profile login --profile work
 ### 3. 预热与发现会话
 
 ```bash
-node <skill>/bin/douyin-message.js warmup --profile work
-node <skill>/bin/douyin-message.js conversations refresh --profile work --kind all
-node <skill>/bin/douyin-message.js conversations resolve --profile work --target "会话名称"
+node <skill>/bin/doudou.js warmup --profile work
+node <skill>/bin/doudou.js conversations refresh --profile work --kind all
+node <skill>/bin/doudou.js conversations resolve --profile work --target "会话名称"
 ```
 
 预热会刷新会话索引与必要的页面/网络契约信息，但不会批量拉取所有会话历史。
@@ -75,13 +75,13 @@ node <skill>/bin/douyin-message.js conversations resolve --profile work --target
 默认拉取本地当天零点至命令执行时刻的消息：
 
 ```bash
-node <skill>/bin/douyin-message.js messages collect --profile work --conversation "会话名称"
+node <skill>/bin/doudou.js messages collect --profile work --conversation "会话名称"
 ```
 
 指定时间范围：
 
 ```bash
-node <skill>/bin/douyin-message.js messages collect \
+node <skill>/bin/doudou.js messages collect \
   --profile work \
   --conversation "会话名称" \
   --from "2026-07-31T00:00:00+08:00" \
@@ -93,7 +93,7 @@ node <skill>/bin/douyin-message.js messages collect \
 先生成预览：
 
 ```bash
-node <skill>/bin/douyin-message.js protocol send \
+node <skill>/bin/doudou.js protocol send \
   --profile work \
   --recipient "会话名称" \
   --text "消息内容"
@@ -102,7 +102,7 @@ node <skill>/bin/douyin-message.js protocol send \
 CLI 返回 `confirmation_required`、`plan_id` 和完整预览。确认无误后，使用原参数加上返回的计划 ID：
 
 ```bash
-node <skill>/bin/douyin-message.js protocol send \
+node <skill>/bin/doudou.js protocol send \
   --profile work \
   --recipient "会话名称" \
   --text "消息内容" \
@@ -115,7 +115,7 @@ node <skill>/bin/douyin-message.js protocol send \
 同一段文本发送到多个现有会话时，使用批量命令，不要循环调用单条发送：
 
 ```bash
-node <skill>/bin/douyin-message.js protocol send-batch \
+node <skill>/bin/doudou.js protocol send-batch \
   --profile work \
   --conversation-ids "会话ID1,会话ID2" \
   --text "消息内容"
@@ -128,7 +128,7 @@ node <skill>/bin/douyin-message.js protocol send-batch \
 引用回复依赖已经采集到本地的目标消息：
 
 ```bash
-node <skill>/bin/douyin-message.js protocol reply \
+node <skill>/bin/doudou.js protocol reply \
   --profile work \
   --recipient "会话名称" \
   --message-text "目标消息关键词" \
@@ -161,7 +161,7 @@ message/profiles/<profile>/
 - Skill 目录只包含代码、说明和测试，不包含任何用户 Profile。
 - 发送回执仅保存脱敏 endpoint、长度、哈希和状态；动态签名只在当前浏览器页内存中使用。
 
-完整文件命名约定见 [`douyin-message/references/layout.md`](douyin-message/references/layout.md)。Protobuf 字段说明见 [`douyin-message/references/protobuf-message-fields.md`](douyin-message/references/protobuf-message-fields.md)。
+完整文件命名约定见 [`doudou/references/layout.md`](doudou/references/layout.md)。Protobuf 字段说明见 [`doudou/references/protobuf-message-fields.md`](doudou/references/protobuf-message-fields.md)。
 
 ## 常见恢复流程
 
@@ -173,7 +173,7 @@ message/profiles/<profile>/
 ## 开发与测试
 
 ```bash
-cd douyin-message
+cd doudou
 npm install
 npm test
 ```

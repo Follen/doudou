@@ -1,0 +1,26 @@
+schema: comet.native.v3
+minimum_runtime_version: 3
+revision: 5
+name: im-media-and-mentions
+language: zh-CN
+phase: archive
+brief: brief.md
+approval: confirmed
+approved_contract_hash: b7effa597b8f1aff8c5c376191205b259e370f8831a2dee82cdc875fa224271a
+spec_changes:
+  - capability: chat-protocol-first
+    operation: replace
+    source: specs/chat-protocol-first/spec.md
+    base_hash: 6ad48b33283005c3329619a4e4e6034fc9002bbac84bbd7736cfc2cb9954a028
+  - capability: douyin-group-message
+    operation: replace
+    source: specs/douyin-group-message/spec.md
+    base_hash: afcd193e153b6966c2ce8a588af02862fb70b896fb9e4570412c388e3af7139b
+verification_result: pass
+verification_report: verification.md
+implementation_scope: runtime/evidence/scopes/6aa84c881b36e2fe3d5e49dcba58d349d06cb3c5b1c6fa9249dd4a103433d94d.json
+verification_evidence: runtime/evidence/verifications/cda59c8673890b6c3c18daa67a8087e1b5b6d079fa060265bed0c46d5dc079bc.json
+partial_allowance: null
+archived: true
+created_at: 2026-07-31
+run_id: 9b3c72b2-42e0-4e7b-8dea-4bb7ef68e220

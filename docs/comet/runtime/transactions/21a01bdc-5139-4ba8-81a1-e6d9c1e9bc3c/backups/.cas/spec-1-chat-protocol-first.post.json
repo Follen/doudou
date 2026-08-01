@@ -1,0 +1,11 @@
+{
+  "schema": "comet.native.archive-cas.v1",
+  "operationId": "spec-1-chat-protocol-first",
+  "role": "post",
+  "hash": "58ce5ecc18f179878405a4936f6cfafa43fc34785dff4caa86d76b4b2283b317",
+  "identity": {
+    "dev": 2421791372,
+    "ino": 3377699724036753,
+    "birthtimeMs": 1785563000762.3174
+  }
+}

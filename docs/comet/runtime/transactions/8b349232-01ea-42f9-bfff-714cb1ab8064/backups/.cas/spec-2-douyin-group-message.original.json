@@ -1,0 +1,11 @@
+{
+  "schema": "comet.native.archive-cas.v1",
+  "operationId": "spec-2-douyin-group-message",
+  "role": "original",
+  "hash": "afcd193e153b6966c2ce8a588af02862fb70b896fb9e4570412c388e3af7139b",
+  "identity": {
+    "dev": 2421791372,
+    "ino": 1125899910447475,
+    "birthtimeMs": 1785501525043.1438
+  }
+}

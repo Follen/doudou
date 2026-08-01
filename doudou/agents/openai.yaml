@@ -1,0 +1,4 @@
+interface:
+  display_name: "Doudou"
+  short_description: "通过本地 Profile 获取与发送抖音群聊和私聊消息"
+  default_prompt: "Use $doudou to inspect my local Profile, collect group or direct messages, and send or quote-reply through the protocol CLI."

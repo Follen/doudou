@@ -1,0 +1,44 @@
+{
+  "schema": "comet.native.check-receipt.v1",
+  "change": "rename-project-to-doudou",
+  "sourceRevision": 4,
+  "checker": {
+    "policy": "scoped-text-safety",
+    "version": 1,
+    "hash": "0b8e0e9570269a64123ba2794f1f5125cf454695e1d7fda8f0acddf87ec4912f",
+    "limits": {
+      "maxFiles": 256,
+      "maxFileBytes": 1048576,
+      "maxTotalBytes": 8388608,
+      "maxIssues": 128
+    }
+  },
+  "inputHash": "48d45fa7e7d0a56a13fc1c5eb793da649648cc324c3b923939de9b0520bd868e",
+  "status": "passed",
+  "startedAt": "2026-08-01T05:39:15.983Z",
+  "endedAt": "2026-08-01T05:39:16.334Z",
+  "contract": {
+    "expectedHash": "8a6db7c85ba07171475cfebfea4ea45f11466ee2c5a6d0e1bfd79047c056381a",
+    "beforeHash": "8a6db7c85ba07171475cfebfea4ea45f11466ee2c5a6d0e1bfd79047c056381a",
+    "afterHash": "8a6db7c85ba07171475cfebfea4ea45f11466ee2c5a6d0e1bfd79047c056381a"
+  },
+  "implementation": {
+    "scopeHash": "1d9e93db87310596e60c134025311047724bdec6c9a57b085dd1745afe79b593",
+    "expectedSnapshotHash": "ef049dd3769a87850b9d474c87b98f8ea7685eb75fba1d20a4cfc662a4abf26d",
+    "beforeSnapshotHash": "ef049dd3769a87850b9d474c87b98f8ea7685eb75fba1d20a4cfc662a4abf26d",
+    "afterSnapshotHash": "ef049dd3769a87850b9d474c87b98f8ea7685eb75fba1d20a4cfc662a4abf26d"
+  },
+  "counts": {
+    "filesSelected": 35,
+    "filesScanned": 35,
+    "binaryFilesSkipped": 0,
+    "bytesScanned": 325113,
+    "issueCount": 0,
+    "recordedIssueCount": 0
+  },
+  "issues": [],
+  "issuesTruncated": false,
+  "stale": false,
+  "staleReasons": [],
+  "receiptHash": "325f85238d217da329ac2472fe9e6644425705599609b36eaa0f17a160fe87d1"
+}

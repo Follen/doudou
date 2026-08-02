@@ -1,6 +1,7 @@
 # Only the documentation and deliverable Skill trees are versioned.
 *
 !.gitignore
+!AGENTS.md
 !README.md
 !package.json
 !package-lock.json

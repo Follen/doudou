@@ -139,8 +139,12 @@ class BrowserSession:
             firefox_user_prefs=FIREFOX_PREFS,
             enable_cache=True,
         )
-        with suppress_asyncio_console_windows():
-            self.context = await self.manager.__aenter__()
+        try:
+            with suppress_asyncio_console_windows():
+                self.context = await self.manager.__aenter__()
+        finally:
+            if self._window_guard is not None:
+                await asyncio.to_thread(self._window_guard.finish_startup)
         await self._adopt_single_business_page()
 
         async def route_media(route) -> None:
@@ -616,6 +620,45 @@ class BrowserSession:
                 "hidden_before_show": self._window_guard.windows_hidden_before_show
                 if self._window_guard
                 else 0,
+                "create_events_seen": self._window_guard.create_events_seen
+                if self._window_guard
+                else 0,
+                "show_events_seen": self._window_guard.show_events_seen
+                if self._window_guard
+                else 0,
+                "show_events_prepared": self._window_guard.show_events_prepared
+                if self._window_guard
+                else 0,
+                "show_events_unprepared": self._window_guard.show_events_unprepared
+                if self._window_guard
+                else 0,
+                "max_callback_latency_ms": self._window_guard.max_callback_latency_ms
+                if self._window_guard
+                else 0,
+                "job_filter_active": self._window_guard.job_filter_active
+                if self._window_guard
+                else False,
+                "window_events": list(self._window_guard.window_events)
+                if self._window_guard
+                else [],
+                "startup_worker_ready": self._window_guard.startup_worker_ready
+                if self._window_guard
+                else False,
+                "startup_worker_max_callback_latency_ms": (
+                    self._window_guard.startup_worker_max_callback_latency_ms
+                    if self._window_guard
+                    else 0
+                ),
+                "startup_worker_events": list(
+                    self._window_guard.startup_worker_events
+                )
+                if self._window_guard
+                else [],
+                "startup_worker_poll_events": list(
+                    self._window_guard.startup_worker_poll_events
+                )
+                if self._window_guard
+                else [],
                 "windows": await asyncio.to_thread(
                     descendant_window_states, os.getpid()
                 )

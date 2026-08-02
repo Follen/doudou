@@ -124,6 +124,21 @@ def launch_browser_probe(python: Path) -> dict[str, Any]:
         "window_guard": {
             "events_seen": guard.events_seen,
             "hidden_before_show": guard.windows_hidden_before_show,
+            "create_events_seen": guard.create_events_seen,
+            "show_events_seen": guard.show_events_seen,
+            "show_events_prepared": guard.show_events_prepared,
+            "show_events_unprepared": guard.show_events_unprepared,
+            "max_callback_latency_ms": guard.max_callback_latency_ms,
+            "job_filter_active": guard.job_filter_active,
+            "window_events": list(guard.window_events),
+            "startup_worker_ready": guard.startup_worker_ready,
+            "startup_worker_max_callback_latency_ms": (
+                guard.startup_worker_max_callback_latency_ms
+            ),
+            "startup_worker_events": list(guard.startup_worker_events),
+            "startup_worker_poll_events": list(
+                guard.startup_worker_poll_events
+            ),
         },
     }
 

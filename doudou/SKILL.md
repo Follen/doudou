@@ -17,7 +17,7 @@ python <skill-directory>/scripts/doudou.py
 
 每次任务开始时执行一次环境门禁：
 
-1. 运行 `<cli> doctor`。
+1. 运行 `<cli> doctor`。该检查默认不启动浏览器；只有诊断 Camoufox 启动本身时才显式使用 `<cli> doctor --launch-probe`。
 2. 若返回 `setup_required`，直接运行 `<cli> setup`，无需再次询问；完成后重跑 `<cli> doctor`。
 3. 只有 doctor 返回 `status=ok` 才运行业务命令。
 4. 运行 `<cli> profile list`，解析用户指定的 Profile；没有 Profile 时创建并登录。

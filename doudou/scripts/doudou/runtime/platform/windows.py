@@ -1,10 +1,16 @@
 from __future__ import annotations
 
 import asyncio
+import contextlib
+import hashlib
+import json
 import os
 import subprocess
+import sys
+import tempfile
 import threading
 import time
+import uuid
 from collections.abc import Iterator
 from contextlib import contextmanager
 from typing import Any
@@ -22,6 +28,177 @@ _TASKBAR_STATE: dict[int, str] = {}
 
 def background_extended_style(original_style: int) -> int:
     return (original_style | WS_EX_LAYERED | WS_EX_TOOLWINDOW) & ~WS_EX_APPWINDOW
+
+
+class DescendantProcessJob:
+    """Track future descendants without scanning the process table in window hooks."""
+
+    def __init__(self, root_pid: int) -> None:
+        self.root_pid = root_pid
+        self.handle: Any = None
+        self.name = f"Local\\DoudouBrowser-{root_pid}-{uuid.uuid4().hex}"
+
+    def start(self) -> bool:
+        if os.name != "nt" or self.handle is not None:
+            return False
+        import ctypes
+        from ctypes import wintypes
+
+        PROCESS_TERMINATE = 0x0001
+        PROCESS_SET_QUOTA = 0x0100
+        PROCESS_QUERY_LIMITED_INFORMATION = 0x1000
+        kernel32 = ctypes.windll.kernel32
+        kernel32.CreateJobObjectW.restype = wintypes.HANDLE
+        kernel32.OpenProcess.restype = wintypes.HANDLE
+        job = kernel32.CreateJobObjectW(None, self.name)
+        if not job:
+            return False
+        process = kernel32.OpenProcess(
+            PROCESS_TERMINATE
+            | PROCESS_SET_QUOTA
+            | PROCESS_QUERY_LIMITED_INFORMATION,
+            False,
+            self.root_pid,
+        )
+        if not process:
+            kernel32.CloseHandle(job)
+            return False
+        try:
+            if not kernel32.AssignProcessToJobObject(job, process):
+                kernel32.CloseHandle(job)
+                return False
+        finally:
+            kernel32.CloseHandle(process)
+        self.handle = wintypes.HANDLE(job)
+        return True
+
+    def contains(self, pid: int) -> bool | None:
+        if os.name != "nt" or self.handle is None:
+            return None
+        import ctypes
+        from ctypes import wintypes
+
+        PROCESS_QUERY_LIMITED_INFORMATION = 0x1000
+        kernel32 = ctypes.windll.kernel32
+        kernel32.OpenProcess.restype = wintypes.HANDLE
+        process = kernel32.OpenProcess(
+            PROCESS_QUERY_LIMITED_INFORMATION, False, pid
+        )
+        if not process:
+            return False
+        try:
+            member = wintypes.BOOL()
+            if not kernel32.IsProcessInJob(
+                process, self.handle, ctypes.byref(member)
+            ):
+                return None
+            return bool(member.value)
+        finally:
+            kernel32.CloseHandle(process)
+
+    def close(self) -> None:
+        if os.name != "nt" or self.handle is None:
+            return
+        import ctypes
+
+        ctypes.windll.kernel32.CloseHandle(self.handle)
+        self.handle = None
+
+
+class StartupWindowGuardProcess:
+    """Run the time-critical startup hook outside the busy broker process."""
+
+    def __init__(self, root_pid: int, job_name: str) -> None:
+        token = f"{root_pid}-{uuid.uuid4().hex}"
+        temporary = os.path.abspath(tempfile.gettempdir())
+        self.ready_path = os.path.join(temporary, f"doudou-window-{token}.ready")
+        self.stop_path = os.path.join(temporary, f"doudou-window-{token}.stop")
+        self.result_path = os.path.join(temporary, f"doudou-window-{token}.json")
+        self.root_pid = root_pid
+        self.job_name = job_name
+        self.process: subprocess.Popen[Any] | None = None
+        self.ready = False
+        self.events: list[dict[str, Any]] = []
+        self.poll_events: list[dict[str, Any]] = []
+        self.max_callback_latency_ms = 0
+
+    def start(self) -> bool:
+        if os.name != "nt" or self.process is not None:
+            return False
+        python = os.path.join(os.path.dirname(sys.executable), "pythonw.exe")
+        if not os.path.exists(python):
+            python = sys.executable
+        startupinfo = subprocess.STARTUPINFO()
+        startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+        startupinfo.wShowWindow = 0
+        environment = os.environ.copy()
+        package_root = os.path.abspath(
+            os.path.join(os.path.dirname(__file__), "..", "..", "..")
+        )
+        existing_path = environment.get("PYTHONPATH")
+        environment["PYTHONPATH"] = (
+            package_root
+            if not existing_path
+            else os.pathsep.join((package_root, existing_path))
+        )
+        self.process = subprocess.Popen(
+            [
+                python,
+                "-m",
+                "doudou.runtime.platform.windows_guard_worker",
+                "--root-pid",
+                str(self.root_pid),
+                "--job-name",
+                self.job_name,
+                "--ready-path",
+                self.ready_path,
+                "--stop-path",
+                self.stop_path,
+                "--result-path",
+                self.result_path,
+            ],
+            env=environment,
+            stdin=subprocess.DEVNULL,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            creationflags=CREATE_NO_WINDOW,
+            startupinfo=startupinfo,
+        )
+        deadline = time.monotonic() + 2
+        while time.monotonic() < deadline:
+            if os.path.exists(self.ready_path):
+                self.ready = True
+                return True
+            if self.process.poll() is not None:
+                break
+            time.sleep(0.01)
+        return False
+
+    def stop(self) -> None:
+        if self.process is None:
+            return
+        try:
+            with open(self.stop_path, "w", encoding="ascii") as handle:
+                handle.write("stop\n")
+            self.process.wait(timeout=3)
+        except (OSError, subprocess.TimeoutExpired):
+            self.process.terminate()
+            with contextlib.suppress(subprocess.TimeoutExpired):
+                self.process.wait(timeout=2)
+        try:
+            with open(self.result_path, encoding="utf-8") as handle:
+                result = json.load(handle)
+            self.events = list(result.get("events") or [])
+            self.poll_events = list(result.get("poll_events") or [])
+            self.max_callback_latency_ms = int(
+                result.get("max_callback_latency_ms") or 0
+            )
+        except (OSError, ValueError, TypeError):
+            pass
+        for path in (self.ready_path, self.stop_path, self.result_path):
+            with contextlib.suppress(OSError):
+                os.unlink(path)
+        self.process = None
 
 
 def _set_taskbar_tab(hwnd: int, visible: bool) -> bool:
@@ -87,12 +264,32 @@ class WindowVisibilityGuard:
         self._thread_id: int | None = None
         self._hook: Any = None
         self._callback: Any = None
+        self._job = DescendantProcessJob(root_pid)
+        self._startup_worker: StartupWindowGuardProcess | None = None
+        self._prepared_windows: set[int] = set()
         self.events_seen = 0
         self.windows_hidden_before_show = 0
+        self.create_events_seen = 0
+        self.show_events_seen = 0
+        self.show_events_prepared = 0
+        self.show_events_unprepared = 0
+        self.max_callback_latency_ms = 0
+        self.job_filter_active = False
+        self.window_events: list[dict[str, Any]] = []
+        self.startup_worker_ready = False
+        self.startup_worker_events: list[dict[str, Any]] = []
+        self.startup_worker_poll_events: list[dict[str, Any]] = []
+        self.startup_worker_max_callback_latency_ms = 0
 
     def start(self) -> None:
         if os.name != "nt" or self._thread is not None:
             return
+        self.job_filter_active = self._job.start()
+        if self.job_filter_active:
+            self._startup_worker = StartupWindowGuardProcess(
+                self.root_pid, self._job.name
+            )
+            self.startup_worker_ready = self._startup_worker.start()
         self._thread = threading.Thread(
             target=self._run, name="doudou-window-guard", daemon=True
         )
@@ -113,6 +310,58 @@ class WindowVisibilityGuard:
         self._thread.join(timeout=2)
         self._thread = None
         self._thread_id = None
+        self.finish_startup()
+        self._job.close()
+
+    def finish_startup(self) -> None:
+        if self._startup_worker is None:
+            return
+        self._startup_worker.stop()
+        self.startup_worker_events = list(self._startup_worker.events)
+        self.startup_worker_poll_events = list(self._startup_worker.poll_events)
+        self.startup_worker_max_callback_latency_ms = (
+            self._startup_worker.max_callback_latency_ms
+        )
+        self._startup_worker = None
+
+    def _owns_descendant_window(self, hwnd: int) -> bool:
+        import ctypes
+        from ctypes import wintypes
+
+        user32 = ctypes.windll.user32
+        pid = wintypes.DWORD()
+        user32.GetWindowThreadProcessId(hwnd, ctypes.byref(pid))
+        membership = self._job.contains(int(pid.value))
+        if membership is not None:
+            return membership
+        return int(pid.value) in _descendant_pids(self.root_pid)
+
+    def _record_window_event(self, hwnd: int, event: int, latency: int) -> None:
+        if len(self.window_events) >= 64:
+            return
+        import ctypes
+
+        user32 = ctypes.windll.user32
+        class_name = ctypes.create_unicode_buffer(256)
+        title = ctypes.create_unicode_buffer(512)
+        user32.GetClassNameW(hwnd, class_name, len(class_name))
+        user32.GetWindowTextW(hwnd, title, len(title))
+        style = int(user32.GetWindowLongW(hwnd, -20))
+        title_bytes = title.value.encode("utf-8", errors="replace")
+        self.window_events.append(
+            {
+                "event": "create" if event == 0x8000 else "show",
+                "hwnd": hwnd,
+                "class_name": class_name.value,
+                "visible_before": bool(user32.IsWindowVisible(hwnd)),
+                "extended_style_before": style,
+                "tool_window_before": bool(style & WS_EX_TOOLWINDOW),
+                "app_window_before": bool(style & WS_EX_APPWINDOW),
+                "title_length": len(title.value),
+                "title_sha256": hashlib.sha256(title_bytes).hexdigest(),
+                "callback_latency_ms": latency,
+            }
+        )
 
     def _run(self) -> None:
         import ctypes
@@ -142,11 +391,26 @@ class WindowVisibilityGuard:
         def on_window_event(_hook, event, hwnd, object_id, child_id, _thread_id, _time):
             if not hwnd or object_id != OBJID_WINDOW or child_id != CHILDID_SELF:
                 return
-            if not _is_browser_window(int(hwnd), self.root_pid):
+            hwnd_value = int(hwnd)
+            if not self._owns_descendant_window(hwnd_value):
                 return
             self.events_seen += 1
+            latency = (int(kernel32.GetTickCount()) - int(_time)) & 0xFFFFFFFF
+            self.max_callback_latency_ms = max(self.max_callback_latency_ms, latency)
+            self._record_window_event(hwnd_value, int(event), latency)
+            if event == EVENT_OBJECT_CREATE:
+                self.create_events_seen += 1
+                self._prepared_windows.add(hwnd_value)
+            elif event == EVENT_OBJECT_SHOW:
+                self.show_events_seen += 1
+                if hwnd_value in self._prepared_windows:
+                    self.show_events_prepared += 1
+                else:
+                    self.show_events_unprepared += 1
             if not self.visible:
-                _set_browser_window_visible(int(hwnd), False)
+                _set_browser_window_visible(
+                    hwnd_value, False, show_background=False
+                )
                 if event == EVENT_OBJECT_CREATE:
                     self.windows_hidden_before_show += 1
 
@@ -266,7 +530,9 @@ def _is_browser_window(hwnd: int, root_pid: int) -> bool:
     return _descendant_processes(root_pid).get(int(pid.value)) in BROWSER_PROCESS_NAMES
 
 
-def _set_browser_window_visible(hwnd: int, visible: bool) -> None:
+def _set_browser_window_visible(
+    hwnd: int, visible: bool, *, show_background: bool = True
+) -> None:
     import ctypes
 
     user32 = ctypes.windll.user32
@@ -299,6 +565,7 @@ def _set_browser_window_visible(hwnd: int, visible: bool) -> None:
         user32.SetWindowLongW(
             hwnd, GWL_EXSTYLE, background_extended_style(original_style)
         )
+        user32.SetLayeredWindowAttributes(hwnd, 0, 0, LWA_ALPHA)
         user32.SetWindowPos(
             hwnd,
             None,
@@ -308,9 +575,10 @@ def _set_browser_window_visible(hwnd: int, visible: bool) -> None:
             0,
             SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED,
         )
-        user32.SetLayeredWindowAttributes(hwnd, 0, 0, LWA_ALPHA)
-        user32.ShowWindow(hwnd, SW_SHOWNOACTIVATE)
         _set_taskbar_tab(hwnd, False)
+        if show_background:
+            user32.ShowWindow(hwnd, SW_SHOWNOACTIVATE)
+            _set_taskbar_tab(hwnd, False)
 
 
 def descendant_window_states(root_pid: int) -> list[dict[str, Any]]:

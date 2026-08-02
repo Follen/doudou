@@ -2,7 +2,7 @@
 
 ## Setup
 
-`doctor` 检查系统 Python、用户级 venv、Camoufox 包、指定浏览器版本、后台窗口模式和项目目录写权限。首次环境不存在时返回 `setup_required`。
+`doctor` 检查系统 Python、用户级 venv、Camoufox 包、指定浏览器版本、后台窗口模式和项目目录写权限。默认不启动浏览器，避免每次任务额外创建一个短命 Camoufox；只有排查浏览器启动时才使用 `doctor --launch-probe`。`setup` 仍会执行一次真实启动验证。首次环境不存在时返回 `setup_required`。
 
 `setup` 执行以下步骤：
 

@@ -27,7 +27,9 @@ def parser() -> argparse.ArgumentParser:
     commands = root.add_subparsers(dest="command", required=True)
 
     doctor_parser = commands.add_parser("doctor")
-    doctor_parser.add_argument("--skip-launch", action="store_true")
+    doctor_probe = doctor_parser.add_mutually_exclusive_group()
+    doctor_probe.add_argument("--launch-probe", action="store_true")
+    doctor_probe.add_argument("--skip-launch", action="store_true", help=argparse.SUPPRESS)
     commands.add_parser("setup")
 
     profile = commands.add_parser("profile").add_subparsers(
@@ -200,7 +202,7 @@ def dispatch(args: argparse.Namespace, skill_root: Path) -> dict[str, Any]:
     data_root = resolve_data_root(args.data_root)
     if args.command == "doctor":
         initialize_data_root(data_root)
-        return doctor(data_root, launch_probe=not args.skip_launch)
+        return doctor(data_root, launch_probe=args.launch_probe)
     if args.command == "setup":
         return setup(skill_root)
     initialize_data_root(data_root)

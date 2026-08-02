@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import ctypes
 import unittest
 from unittest.mock import AsyncMock, MagicMock, patch
 
@@ -58,6 +59,38 @@ class WindowsProcessTests(unittest.IsolatedAsyncioTestCase):
         self.assertFalse(guard.visible)
         self.assertEqual(guard.events_seen, 0)
         self.assertEqual(guard.windows_hidden_before_show, 0)
+        self.assertEqual(guard.show_events_unprepared, 0)
+        self.assertFalse(guard.job_filter_active)
+        self.assertEqual(guard.window_events, [])
+
+    def test_create_event_preparation_does_not_force_window_show(self) -> None:
+        user32 = MagicMock()
+        user32.GetWindowLongW.return_value = windows.WS_EX_APPWINDOW
+        windows._WINDOW_EX_STYLES.pop(123, None)
+        with (
+            patch.object(ctypes.windll, "user32", user32),
+            patch.object(windows, "_set_taskbar_tab") as taskbar,
+        ):
+            windows._set_browser_window_visible(
+                123, False, show_background=False
+            )
+        user32.ShowWindow.assert_not_called()
+        taskbar.assert_called_once_with(123, False)
+        written_style = user32.SetWindowLongW.call_args.args[2]
+        self.assertTrue(written_style & windows.WS_EX_TOOLWINDOW)
+        self.assertFalse(written_style & windows.WS_EX_APPWINDOW)
+
+    def test_descendant_process_job_is_noop_off_windows(self) -> None:
+        job = windows.DescendantProcessJob(123)
+        with patch.object(windows.os, "name", "posix"):
+            self.assertFalse(job.start())
+            self.assertIsNone(job.contains(456))
+            job.close()
+
+    def test_guard_accepts_every_job_descendant_window_class(self) -> None:
+        guard = windows.WindowVisibilityGuard(123)
+        with patch.object(guard._job, "contains", return_value=True):
+            self.assertTrue(guard._owns_descendant_window(456))
 
     async def test_asyncio_browser_driver_uses_no_console_flag(self) -> None:
         original = asyncio.create_subprocess_exec

@@ -86,7 +86,9 @@ const manifest = {
 const serialized = `${JSON.stringify(manifest, null, 2)}\n`;
 
 if (process.argv.includes("--check")) {
-  const current = fs.existsSync(output) ? fs.readFileSync(output, "utf8") : "";
+  const current = fs.existsSync(output)
+    ? fs.readFileSync(output, "utf8").replaceAll("\r\n", "\n")
+    : "";
   if (current !== serialized) {
     process.stderr.write("npm/skill-manifest.json is stale. Run npm run build:manifest.\n");
     process.exitCode = 1;

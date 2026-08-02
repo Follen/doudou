@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import asyncio
 import ctypes
+import os
 import unittest
 from unittest.mock import AsyncMock, MagicMock, patch
 
@@ -9,6 +10,7 @@ from doudou.runtime.browser.session import FIREFOX_PREFS
 from doudou.runtime.platform import windows
 
 
+@unittest.skipUnless(os.name == "nt", "Windows process integration tests")
 class WindowsProcessTests(unittest.IsolatedAsyncioTestCase):
     def test_only_browser_processes_are_eligible_for_window_visibility(self) -> None:
         processes = {

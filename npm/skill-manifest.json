@@ -3,7 +3,7 @@
   "package_name": "@follenfang/doudou",
   "package_version": "0.0.1",
   "skill_version": "0.0.1",
-  "tree_sha256": "76e0e995bb65740dc320f112ab039d5f383f8d28da9dc51d72bbff192181c271",
+  "tree_sha256": "74d6fa14321e98dc0b4291c5d10fa87dd3ec71ade1f871c1e061eb74cb709729",
   "files": [
     {
       "path": "agents/openai.yaml",
@@ -107,8 +107,8 @@
     },
     {
       "path": "scripts/doudou/models/resolver.py",
-      "bytes": 4051,
-      "sha256": "65ccd9fbb37465befd3103bd23643ef2f67645445b034cbb26bc8c18a94b374d"
+      "bytes": 4118,
+      "sha256": "40f795a9d1f115666260fa3bda7971d643aeeae490a2ca121ea9822b78e122ba"
     },
     {
       "path": "scripts/doudou/protocol/__init__.py",
@@ -227,8 +227,8 @@
     },
     {
       "path": "scripts/doudou/runtime/process.py",
-      "bytes": 1935,
-      "sha256": "9d04e2b3ea4edb97eed8ca082ad2ae35605041e737a60ee512a787d5f1b11119"
+      "bytes": 2406,
+      "sha256": "b902d9e05a99c0040f08434ade8581ce688b46243bdeb23b5350d6f16b7333ca"
     },
     {
       "path": "scripts/doudou/runtime/profile.py",

@@ -98,8 +98,9 @@ def parse_selection(value: str, count: int) -> list[int]:
 
 
 def default_message_window(clock: datetime) -> tuple[str, str]:
-    start = clock.astimezone().replace(hour=0, minute=0, second=0, microsecond=0)
-    return start.isoformat(), clock.astimezone().isoformat()
+    local_clock = clock if clock.utcoffset() is not None else clock.astimezone()
+    start = local_clock.replace(hour=0, minute=0, second=0, microsecond=0)
+    return start.isoformat(), local_clock.isoformat()
 
 
 def infer_self_uid(conversations: list[dict[str, Any]]) -> str | None:

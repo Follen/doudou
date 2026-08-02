@@ -156,6 +156,33 @@ test("interrupted runtime staging is removed and the previous runtime restored",
   assert.equal(fs.existsSync(temporary), false);
 });
 
+test("relocates Linux venv symlinks after the runtime directory is renamed", {
+  skip: process.platform === "win32",
+}, (t) => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "doudou-venv-relocate-"));
+  t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  const previous = path.join(root, ".runtime.install-fixture");
+  const directory = path.join(root, "runtime");
+  const bootstrapPython = path.join(previous, "python", "bin", "python3");
+  const scripts = path.join(previous, "venv", "bin");
+  fs.mkdirSync(path.dirname(bootstrapPython), { recursive: true });
+  fs.mkdirSync(scripts, { recursive: true });
+  fs.writeFileSync(bootstrapPython, "fixture");
+  fs.writeFileSync(path.join(previous, "venv", "pyvenv.cfg"), `home = ${previous}/python/bin\n`);
+  fs.writeFileSync(path.join(scripts, "activate"), `VIRTUAL_ENV=${previous}/venv\n`);
+  fs.symlinkSync(bootstrapPython, path.join(scripts, "python"));
+
+  fs.renameSync(previous, directory);
+  const relocatedPython = path.join(directory, "venv", "bin", "python");
+  assert.equal(fs.existsSync(relocatedPython), false);
+
+  setupInternals.relocateVenv(directory, previous);
+
+  assert.equal(fs.realpathSync(relocatedPython), path.join(directory, "python", "bin", "python3"));
+  assert.equal(fs.readFileSync(path.join(directory, "venv", "pyvenv.cfg"), "utf8").includes(previous), false);
+  assert.equal(fs.readFileSync(path.join(directory, "venv", "bin", "activate"), "utf8").includes(previous), false);
+});
+
 test("setup cancellation terminates its managed process tree", async () => {
   const child = spawn(process.execPath, ["-e", "setInterval(() => {}, 1000)"], {
     detached: process.platform !== "win32",

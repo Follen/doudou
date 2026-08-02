@@ -253,7 +253,16 @@ function relocateVenv(directory, previous) {
   if (fs.existsSync(scripts)) {
     for (const name of fs.readdirSync(scripts)) {
       const filename = path.join(scripts, name);
-      if (!fs.statSync(filename).isFile()) continue;
+      const entry = fs.lstatSync(filename);
+      if (entry.isSymbolicLink()) {
+        const target = fs.readlinkSync(filename);
+        if (target.includes(previous)) {
+          fs.unlinkSync(filename);
+          fs.symlinkSync(target.split(previous).join(directory), filename);
+        }
+        continue;
+      }
+      if (!entry.isFile()) continue;
       try {
         const value = fs.readFileSync(filename, "utf8");
         if (value.includes(previous)) fs.writeFileSync(filename, value.split(previous).join(directory), "utf8");

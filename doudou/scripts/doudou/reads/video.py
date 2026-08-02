@@ -7,6 +7,7 @@ from typing import Any
 from urllib.parse import parse_qsl, quote, urlencode, urlsplit, urlunsplit
 
 from ..common.errors import DoudouError
+from ..models.identity import IdentityCache, enrich_known_identities
 from ..protocol.contracts import WEB_PROTOCOL
 from ..protocol.responses import ResponseCodes
 from ..protocol.web import (
@@ -25,39 +26,12 @@ from ..storage.content import (
     write_video,
     write_video_index,
 )
-from ..ui.adapters import PROFILE_ADAPTER, VIDEO_ADAPTER
-from ..ui.components import VideoCommentsPanelComponent
+from ..ui.components import (
+    ProfileVideoListComponent,
+    VideoCommentsPanelComponent,
+    VideoDetailComponent,
+)
 from .transport import fetch_json, parse_result
-
-
-async def _first_visible(locator: Any) -> Any | None:
-    for index in range(await locator.count()):
-        candidate = locator.nth(index)
-        if await candidate.is_visible():
-            return candidate
-    return None
-
-
-async def _bounded_control_inventory(
-    page: Any, limit: int = 80
-) -> list[dict[str, Any]]:
-    controls = VIDEO_ADAPTER.locator(page, "inventory_controls")
-    output: list[dict[str, Any]] = []
-    for index in range(min(await controls.count(), limit)):
-        control = controls.nth(index)
-        with contextlib.suppress(Exception):
-            if not await control.is_visible():
-                continue
-            output.append(
-                {
-                    "data_e2e": await control.get_attribute("data-e2e"),
-                    "aria_label": await control.get_attribute("aria-label"),
-                    "title": await control.get_attribute("title"),
-                    "text": (await control.inner_text())[:120],
-                }
-            )
-    return output
-
 
 COMMENT_CODES = ResponseCodes(
     empty="COMMENT_RESPONSE_EMPTY",
@@ -72,16 +46,13 @@ VIDEO_LIST_CODES = ResponseCodes(
 VOLATILE_QUERY_KEYS = {"msToken", "a_bogus"}
 REPLY_INCOMPATIBLE_QUERY_KEYS = {
     "aweme_id",
-    "pc_img_format",
     "insert_ids",
     "whale_cut_token",
     "rcFT",
 }
 
 
-def _url_with_query(
-    url: str, *, remove: set[str] | None = None, **changes: Any
-) -> str:
+def _url_with_query(url: str, *, remove: set[str] | None = None, **changes: Any) -> str:
     parsed = urlsplit(url)
     query = dict(parse_qsl(parsed.query, keep_blank_values=True))
     for key in VOLATILE_QUERY_KEYS | (remove or set()):
@@ -92,7 +63,18 @@ def _url_with_query(
     )
 
 
-def _reply_url(root_template: str, aweme_id: str, root_cid: str, cursor: Any) -> str:
+def _url_matches_aweme(url: str, aweme_id: str) -> bool:
+    query = dict(parse_qsl(urlsplit(url).query, keep_blank_values=True))
+    return any(query.get(key) == aweme_id for key in ("aweme_id", "item_id"))
+
+
+def _reply_url(
+    root_template: str,
+    aweme_id: str,
+    root_cid: str,
+    cursor: Any,
+    reported_reply_count: int,
+) -> str:
     parsed = urlsplit(
         _url_with_query(
             root_template,
@@ -100,8 +82,9 @@ def _reply_url(root_template: str, aweme_id: str, root_cid: str, cursor: Any) ->
             cursor=cursor,
             item_id=aweme_id,
             comment_id=root_cid,
-            count=20,
+            count=min(max(reported_reply_count, 1), 10),
             item_type=0,
+            pc_img_format="webp",
         )
     )
     return urlunsplit(
@@ -126,12 +109,34 @@ async def _collect_reply_thread(
     pages: list[dict[str, Any]] = []
     comments: list[dict[str, Any]] = []
     for page_number in range(1, max_pages + 1):
-        value = await fetch_json(
-            session,
-            _reply_url(reply_template, aweme_id, target["cid"], cursor),
-            codes=COMMENT_CODES,
-            operation="comment.reply.list",
+        await session.page.wait_for_timeout(3000)
+        url = _reply_url(
+            reply_template,
+            aweme_id,
+            target["cid"],
+            cursor,
+            int(target.get("reported") or 0),
         )
+        try:
+            value = await fetch_json(
+                session,
+                url,
+                codes=COMMENT_CODES,
+                operation="comment.reply.list",
+            )
+        except DoudouError as error:
+            query = dict(parse_qsl(urlsplit(url).query, keep_blank_values=True))
+            error.details = {
+                **(error.details or {}),
+                "request_contract": {
+                    "path": urlsplit(url).path,
+                    "query_keys": sorted(query),
+                    "item_id_matches": query.get("item_id") == aweme_id,
+                    "count": query.get("count"),
+                    "cursor": query.get("cursor"),
+                },
+            }
+            raise
         batch = WEB_PROTOCOL.list_value(value, "comments", "comment.reply.list")
         next_cursor = WEB_PROTOCOL.value(value, "comment_cursor")
         has_more = bool(WEB_PROTOCOL.value(value, "has_more"))
@@ -201,14 +206,12 @@ async def resolve_identity(
         await session.page.wait_for_timeout(10_000)
         if tasks:
             await asyncio.gather(*tasks, return_exceptions=True)
-        render = VIDEO_ADAPTER.locator(session.page, "render_data")
-        if await render.count():
-            try:
-                captured.append(
-                    parse_render_data(await render.text_content(timeout=2000) or "")
-                )
-            except Exception:  # noqa: BLE001 - SSR is an optional identity source
-                captured.append({})
+        try:
+            render_data = await VideoDetailComponent(session.page).render_data()
+            if render_data is not None:
+                captured.append(parse_render_data(render_data))
+        except Exception:  # noqa: BLE001 - SSR is an optional identity source
+            captured.append({})
     finally:
         session.page.remove_listener("response", on_response)
     protocol_errors: list[DoudouError] = []
@@ -236,7 +239,8 @@ async def resolve_identity(
     exact = [
         item
         for item in values
-        if item["unique_id"].casefold() == douyin_id.casefold() and item["sec_uid"]
+        if (item["unique_id"] or "").casefold() == douyin_id.casefold()
+        and item["sec_uid"]
     ]
     if len(exact) != 1:
         blocking = next(
@@ -262,10 +266,18 @@ async def resolve_identity(
                 ),
             },
         )
-    files = write_identity(data_root, profile, exact[0], values)
+    cache = IdentityCache(data_root, profile)
+    values = [cache.merge(item, source="identity-resolve") for item in values]
+    exact_identity = next(
+        item
+        for item in values
+        if (item.get("unique_id") or "").casefold() == douyin_id.casefold()
+    )
+    cache.save()
+    files = write_identity(data_root, profile, exact_identity, values)
     return {
         "status": "resolved",
-        "identity": exact[0],
+        "identity": exact_identity,
         "candidates": values,
         "files": files,
     }
@@ -303,6 +315,7 @@ async def collect_user_videos(
         task.add_done_callback(tasks.discard)
 
     session.page.on("response", on_response)
+
     async def next_protocol_page(timeout: float) -> tuple[str, dict[str, Any]]:
         nonlocal ignored_non_json
         deadline = asyncio.get_running_loop().time() + timeout
@@ -341,17 +354,8 @@ async def collect_user_videos(
             f"https://www.douyin.com/user/{identity['sec_uid']}?from_tab_name=main"
         )
         _template, value = await next_protocol_page(30)
-        scroll = PROFILE_ADAPTER.locator(session.page, "scroll_container").first
-        if not await scroll.count() or not await scroll.is_visible():
-            raise DoudouError(
-                "PAGE_ADAPTER_DRIFTED",
-                "The profile page scroll component is unavailable.",
-                {
-                    "adapter": PROFILE_ADAPTER.name,
-                    "adapter_version": PROFILE_ADAPTER.version,
-                    "capability": "video.list.paginate",
-                },
-            )
+        video_list = ProfileVideoListComponent(session.page)
+        await video_list.scroll_container()
         cursor_in: Any = 0
         seen_cursors: set[str] = set()
         for page_number in range(1, max_pages + 1):
@@ -385,9 +389,7 @@ async def collect_user_videos(
             seen_cursors.add(str(cursor_out))
             cursor_in = cursor_out
             for attempt in range(1, 6):
-                await scroll.evaluate(
-                    "element => { element.scrollTop = element.scrollHeight; }"
-                )
+                await video_list.scroll_to_end()
                 try:
                     _template, value = await next_protocol_page(4)
                     break
@@ -403,8 +405,16 @@ async def collect_user_videos(
             )
     finally:
         session.page.remove_listener("response", on_response)
+    cache = IdentityCache(data_root, profile)
+    ordered = [
+        enrich_known_identities(item, cache, source="video-list")
+        for item in videos.values()
+    ]
+    for item in ordered:
+        cache.merge(item["author"], source="video-list")
+    cache.save()
     ordered = sorted(
-        videos.values(),
+        ordered,
         key=lambda item: (-(item["create_time"] or 0), item["aweme_id"]),
     )
     files = write_video_index(data_root, profile, identity, ordered, pages)
@@ -434,9 +444,14 @@ async def collect_video(
     response_tasks: set[asyncio.Task[Any]] = set()
 
     def on_request(request: Any) -> None:
-        if WEB_PROTOCOL.path("comment_reply") in request.url:
+        if WEB_PROTOCOL.path("comment_reply") in request.url and _url_matches_aweme(
+            request.url, aweme_id
+        ):
             reply_urls.put_nowait(request.url)
-        elif WEB_PROTOCOL.path("comment_root") in request.url:
+            return
+        if WEB_PROTOCOL.path("comment_root") in request.url and _url_matches_aweme(
+            request.url, aweme_id
+        ):
             root_urls.put_nowait(request.url)
 
     async def consume_response(response: Any) -> None:
@@ -463,12 +478,10 @@ async def collect_video(
         source_url = f"https://www.douyin.com/video/{aweme_id}"
         await session.open(source_url)
         render_data: dict[str, Any] = {}
-        render = VIDEO_ADAPTER.locator(session.page, "render_data")
-        if await render.count():
+        render_text = await VideoDetailComponent(session.page).render_data()
+        if render_text is not None:
             with contextlib.suppress(Exception):
-                render_data = parse_render_data(
-                    await render.text_content(timeout=3000) or ""
-                )
+                render_data = parse_render_data(render_text)
         app_data = render_data.get("app") or {}
         detail = app_data.get("videoDetail") or {}
         if not detail:
@@ -498,33 +511,12 @@ async def collect_video(
                 },
             )
         await session.page.wait_for_timeout(3000)
-        tutorial = await _first_visible(VIDEO_ADAPTER.text(session.page, "tutorial"))
-        if tutorial:
-            await tutorial.click()
-        try:
+        await VideoCommentsPanelComponent().ensure_open(session.page)
+        await session.page.wait_for_timeout(500)
+        root_template: str | None = None
+        while not root_urls.empty():
             root_template = root_urls.get_nowait()
-        except asyncio.QueueEmpty:
-            comment_button = await _first_visible(
-                VIDEO_ADAPTER.locator(session.page, "comment_button")
-            )
-            if not comment_button:
-                comment_count = str(
-                    (detail.get("stats") or {}).get("commentCount") or ""
-                )
-                comment_button = await _first_visible(
-                    session.page.get_by_text(comment_count, exact=True)
-                )
-            if not comment_button:
-                raise DoudouError(
-                    "COMMENT_PANEL_MISSING",
-                    "The bounded comment panel control is unavailable.",
-                    {
-                        "visible_controls": await _bounded_control_inventory(
-                            session.page
-                        )
-                    },
-                )
-            await comment_button.click(timeout=15_000)
+        if root_template is None:
             root_template = await asyncio.wait_for(root_urls.get(), timeout=20)
         checkpoint, comments = read_comment_checkpoint(data_root, profile, aweme_id)
         if not checkpoint or checkpoint.get("status") == "completed":
@@ -626,57 +618,45 @@ async def collect_video(
                 > embedded_reply_counts.get(root["cid"], 0)
                 and root["cid"] not in completed_reply_root_ids
             ]
-            reply_template: str | None = None
+            reply_template = root_template
             if reply_targets:
-                panel = VideoCommentsPanelComponent()
-                await panel.ensure_open(session.page)
-                await panel.expand_any_replies(session.page)
-                reply_template = await asyncio.wait_for(reply_urls.get(), timeout=20)
-            semaphore = asyncio.Semaphore(4)
-
-            async def collect_target(target: dict[str, Any]) -> dict[str, Any]:
-                async with semaphore:
-                    try:
-                        return await _collect_reply_thread(
-                            session,
-                            reply_template or root_template,
-                            aweme_id,
-                            target,
-                            max_pages,
-                        )
-                    except DoudouError as error:
-                        error.details = {
-                            "root_cid": target["cid"],
-                            **(error.details or {}),
-                        }
-                        raise
-
-            tasks = [
-                asyncio.create_task(collect_target(target)) for target in reply_targets
-            ]
-            try:
-                for completed in asyncio.as_completed(tasks):
-                    thread = await completed
-                    comments.extend(thread.get("comments") or [])
-                    pages.extend(
-                        {"kind": "reply", "root_cid": thread["cid"], **item}
-                        for item in thread.get("pages") or []
+                triggered = await VideoCommentsPanelComponent().trigger_reply_template(
+                    session.page
+                )
+                if triggered:
+                    reply_template = await asyncio.wait_for(
+                        reply_urls.get(), timeout=20
                     )
-                    completed_reply_root_ids.add(thread["cid"])
-                    pending = next(
-                        (
-                            target["cid"]
-                            for target in reply_targets
-                            if target["cid"] not in completed_reply_root_ids
-                        ),
-                        None,
+            for target in reply_targets:
+                try:
+                    thread = await _collect_reply_thread(
+                        session,
+                        reply_template,
+                        aweme_id,
+                        target,
+                        max_pages,
                     )
-                    persist("running", next_reply_root_id=pending)
-            except Exception:
-                for task in tasks:
-                    task.cancel()
-                await asyncio.gather(*tasks, return_exceptions=True)
-                raise
+                except DoudouError as error:
+                    error.details = {
+                        "root_cid": target["cid"],
+                        **(error.details or {}),
+                    }
+                    raise
+                comments.extend(thread.get("comments") or [])
+                pages.extend(
+                    {"kind": "reply", "root_cid": thread["cid"], **item}
+                    for item in thread.get("pages") or []
+                )
+                completed_reply_root_ids.add(thread["cid"])
+                pending = next(
+                    (
+                        item["cid"]
+                        for item in reply_targets
+                        if item["cid"] not in completed_reply_root_ids
+                    ),
+                    None,
+                )
+                persist("running", next_reply_root_id=pending)
         except DoudouError as error:
             persist("failed", error=error)
             raise
@@ -692,6 +672,15 @@ async def collect_video(
                 (b"\xff\xd8\xff", b"\x89PNG", b"RIFF")
             ):
                 cover = candidate
+        cache = IdentityCache(data_root, profile)
+        normalized = enrich_known_identities(normalized, cache, source="video-detail")
+        comments = [
+            enrich_known_identities(item, cache, source="comment") for item in comments
+        ]
+        cache.merge(normalized["author"], source="video-detail")
+        for comment in comments:
+            cache.merge(comment["user"], source="comment")
+        cache.save()
         files = write_video(data_root, profile, normalized, cover, comments, pages)
         persist("completed")
         return {

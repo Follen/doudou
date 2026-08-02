@@ -4,17 +4,16 @@ import importlib.metadata
 import json
 import os
 import platform
-import shutil
 import subprocess
 import sys
-import tempfile
 import threading
-import venv
 from pathlib import Path
 from typing import Any
 
-from ..common.core import atomic_write_json, utc_now
+from .camoufox_asset import browser_status
+from .home import browser_root, doudou_home
 from .platform.windows import WindowVisibilityGuard
+from .process import process_identity
 from .profile import (
     CAMOUFOX_BROWSER_VERSION,
     CAMOUFOX_PACKAGE_VERSION,
@@ -25,12 +24,7 @@ RUNTIME_ID = f"py{sys.version_info.major}{sys.version_info.minor}-camoufox-{CAMO
 
 
 def user_cache_root() -> Path:
-    if os.name == "nt":
-        return (
-            Path(os.environ.get("LOCALAPPDATA", Path.home() / "AppData" / "Local"))
-            / "doudou"
-        )
-    return Path(os.environ.get("XDG_CACHE_HOME", Path.home() / ".cache")) / "doudou"
+    return doudou_home()
 
 
 def runtime_root() -> Path:
@@ -46,7 +40,9 @@ def runtime_directory(runtime_id: str = RUNTIME_ID) -> Path:
 
 
 def venv_python(directory: Path) -> Path:
-    return directory / ("Scripts/python.exe" if os.name == "nt" else "bin/python")
+    return directory / "venv" / (
+        "Scripts/python.exe" if os.name == "nt" else "bin/python"
+    )
 
 
 def hidden_process_options() -> dict[str, Any]:
@@ -85,7 +81,11 @@ def environment_package_version(python: Path, name: str) -> str | None:
 def launch_browser_probe(python: Path) -> dict[str, Any]:
     headless = "'virtual'" if platform.system() == "Linux" else "False"
     script = (
-        "import asyncio,subprocess,sys\nfrom camoufox.async_api import AsyncCamoufox\n"
+        "import asyncio,subprocess,sys\nfrom pathlib import Path\n"
+        "from camoufox import multiversion,pkgman\nfrom camoufox.async_api import AsyncCamoufox\n"
+        f"cache=Path({str(browser_root())!r})\n"
+        "pkgman.INSTALL_DIR=cache; multiversion.INSTALL_DIR=cache\n"
+        "multiversion.BROWSERS_DIR=cache/'browsers'; multiversion.CONFIG_FILE=cache/'config.json'; multiversion.COMPAT_FLAG=cache/'.0.5_FLAG'\n"
         "if sys.platform == 'win32':\n"
         " original_create = asyncio.create_subprocess_exec\n"
         " async def hidden_create(*args, **kwargs):\n"
@@ -144,22 +144,35 @@ def launch_browser_probe(python: Path) -> dict[str, Any]:
 
 
 def browser_version(python: Path | None = None) -> dict[str, Any]:
-    executable = str(python or Path(sys.executable))
-    command = [executable, "-m", "camoufox", "version"]
-    result = subprocess.run(
-        command,
-        capture_output=True,
-        check=False,
-        text=True,
-        timeout=30,
-        **hidden_process_options(),
+    return browser_status(browser_root(), CAMOUFOX_BROWSER_VERSION)
+
+
+def setup_download_status() -> dict[str, Any]:
+    root = user_cache_root()
+    state: dict[str, Any] | None = None
+    try:
+        state = json.loads((root / "setup-state.json").read_text(encoding="utf-8"))
+    except (FileNotFoundError, json.JSONDecodeError):
+        pass
+    partials = []
+    downloads = root / "downloads"
+    if downloads.exists():
+        partials = [
+            {"name": item.name, "bytes": item.stat().st_size}
+            for item in sorted(downloads.glob("*.part"))
+        ]
+    owner_alive = bool(
+        state
+        and state.get("stage") not in {"complete", "failed"}
+        and process_identity(int(state.get("pid") or 0))
     )
-    output = (result.stdout + result.stderr).strip()
     return {
-        "available": result.returncode == 0,
-        "matches": result.returncode == 0 and f"v{CAMOUFOX_BROWSER_VERSION}" in output,
-        "expected": CAMOUFOX_BROWSER_VERSION,
-        "summary": output,
+        "state": state,
+        "owner_alive": owner_alive,
+        "partials": partials,
+        "repair_command": "doudou setup"
+        if not state or state.get("stage") == "failed"
+        else None,
     }
 
 
@@ -169,13 +182,13 @@ def doctor(data_root: Path, launch_probe: bool = False) -> dict[str, Any]:
         pointer = json.loads(current_pointer().read_text(encoding="utf-8"))
     except (FileNotFoundError, json.JSONDecodeError):
         pass
-    selected_dir = (
-        Path(pointer["path"])
-        if pointer and pointer.get("runtime_id") == RUNTIME_ID
-        else runtime_directory()
-    )
+    selected_dir = Path(pointer["path"]) if pointer and pointer.get("path") else runtime_directory()
     selected_python = venv_python(selected_dir)
-    current_environment = os.environ.get("DOUDOU_RUNTIME_ACTIVE") == RUNTIME_ID
+    selected_runtime_id = pointer.get("runtime_id") if pointer else RUNTIME_ID
+    process_active = (
+        os.environ.get("DOUDOU_RUNTIME_ACTIVE") == selected_runtime_id
+    )
+    pointer_active = bool(pointer and selected_python.exists())
     current_camoufox = package_version("camoufox")
     selected_camoufox = (
         environment_package_version(selected_python, "camoufox")
@@ -249,11 +262,12 @@ def doctor(data_root: Path, launch_probe: bool = False) -> dict[str, Any]:
             "supported": python_supported,
         },
         "runtime": {
-            "runtime_id": RUNTIME_ID,
+            "runtime_id": selected_runtime_id,
             "path": str(selected_dir),
             "python": str(selected_python),
             "exists": selected_python.exists(),
-            "active": current_environment,
+            "active": pointer_active,
+            "process_active": process_active,
         },
         "camoufox": {
             "expected": CAMOUFOX_PACKAGE_VERSION,
@@ -262,6 +276,7 @@ def doctor(data_root: Path, launch_probe: bool = False) -> dict[str, Any]:
             "matches": camoufox_matches,
         },
         "browser": browser,
+        "setup": setup_download_status(),
         "background_headed": launch,
         "filesystem": {
             "data_root": str(data_root),
@@ -270,167 +285,23 @@ def doctor(data_root: Path, launch_probe: bool = False) -> dict[str, Any]:
             "message": str(data_root / "message"),
         },
         "issues": issues,
-        "repair_command": "python <skill>/scripts/doudou.py setup" if issues else None,
+        "repair_command": "doudou setup" if issues else None,
     }
 
 
-def setup(skill_root: Path) -> dict[str, Any]:
-    root = runtime_root()
-    root.mkdir(parents=True, exist_ok=True)
-    final = runtime_directory()
-    previous: dict[str, Any] | None = None
-    try:
-        previous = json.loads(current_pointer().read_text(encoding="utf-8"))
-    except (FileNotFoundError, json.JSONDecodeError):
-        pass
-    temporary = Path(tempfile.mkdtemp(prefix=f".{RUNTIME_ID}-", dir=root))
-    stages: dict[str, str] = {}
-    rollback_id = f"setup-{utc_now().replace(':', '').replace('-', '')}"
-    rollback_path = user_cache_root() / "rollbacks" / f"{rollback_id}.json"
-    try:
-        venv.EnvBuilder(with_pip=True, clear=True).create(temporary)
-        stages["venv"] = "passed"
-        python = venv_python(temporary)
-        lock = skill_root / "scripts" / "requirements.lock"
-        install = subprocess.run(
-            [str(python), "-m", "pip", "install", "--require-hashes", "-r", str(lock)],
-            capture_output=True,
-            check=False,
-            text=True,
-            **hidden_process_options(),
-        )
-        if install.returncode:
-            raise RuntimeError(f"dependency install failed: {install.stderr[-3000:]}")
-        stages["dependencies"] = "passed"
-        set_result = subprocess.run(
-            [
-                str(python),
-                "-m",
-                "camoufox",
-                "set",
-                f"official/stable/{CAMOUFOX_BROWSER_VERSION}",
-            ],
-            capture_output=True,
-            check=False,
-            text=True,
-            **hidden_process_options(),
-        )
-        if set_result.returncode:
-            raise RuntimeError(f"browser selection failed: {set_result.stderr[-3000:]}")
-        fetch_result = subprocess.run(
-            [str(python), "-m", "camoufox", "fetch"],
-            capture_output=True,
-            check=False,
-            text=True,
-            **hidden_process_options(),
-        )
-        if fetch_result.returncode:
-            raise RuntimeError(f"browser fetch failed: {fetch_result.stderr[-3000:]}")
-        stages["browser"] = "passed"
-        version_check = browser_version(python)
-        launch_check = launch_browser_probe(python)
-        if (
-            environment_package_version(python, "camoufox") != CAMOUFOX_PACKAGE_VERSION
-            or not version_check["matches"]
-            or not launch_check["passed"]
-        ):
-            raise RuntimeError(
-                "new runtime failed the real package/browser launch verification"
-            )
-        stages["verification"] = "passed"
-        manifest = {
-            "schema": "doudou.runtime-install.v1",
-            "runtime_id": RUNTIME_ID,
-            "python": platform.python_version(),
-            "camoufox": CAMOUFOX_PACKAGE_VERSION,
-            "browser": CAMOUFOX_BROWSER_VERSION,
-            "installed_at": utc_now(),
-        }
-        atomic_write_json(temporary / "runtime.json", manifest)
-        replaced: str | None = None
-        if final.exists():
-            existing_python = venv_python(final)
-            existing_valid = (
-                existing_python.exists()
-                and environment_package_version(existing_python, "camoufox")
-                == CAMOUFOX_PACKAGE_VERSION
-                and browser_version(existing_python)["matches"]
-                and launch_browser_probe(existing_python)["passed"]
-            )
-            if existing_valid:
-                shutil.rmtree(temporary)
-                temporary = final
-            else:
-                replaced_path = final.with_name(f"{final.name}.replaced-{rollback_id}")
-                os.replace(final, replaced_path)
-                replaced = str(replaced_path)
-                os.replace(temporary, final)
-                temporary = final
-        else:
-            os.replace(temporary, final)
-            temporary = final
-        pointer = {
-            "schema": "doudou.runtime-pointer.v1",
-            "runtime_id": RUNTIME_ID,
-            "path": str(final),
-            "updated_at": utc_now(),
-        }
-        atomic_write_json(current_pointer(), pointer)
-        stages["switch"] = "passed"
-        rollback = {
-            "schema": "doudou.runtime-rollback.v1",
-            "rollback_id": rollback_id,
-            "completed_at": utc_now(),
-            "status": "switched",
-            "previous": previous,
-            "current": pointer,
-            "replaced_runtime": replaced,
-            "stages": stages,
-        }
-        atomic_write_json(rollback_path, rollback)
-        return {
-            "status": "ok",
-            "runtime": pointer,
-            "stages": stages,
-            "previous": previous,
-            "rollback_record": str(rollback_path),
-        }
-    except Exception as error:  # noqa: BLE001 - setup must always emit rollback evidence
-        if temporary.exists() and temporary != final:
-            shutil.rmtree(temporary, ignore_errors=True)
-        rollback = {
-            "schema": "doudou.runtime-rollback.v1",
-            "rollback_id": rollback_id,
-            "completed_at": utc_now(),
-            "status": "failed_before_switch",
-            "previous": previous,
-            "stages": stages,
-            "error_type": type(error).__name__,
-        }
-        atomic_write_json(rollback_path, rollback)
-        return {
-            "status": "failed",
-            "error": str(error),
-            "stages": stages,
-            "previous": previous,
-            "rollback_record": str(rollback_path),
-        }
-
-
 def reexec_in_runtime(argv: list[str]) -> bool:
-    if os.environ.get("DOUDOU_RUNTIME_ACTIVE") == RUNTIME_ID:
-        return True
     try:
         pointer = json.loads(current_pointer().read_text(encoding="utf-8"))
     except (FileNotFoundError, json.JSONDecodeError):
         return False
-    if pointer.get("runtime_id") != RUNTIME_ID:
-        return False
+    runtime_id = pointer.get("runtime_id")
+    if runtime_id and os.environ.get("DOUDOU_RUNTIME_ACTIVE") == runtime_id:
+        return True
     python = venv_python(Path(pointer["path"]))
     if not python.exists():
         return False
     environment = os.environ.copy()
-    environment["DOUDOU_RUNTIME_ACTIVE"] = RUNTIME_ID
+    environment["DOUDOU_RUNTIME_ACTIVE"] = str(runtime_id)
     if os.name == "nt":
         startupinfo = subprocess.STARTUPINFO()
         startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW

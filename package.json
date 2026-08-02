@@ -40,5 +40,8 @@
     "camoufox",
     "cli"
   ],
-  "license": "UNLICENSED"
+  "license": "UNLICENSED",
+  "dependencies": {
+    "undici": "^6.28.0"
+  }
 }

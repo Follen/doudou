@@ -1,0 +1,28 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "manual-evidence",
+  "role": "acceptance-evidence",
+  "status": "passed",
+  "bindings": {
+    "change": "harden-setup-identity-enrichment-and-updates",
+    "sourceRevision": 9,
+    "contractHash": "f5f099d3e4c79e2d4bb08db432beff2d7be1aeca3234a5e5d1f7dee7103a1d7d",
+    "scopeHash": "8de7730ab07abc8866aa417dd1325c3308b48117da6b0a92080304c045770c8f",
+    "snapshotHash": "ab7c2bca4af213e4c960a926b3d9e501f80dd7e32b75698b3a8aa09821db4c35",
+    "artifactHash": "b1f3a8adc2e1ca4adc05edf8a84fb186c5f6c6f50617408b2727a24fe69a6f3f"
+  },
+  "acceptanceIds": [
+    "acceptance-7dd0738c58991afde9170ccc8e96b7cd2cd851ab315e855966bd3b7901e9c749"
+  ],
+  "actor": "native-runtime:manual-evidence",
+  "issuedAt": "2026-08-02T18:32:51.847Z",
+  "evidence": {
+    "steps": [
+      "运行身份模型、存储迁移测试与现有 Profile 全量只读回归。"
+    ],
+    "observations": [
+      "身份与协议存储测试通过；真实读取覆盖群聊、私聊、图片、进群事件、视频、评论和回复；迁移重复运行幂等且空字段不降级。"
+    ]
+  },
+  "receiptHash": "91d7cc03b8ca8067bfd4a70ddf0616d840a5e850ac7c0ba4cec57df1d4be95fd"
+}

@@ -73,11 +73,11 @@ try {
   const normalPrefix = path.join(temporary, "normal-prefix");
   const normalHome = path.join(temporary, "normal-agent");
   const cacheRoot = path.join(temporary, "user-cache");
+  const doudouHome = path.join(cacheRoot, ".doudou");
   const managedEnvironment = {
     ...process.env,
     DOUDOU_AGENT_HOME: normalHome,
-    LOCALAPPDATA: cacheRoot,
-    XDG_CACHE_HOME: cacheRoot,
+    DOUDOU_HOME: doudouHome,
   };
   runNpm(["install", "-g", "--prefix", normalPrefix, tarball], {
     env: managedEnvironment,
@@ -94,7 +94,17 @@ try {
   if (normalVersion.stdout.trim() !== expectedVersion) {
     throw new Error(`Unexpected global CLI version: ${normalVersion.stdout}`);
   }
-  const runtimeRoot = path.join(cacheRoot, "doudou", "runtimes");
+  for (const alias of ["-v", "-version"]) {
+    const aliasVersion = runInstalled(
+      normalPrefix,
+      ["--skill-dir", normalSkill, alias],
+      { env: managedEnvironment },
+    );
+    if (aliasVersion.stdout.trim() !== expectedVersion) {
+      throw new Error(`Unexpected ${alias} output: ${aliasVersion.stdout}`);
+    }
+  }
+  const runtimeRoot = path.join(doudouHome, "runtimes");
   fs.mkdirSync(runtimeRoot, { recursive: true });
   fs.writeFileSync(path.join(runtimeRoot, "runtime.txt"), "managed runtime", "utf8");
   const project = path.join(temporary, "project");

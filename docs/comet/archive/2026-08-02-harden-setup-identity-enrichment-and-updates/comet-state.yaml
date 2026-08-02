@@ -1,0 +1,43 @@
+schema: comet.native.v3
+minimum_runtime_version: 3
+revision: 11
+verification_protocol: legacy-v1
+name: harden-setup-identity-enrichment-and-updates
+language: zh-CN
+phase: archive
+brief: brief.md
+approval: confirmed
+approved_contract_hash: f5f099d3e4c79e2d4bb08db432beff2d7be1aeca3234a5e5d1f7dee7103a1d7d
+spec_changes:
+  - capability: broker-auth-state
+    operation: create
+    source: specs/broker-auth-state/spec.md
+    base_hash: null
+  - capability: cli-version-and-update
+    operation: create
+    source: specs/cli-version-and-update/spec.md
+    base_hash: null
+  - capability: controlled-camoufox-download
+    operation: create
+    source: specs/controlled-camoufox-download/spec.md
+    base_hash: null
+  - capability: page-component-safety
+    operation: create
+    source: specs/page-component-safety/spec.md
+    base_hash: null
+  - capability: resilient-runtime-setup
+    operation: create
+    source: specs/resilient-runtime-setup/spec.md
+    base_hash: null
+  - capability: user-identity-enrichment
+    operation: create
+    source: specs/user-identity-enrichment/spec.md
+    base_hash: null
+verification_result: pass
+verification_report: verification.md
+implementation_scope: runtime/evidence/scopes/8de7730ab07abc8866aa417dd1325c3308b48117da6b0a92080304c045770c8f.json
+verification_evidence: runtime/evidence/verifications/7c3081223081dbbbedb0e6b654754a0f8efb2a059d0c9ea2b5bb7abe6fc29bf2.json
+partial_allowance: null
+archived: true
+created_at: 2026-08-02
+run_id: e38942ae-affc-487f-b617-c39c0a524774

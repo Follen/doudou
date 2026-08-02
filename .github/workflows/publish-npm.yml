@@ -43,6 +43,19 @@ jobs:
         run: npm run test:pack
       - name: Test global, npx, and ignore-scripts installs
         run: npm run test:install
+      - name: Cache Doudou downloads and dedicated browser
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ runner.temp }}/doudou-home/downloads
+            ${{ runner.temp }}/doudou-home/browsers
+          key: doudou-runtime-${{ runner.os }}-${{ hashFiles('doudou/scripts/runtime-manifest.json') }}
+      - name: Run managed runtime setup and browser launch probe
+        run: |
+          node npm/bin/doudou.mjs setup
+          node npm/bin/doudou.mjs --data-root "${{ runner.temp }}/doudou-project" doctor --launch-probe
+        env:
+          DOUDOU_HOME: ${{ runner.temp }}/doudou-home
       - name: Run Python tests
         run: python -m pytest docs/verification/tests -q
         env:

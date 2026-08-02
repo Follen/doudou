@@ -19,7 +19,7 @@ async def parse_result(
     return parse_json_response(
         result,
         codes=codes,
-        authenticated=bool(login.get("authenticated_cookie_count")),
+        authenticated=bool(login.get("valid")),
         verification_visible=bool(login.get("verification_visible")),
         operation=operation,
     )

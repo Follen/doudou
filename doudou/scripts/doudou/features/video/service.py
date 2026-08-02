@@ -180,8 +180,15 @@ async def execute_interaction(
         readback = await _protocol_recheck(
             session, data_root, profile, operation, plan, result
         )
+        if operation in {"video.comment.create", "video.comment.reply"}:
+            readback["authoritative"] = False
+            readback["reason"] = (
+                None
+                if readback["passed"]
+                else "ranked_comment_list_did_not_include_the_new_comment"
+            )
         result.setdefault("verification", {})["protocol_recheck"] = readback
-        if not readback["passed"]:
+        if operation == "video.comment.like" and not readback["passed"]:
             files = write_receipt(
                 data_root,
                 profile,

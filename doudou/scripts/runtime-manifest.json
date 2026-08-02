@@ -1,9 +1,44 @@
 {
-  "schema": "doudou.runtime-manifest.v1",
-  "python": ">=3.10,<4.0",
+  "schema": "doudou.runtime-manifest.v2",
+  "runtime_contract": "2026-08-02.2",
+  "python": {
+    "version": "3.12.13",
+    "release": "20260728",
+    "assets": {
+      "win32-x64": {
+        "url": "https://github.com/astral-sh/python-build-standalone/releases/download/20260728/cpython-3.12.13%2B20260728-x86_64-pc-windows-msvc-install_only_stripped.tar.gz",
+        "size": 21932566,
+        "sha256": "242b94b37682ac55f9bf9eb624348dc8d17c64f74f56028104545ea3ffe35e26"
+      },
+      "linux-x64": {
+        "url": "https://github.com/astral-sh/python-build-standalone/releases/download/20260728/cpython-3.12.13%2B20260728-x86_64-unknown-linux-gnu-install_only_stripped.tar.gz",
+        "size": 34175396,
+        "sha256": "7ceaf4360f4b4ab44f31d8217cfdc70df8e12b61d9561b4900ee7af87176e50d"
+      }
+    }
+  },
   "camoufox_package": "0.5.4",
   "camoufox_browser": "official/stable/152.0.4-beta.28",
-  "camoufox_browser_sha256": "386fc2f41139685f9a1a9cef0d024bc041d899c315ea538d561171b5b282e57d",
+  "camoufox_assets": {
+    "win32-x64": {
+      "url": "https://github.com/daijro/camoufox/releases/download/v152.0.4-beta.28/camoufox-152.0.4-beta.28-win.x86_64.zip",
+      "size": 492370020,
+      "sha256": "386fc2f41139685f9a1a9cef0d024bc041d899c315ea538d561171b5b282e57d"
+    },
+    "linux-x64": {
+      "url": "https://github.com/daijro/camoufox/releases/download/v152.0.4-beta.28/camoufox-152.0.4-beta.28-lin.x86_64.zip",
+      "size": 663387175,
+      "sha256": "924f3109ccd6d47cd6a0384d67a345fadf975d48b6319f8dbbd5954c588982bd"
+    }
+  },
+  "download": {
+    "connect_timeout_seconds": 15,
+    "stall_timeout_seconds": 90,
+    "total_timeout_seconds": 2700,
+    "heartbeat_seconds": 5,
+    "attempts": 3,
+    "backoff_seconds": [1, 3, 10]
+  },
   "broker_idle_seconds": 1200,
   "windows_mode": "hidden_headed",
   "linux_mode": "virtual_headed"

@@ -1,0 +1,11 @@
+{
+  "schema": "comet.native.archive-cas.v1",
+  "operationId": "spec-3-controlled-camoufox-download",
+  "role": "post",
+  "hash": "f2e7bb393894bcdd03309374045ee274a8984595910142f3be20933c2f0dc849",
+  "identity": {
+    "dev": 2421791372,
+    "ino": 5066549584566316,
+    "birthtimeMs": 1785695940276.3591
+  }
+}

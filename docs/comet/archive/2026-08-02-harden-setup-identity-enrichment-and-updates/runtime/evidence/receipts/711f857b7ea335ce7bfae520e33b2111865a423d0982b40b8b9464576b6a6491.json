@@ -1,0 +1,28 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "manual-evidence",
+  "role": "acceptance-evidence",
+  "status": "passed",
+  "bindings": {
+    "change": "harden-setup-identity-enrichment-and-updates",
+    "sourceRevision": 9,
+    "contractHash": "f5f099d3e4c79e2d4bb08db432beff2d7be1aeca3234a5e5d1f7dee7103a1d7d",
+    "scopeHash": "8de7730ab07abc8866aa417dd1325c3308b48117da6b0a92080304c045770c8f",
+    "snapshotHash": "ab7c2bca4af213e4c960a926b3d9e501f80dd7e32b75698b3a8aa09821db4c35",
+    "artifactHash": "b1f3a8adc2e1ca4adc05edf8a84fb186c5f6c6f50617408b2727a24fe69a6f3f"
+  },
+  "acceptanceIds": [
+    "acceptance-ac2b51569e70305c9ae1f408a120f40efdf2d2e1217d132bcca5f36325b8c464"
+  ],
+  "actor": "native-runtime:manual-evidence",
+  "issuedAt": "2026-08-02T18:33:01.413Z",
+  "evidence": {
+    "steps": [
+      "运行组件几何测试、聊天与视频 Page Doctor 及授权真实写回归。"
+    ],
+    "observations": [
+      "三级组件测试通过；聊天和视频适配器 compatible；文字、引用、图片、聊天点赞、视频评论、回复和点赞均单次成功并获服务端回执。"
+    ]
+  },
+  "receiptHash": "711f857b7ea335ce7bfae520e33b2111865a423d0982b40b8b9464576b6a6491"
+}

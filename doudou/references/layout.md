@@ -1,6 +1,6 @@
 # Runtime layout
 
-所有路径相对调用项目的数据根，默认是当前目录。Skill 和共享 venv 不保存业务数据。Skill 本身也不包含 venv、Python 包或浏览器二进制。
+所有路径相对调用项目的数据根，默认是当前目录。Skill 和用户级 runtime 不保存业务数据。Skill 本身也不包含 venv、Python 包或浏览器二进制。
 
 ```text
 profile/<profile>/
@@ -48,6 +48,6 @@ message/profiles/<profile>/
 
 `kind` 为 `group` 或 `direct`。所有 JSON/JSONL 使用原子替换；不完整 JSONL 会停止覆盖。回执与诊断不保存 Cookie、token、动态签名、上传凭证或完整签名 URL。
 
-用户级运行时位于 `%LOCALAPPDATA%/doudou/runtimes/`（Windows）或 `${XDG_CACHE_HOME:-~/.cache}/doudou/runtimes/`（Linux）；Camoufox 浏览器保存在 Camoufox 的用户级缓存中。这些目录不进入调用项目或 Skill 包。
+用户级安装默认位于 `~/.doudou/`，可由 `DOUDOU_HOME` 覆盖：`runtimes/` 保存专用 Python/venv，`browsers/` 保存专用 Camoufox，`downloads/` 保存受控下载。它们不进入调用项目或 Skill 包。
 
 旧 Chromium Profile 不和 Camoufox 数据库合并。首次使用时整个目录原子改名为 `profile/<name>__chromium-backup-<UTC>/`，随后创建同名 Camoufox Profile；`message/profiles/<name>/` 保持不变。

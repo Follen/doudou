@@ -1,18 +1,22 @@
 # CLI reference
 
-将 `<cli>` 替换为 `python <skill-directory>/scripts/doudou.py`。所有命令从用户项目运行。
+将 `<cli>` 替换为 `doudou`；PATH 中尚无全局命令时使用 `npx --yes @follenfang/doudou`。所有命令从用户项目运行。
 
 ## Environment and profiles
 
 ```text
 <cli> doctor
 <cli> setup
+<cli> update --check
+<cli> update
 <cli> profile list
 <cli> profile create --profile <name>
 <cli> profile login --profile <name>
 <cli> session status --profile <name>
 <cli> session refresh --profile <name>
 ```
+
+`session status` 会分别报告账号登录、可见验证组件、IM 初始化捕获和人工接管状态。账号已登录但 IM 捕获缺失时，应刷新当前会话初始化；不要把 `IM_CAPTURE_MISSING` 或 `IM_INITIALIZATION_MISSING` 当成重新登录。
 
 ## Conversations and messages
 
@@ -30,7 +34,6 @@
 
 ```text
 <cli> protocol send --profile <name> --recipient <conversation> --text <text>
-<cli> protocol send --profile <name> --recipient <group> --text <text> --at <member>
 <cli> protocol send --profile <name> --recipient <conversation> --image <path>
 <cli> protocol reply --profile <name> --recipient <conversation> --message <message-id-or-text> --text <text>
 <cli> chat like --profile <name> --conversation <conversation> --message <message-id-or-text>
@@ -57,6 +60,7 @@
 
 ```text
 <cli> identity resolve --profile <name> --douyin-id <douyin-id>
+<cli> identity migrate --profile <name>
 <cli> videos collect --profile <name> --douyin-id <douyin-id>
 <cli> video collect --profile <name> --sec-uid <sec-uid> --aweme-id <video-id>
 ```

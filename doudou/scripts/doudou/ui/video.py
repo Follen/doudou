@@ -80,13 +80,9 @@ async def comment_write(
         await page.wait_for_timeout(500)
     composer = VideoCommentComposerComponent(page, focused=operation == "video.comment.reply")
     if operation == "video.comment.create":
-        container = await composer.container()
-        await container.click()
-        operations += 1
+        operations += await composer.activate()
     editor = await composer.insert_text(payload["text"])
-    composed = await editor.evaluate(
-        "element => 'value' in element ? element.value : (element.innerText || element.textContent || '')"
-    )
+    composed = await composer.composed_text(editor)
     if composed.translate({ord(char): None for char in SENTINELS}) != payload["text"]:
         raise DoudouError(
             "COMPOSER_PLAN_MISMATCH",
@@ -96,10 +92,13 @@ async def comment_write(
     capture = NetworkCapture(page, ("/aweme/v1/web/comment/",))
     capture.start()
     try:
-        await (await composer.send_control()).click()
-        operations += 3
+        operations += await composer.publish()
+        operations += 2
         for _ in range(250):
-            if capture.responses:
+            if any(
+                response_path.rstrip("/") == publish_path.rstrip("/")
+                for response_path, _body in capture.response_bodies
+            ):
                 break
             await page.wait_for_timeout(100)
         verification_visible = await session._verification_visible()
@@ -167,15 +166,13 @@ async def like_comment(session: BrowserSession, plan: dict[str, Any]) -> dict[st
             "dom_operations": operations,
             "verification": {"passed": True, "already_liked": True},
         }
-    control = await component.like_control(
-        item, int(payload["comment"].get("digg_count") or 0)
-    )
     digg_path = WEB_PROTOCOL.path("comment_digg")
     capture = NetworkCapture(page, (digg_path,), exact_paths=True)
     capture.start()
     try:
-        await control.click()
-        operations += 1
+        operations += await component.like(
+            item, int(payload["comment"].get("digg_count") or 0)
+        )
         for _ in range(200):
             if capture.responses:
                 break

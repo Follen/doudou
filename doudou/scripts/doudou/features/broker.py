@@ -61,7 +61,7 @@ async def dispatch(
             browser, data_root, profile, params["operation"], params
         )
     if command == "page.doctor":
-        return await page_doctor(browser, data_root, profile)
+        return await page_doctor(browser, data_root, profile, params)
     if command == "protocol.capture":
         return await protocol_capture(
             browser, data_root, profile, float(params.get("timeout_seconds") or 600)

@@ -1,0 +1,28 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "manual-evidence",
+  "role": "acceptance-evidence",
+  "status": "passed",
+  "bindings": {
+    "change": "harden-setup-identity-enrichment-and-updates",
+    "sourceRevision": 9,
+    "contractHash": "f5f099d3e4c79e2d4bb08db432beff2d7be1aeca3234a5e5d1f7dee7103a1d7d",
+    "scopeHash": "8de7730ab07abc8866aa417dd1325c3308b48117da6b0a92080304c045770c8f",
+    "snapshotHash": "ab7c2bca4af213e4c960a926b3d9e501f80dd7e32b75698b3a8aa09821db4c35",
+    "artifactHash": "b1f3a8adc2e1ca4adc05edf8a84fb186c5f6c6f50617408b2727a24fe69a6f3f"
+  },
+  "acceptanceIds": [
+    "acceptance-3bdb11fa310ac7e9b14a22379fae69fe15a81e86a7c4fc300dfd863a516fc21c"
+  ],
+  "actor": "native-runtime:manual-evidence",
+  "issuedAt": "2026-08-02T18:32:41.128Z",
+  "evidence": {
+    "steps": [
+      "运行受控下载故障矩阵、缓存与真实浏览器启动探针。"
+    ],
+    "observations": [
+      "Range、无 Range、停滞、代理、TLS、磁盘、哈希、并发和中断测试通过；真实 Camoufox 版本与哈希匹配且 launch probe 通过。"
+    ]
+  },
+  "receiptHash": "153cb77fc54936b0d6803752e7df1aee6a06942caffad86ba82b2a0a21313edd"
+}

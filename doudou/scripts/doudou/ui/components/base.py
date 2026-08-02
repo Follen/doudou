@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections.abc import Awaitable, Callable
 from typing import Any, Literal
 
 from ...common.errors import DoudouError
@@ -70,6 +71,7 @@ async def require_target(
     relation: Literal["above", "below", "left_of", "right_of"] | None = None,
     max_anchor_distance: float | None = None,
     filter_by_geometry: bool = False,
+    scope_tolerance: int = 2,
 ) -> Any:
     total_count = min(await locator.count(), 40)
     candidates = await visible_candidates(locator)
@@ -82,7 +84,8 @@ async def require_target(
             if not _valid_box(box):
                 continue
             if scope is not None and (
-                not _valid_box(scope_box) or not _contains(scope_box, box)
+                not _valid_box(scope_box)
+                or not _contains(scope_box, box, tolerance=scope_tolerance)
             ):
                 continue
             if anchor is not None:
@@ -154,7 +157,8 @@ async def require_target(
             geometry_reason="target_box_missing",
         )
     if scope is not None and (
-        not _valid_box(scope_box) or not _contains(scope_box, target_box)
+        not _valid_box(scope_box)
+        or not _contains(scope_box, target_box, tolerance=scope_tolerance)
     ):
         raise _drift(
             "The page component target is outside its confirmed local scope.",
@@ -311,3 +315,72 @@ async def component_probe(
         "geometry_valid": geometry_valid,
         "geometry_reason": reason,
     }
+
+
+def not_exercised_probe(
+    *,
+    component: str,
+    version: str,
+    capability: str,
+    strategy: str,
+    reason: str,
+) -> dict[str, Any]:
+    return {
+        "component": component,
+        "component_version": version,
+        "capability": capability,
+        "exercised": False,
+        "status": "not_exercised",
+        "strategy": strategy,
+        "reason": reason,
+    }
+
+
+async def resolution_probe(
+    resolver: Callable[[], Awaitable[Any]],
+    *,
+    component: str,
+    version: str,
+    capability: str,
+    strategy: str,
+    exercised: bool,
+    not_exercised_reason: str,
+) -> dict[str, Any]:
+    if not exercised:
+        return not_exercised_probe(
+            component=component,
+            version=version,
+            capability=capability,
+            strategy=strategy,
+            reason=not_exercised_reason,
+        )
+    try:
+        target = await resolver()
+        box = await target.bounding_box()
+        enabled = await target.is_enabled()
+        return {
+            "component": component,
+            "component_version": version,
+            "capability": capability,
+            "exercised": True,
+            "status": "ok",
+            "strategy": strategy,
+            "candidate_count": 1,
+            "visible_count": 1,
+            "enabled_count": int(enabled),
+            "unique": True,
+            "geometry_valid": _valid_box(box),
+            "geometry_reason": None,
+        }
+    except DoudouError as error:
+        if error.code != "PAGE_ADAPTER_DRIFTED":
+            raise
+        return {
+            "component": component,
+            "component_version": version,
+            "capability": capability,
+            "exercised": True,
+            "status": "drifted",
+            "strategy": strategy,
+            **error.details,
+        }

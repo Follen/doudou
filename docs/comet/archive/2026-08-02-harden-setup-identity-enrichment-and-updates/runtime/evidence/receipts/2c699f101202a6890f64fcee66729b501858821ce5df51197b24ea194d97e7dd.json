@@ -1,0 +1,28 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "manual-evidence",
+  "role": "acceptance-evidence",
+  "status": "passed",
+  "bindings": {
+    "change": "harden-setup-identity-enrichment-and-updates",
+    "sourceRevision": 9,
+    "contractHash": "f5f099d3e4c79e2d4bb08db432beff2d7be1aeca3234a5e5d1f7dee7103a1d7d",
+    "scopeHash": "8de7730ab07abc8866aa417dd1325c3308b48117da6b0a92080304c045770c8f",
+    "snapshotHash": "ab7c2bca4af213e4c960a926b3d9e501f80dd7e32b75698b3a8aa09821db4c35",
+    "artifactHash": "b1f3a8adc2e1ca4adc05edf8a84fb186c5f6c6f50617408b2727a24fe69a6f3f"
+  },
+  "acceptanceIds": [
+    "acceptance-942ae41d6bc3085ac29b0d42ed523d111406639cd601707fa6162456ce07f27e"
+  ],
+  "actor": "native-runtime:manual-evidence",
+  "issuedAt": "2026-08-02T18:32:56.189Z",
+  "evidence": {
+    "steps": [
+      "运行 CLI 版本、update、全局安装、npx 与回滚测试。"
+    ],
+    "observations": [
+      "Node 全量 52 项通过；update 专项 9 项通过；三个版本别名均输出 0.0.2；真实只读检查未降级安装。"
+    ]
+  },
+  "receiptHash": "2c699f101202a6890f64fcee66729b501858821ce5df51197b24ea194d97e7dd"
+}

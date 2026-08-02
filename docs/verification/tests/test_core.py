@@ -1,10 +1,17 @@
 from __future__ import annotations
 
+import os
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
-from doudou.common.core import atomic_write_jsonl, read_jsonl, safe_segment
+from doudou.common.core import (
+    atomic_write_jsonl,
+    read_jsonl,
+    resolve_data_root,
+    safe_segment,
+)
 from doudou.common.errors import DoudouError
 
 
@@ -23,6 +30,16 @@ class CoreTests(unittest.TestCase):
             with self.assertRaises(DoudouError) as context:
                 read_jsonl(filename)
             self.assertEqual(context.exception.code, "INCOMPLETE_JSONL_LINE")
+
+    def test_doudou_home_does_not_change_the_project_data_root(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            previous = Path.cwd()
+            try:
+                os.chdir(directory)
+                with patch.dict(os.environ, {"DOUDOU_HOME": str(Path(directory) / "runtime")}):
+                    self.assertEqual(resolve_data_root(), Path(directory).resolve())
+            finally:
+                os.chdir(previous)
 
 
 if __name__ == "__main__":

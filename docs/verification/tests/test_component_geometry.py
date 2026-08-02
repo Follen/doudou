@@ -40,7 +40,9 @@ class FakeLocator:
         return self.items[index]
 
 
-def box(x: float, y: float, width: float = 20, height: float = 20) -> dict[str, float]:
+def box(
+    x: float, y: float, width: float = 20, height: float = 20
+) -> dict[str, float]:
     return {"x": x, "y": y, "width": width, "height": height}
 
 
@@ -108,6 +110,26 @@ class ComponentGeometryTests(unittest.IsolatedAsyncioTestCase):
             scope=FakeElement(box(0, 0, 300, 100)),
         )
 
+    async def test_component_specific_scope_tolerance_remains_bounded(self) -> None:
+        scope = FakeElement(box(214, 100, 100, 30))
+        css_overflow = FakeElement(box(211, 100, 100, 20))
+        resolved = await require_target(
+            FakeLocator(css_overflow),
+            component="video-comment-item",
+            version="test.v1",
+            capability="video.comment.like",
+            strategy="comment-item-local stats container",
+            scope=scope,
+            scope_tolerance=4,
+        )
+        self.assertIs(resolved, css_overflow)
+        await self.assert_drift(
+            FakeLocator(FakeElement(box(209, 100, 100, 20))),
+            "outside_local_scope",
+            scope=scope,
+            scope_tolerance=4,
+        )
+
     async def test_wrong_relative_position_fails_closed(self) -> None:
         target = FakeElement(box(200, 20))
         await self.assert_drift(
@@ -118,20 +140,19 @@ class ComponentGeometryTests(unittest.IsolatedAsyncioTestCase):
             minimum_peer_count=2,
         )
 
-    async def test_anchor_filter_selects_only_local_mention_candidate(self) -> None:
-        editor = FakeElement(box(200, 500, 400, 50))
+    async def test_anchor_filter_selects_only_local_candidate(self) -> None:
+        anchor = FakeElement(box(200, 500, 400, 50))
         local = FakeElement(box(220, 400, 120, 30))
         unrelated = FakeElement(box(40, 40, 120, 30))
         resolved = await require_target(
             FakeLocator(unrelated, local),
-            component="chat-composer",
+            component="fixture-component",
             version="test.v1",
-            capability="chat.mention",
-            strategy="exact label -> composer-bounded candidate",
-            require_enabled=True,
-            anchor=editor,
+            capability="fixture.action",
+            strategy="anchor -> local candidate",
+            anchor=anchor,
             relation="above",
-            max_anchor_distance=450,
+            max_anchor_distance=300,
             filter_by_geometry=True,
         )
         self.assertIs(resolved, local)
@@ -148,7 +169,6 @@ class ComponentGeometryTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(report["status"], "drifted")
         self.assertFalse(report["geometry_valid"])
         self.assertEqual(report["geometry_reason"], "target_box_missing")
-
 
 if __name__ == "__main__":
     unittest.main()

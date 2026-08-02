@@ -190,6 +190,8 @@ def list_profiles(data_root: Path) -> list[dict[str, Any]]:
             continue
         metadata = read_json(entry / "profile.json", optional=True)
         if metadata:
+            if entry.name != str(metadata.get("profile_id") or ""):
+                continue
             paths = stored_profile_paths(data_root, str(metadata["profile_id"]))
             conversation_index = read_json(
                 paths.message / "conversations.json", optional=True

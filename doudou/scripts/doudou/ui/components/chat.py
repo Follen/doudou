@@ -1,39 +1,164 @@
 from __future__ import annotations
 
-import contextlib
+import asyncio
 from pathlib import Path
 from typing import Any
 
 from ...common.errors import DoudouError
-from .base import component_probe, require_target, unique_visible, visible_candidates
+from ..adapters import CHAT_ADAPTER
+from .base import (
+    component_probe,
+    not_exercised_probe,
+    require_target,
+    resolution_probe,
+    unique_visible,
+    visible_candidates,
+)
 
 
 class ConversationListComponent:
     name = "conversation-list"
-    version = "2026-08-02.2"
+    version = "2026-08-02.3"
 
     def __init__(self, page: Any) -> None:
         self.page = page
 
-    async def open(self, display_name: str) -> int:
-        matches = self.page.get_by_text(display_name, exact=True)
-        with contextlib.suppress(Exception):
-            await matches.first.wait_for(state="visible", timeout=15_000)
-        target = await require_target(
-            matches,
+    async def _container(self) -> Any:
+        return await require_target(
+            CHAT_ADAPTER.locator(self.page, "conversation_list"),
             component=self.name,
             version=self.version,
-            capability="chat.conversation.open",
-            strategy="exact visible conversation label after bounded render wait",
-            require_enabled=True,
+            capability="chat.conversation.list",
+            strategy="versioned conversation-list container with data-e2e items",
+            scope=self.page.locator("body"),
         )
+
+    async def _items(self) -> tuple[Any, list[Any], int]:
+        container = await self._container()
+        locator = container.locator(CHAT_ADAPTER.selectors["session_candidates"])
+        items = await visible_candidates(locator)
+        return container, items, min(await locator.count(), 100)
+
+    async def evidence(self, wait_seconds: float = 0) -> dict[str, Any]:
+        deadline = asyncio.get_running_loop().time() + wait_seconds
+        while True:
+            try:
+                _container, items, total = await self._items()
+                loaded = bool(items)
+                container_count = 1
+            except DoudouError:
+                items, total, loaded, container_count = [], 0, False, 0
+            if loaded or asyncio.get_running_loop().time() >= deadline:
+                break
+            await self.page.wait_for_timeout(250)
+        return {
+            "chat_route": str(self.page.url).startswith("https://www.douyin.com/chat"),
+            "loaded": loaded,
+            "candidate_count": total,
+            "left_region_count": len(items),
+            "container_count": container_count,
+            "component": self.name,
+            "component_version": self.version,
+            "strategy": "unique versioned conversation list -> local data-e2e items",
+        }
+
+    async def open(self, display_name: str) -> int:
+        deadline = asyncio.get_running_loop().time() + 15
+        target = None
+        diagnostics = {"candidate_count": 0, "visible_count": 0}
+        while asyncio.get_running_loop().time() < deadline:
+            try:
+                container, items, total_items = await self._items()
+            except DoudouError as error:
+                if error.code != "PAGE_ADAPTER_DRIFTED":
+                    raise
+                if error.details.get("candidate_count") or error.details.get(
+                    "visible_count"
+                ):
+                    raise
+                diagnostics = {
+                    "candidate_count": 0,
+                    "visible_count": 0,
+                    "matching_items": 0,
+                    "render_state": "conversation_list_pending",
+                }
+                await self.page.wait_for_timeout(250)
+                continue
+            matches: list[Any] = []
+            for item in items:
+                labels = await visible_candidates(
+                    item.get_by_text(display_name, exact=True), limit=5
+                )
+                if len(labels) == 1:
+                    matches.append(item)
+            diagnostics = {
+                "candidate_count": total_items,
+                "visible_count": len(items),
+                "matching_items": len(matches),
+            }
+            if len(matches) == 1:
+                target = await require_target(
+                    matches[0],
+                    component=self.name,
+                    version=self.version,
+                    capability="chat.conversation.open",
+                    strategy="versioned session items -> left list region -> exact protocol label",
+                    require_enabled=True,
+                    scope=container,
+                )
+                break
+            if len(matches) > 1:
+                break
+            await container.evaluate(
+                "element => { const before=element.scrollTop; element.scrollBy(0, Math.max(300, element.clientHeight * 0.7)); return element.scrollTop !== before; }"
+            )
+            await self.page.wait_for_timeout(250)
+        if target is None:
+            raise DoudouError(
+                "PAGE_ADAPTER_DRIFTED",
+                "The left conversation list did not resolve the protocol-selected target.",
+                {
+                    "component": self.name,
+                    "component_version": self.version,
+                    "capability": "chat.conversation.open",
+                    "strategy": "versioned session items -> left list region -> exact protocol label",
+                    **diagnostics,
+                    "geometry_reason": "left_list_target_not_unique",
+                },
+            )
+        class_name = str(await target.get_attribute("class") or "")
+        if "conversationConversationItemcurConversation" in class_name:
+            return 0
         await target.click(timeout=15_000)
         return 1
+
+    async def probe(self, exercised: bool = True) -> dict[str, Any]:
+        if not exercised:
+            return not_exercised_probe(
+                component=self.name,
+                version=self.version,
+                capability="chat.conversation.open",
+                strategy="unique conversation list -> local data-e2e items",
+                reason="chat_route_not_open",
+            )
+        evidence = await self.evidence(wait_seconds=15)
+        return {
+            **evidence,
+            "capability": "chat.conversation.open",
+            "exercised": True,
+            "status": "ok" if evidence["loaded"] else "drifted",
+            "visible_count": evidence["left_region_count"],
+            "unique": evidence["container_count"] == 1,
+            "geometry_valid": evidence["container_count"] == 1,
+            "geometry_reason": None
+            if evidence["loaded"]
+            else "left_list_not_loaded",
+        }
 
 
 class ChatComposerComponent:
     name = "chat-composer"
-    version = "2026-08-02.2"
+    version = "2026-08-03.1"
     composer_selector = '[data-e2e="msg-input"] [contenteditable="true"]'
     container_xpath = (
         "xpath=ancestor::div[contains(@class,'messageMsgInputinputRow')][1]"
@@ -66,6 +191,16 @@ class ChatComposerComponent:
             scope=self.page.locator("body"),
         )
 
+    async def root(self) -> Any:
+        return await require_target(
+            self.page.locator('[data-e2e="msg-input"]'),
+            component=self.name,
+            version=self.version,
+            capability="chat.compose",
+            strategy="unique data-e2e msg-input root",
+            scope=self.page.locator("body"),
+        )
+
     async def send_control(self) -> Any:
         container = await self.container()
         return await require_target(
@@ -81,11 +216,27 @@ class ChatComposerComponent:
             minimum_peer_count=2,
         )
 
+    async def send(self) -> int:
+        await (await self.send_control()).click(timeout=15_000)
+        return 1
+
     async def clear(self) -> Any:
         editor = await self.editor()
-        await editor.click(timeout=10_000)
-        await editor.press("Control+A", timeout=10_000)
-        await editor.press("Backspace", timeout=10_000)
+        await editor.click(timeout=5_000)
+        await editor.press("Control+A", timeout=5_000)
+        await editor.press("Backspace", timeout=5_000)
+        if await self.text():
+            raise DoudouError(
+                "PAGE_ADAPTER_DRIFTED",
+                "The confirmed chat composer did not clear.",
+                {
+                    "component": self.name,
+                    "component_version": self.version,
+                    "capability": "chat.compose.clear",
+                    "strategy": "unique contenteditable -> semantic fill empty -> state check",
+                    "geometry_reason": "composer_clear_state_mismatch",
+                },
+            )
         return editor
 
     async def insert_text(self, text: str) -> Any:
@@ -93,29 +244,10 @@ class ChatComposerComponent:
         await editor.press_sequentially(text, delay=35, timeout=30_000)
         return editor
 
-    async def select_mention(self, name: str) -> int:
-        editor = await self.editor()
-        await editor.press("@", timeout=10_000)
-        await self.page.wait_for_timeout(800)
-        match = await require_target(
-            self.page.get_by_text(name, exact=True),
-            component=self.name,
-            version=self.version,
-            capability="chat.mention",
-            strategy="exact member label -> composer-bounded mention candidate",
-            require_enabled=True,
-            anchor=editor,
-            relation="above",
-            max_anchor_distance=450,
-            filter_by_geometry=True,
-        )
-        await match.click(timeout=10_000)
-        return 2
-
     async def text(self) -> str:
         editor = await self.editor()
         return (
-            (await editor.inner_text())
+            (await editor.inner_text(timeout=5_000))
             .replace("\r\n", "\n")
             .rstrip("\n")
             .translate(
@@ -133,10 +265,26 @@ class ChatComposerComponent:
             exercised=exercised,
         )
 
+    async def operation_probes(
+        self,
+        exercised: bool,
+    ) -> list[dict[str, Any]]:
+        composer = await self.probe(exercised)
+        send = await resolution_probe(
+            self.send_control,
+            component=self.name,
+            version=self.version,
+            capability="chat.send",
+            strategy="composer -> local input row -> rightmost send control",
+            exercised=exercised,
+            not_exercised_reason="conversation_not_selected",
+        )
+        return [composer, send]
+
 
 class MessageItemComponent:
     name = "chat-message-item"
-    version = "2026-08-02.2"
+    version = "2026-08-03.1"
     item_selector = '[data-e2e="msg-item-content"]'
 
     def __init__(self, page: Any) -> None:
@@ -191,13 +339,15 @@ class MessageItemComponent:
 
     async def menu_action(self, item: Any, label: str, capability: str) -> int:
         await item.click(button="right", timeout=15_000)
+        menu = await self.context_menu(item, capability)
         action = await require_target(
-            self.page.get_by_text(label, exact=True),
+            menu.get_by_text(label, exact=True),
             component=self.name,
             version=self.version,
             capability=capability,
-            strategy="message-local context menu semantic label",
+            strategy="target message -> versioned local action popup -> exact semantic action",
             require_enabled=True,
+            scope=menu,
             anchor=item,
             max_anchor_distance=600,
             filter_by_geometry=True,
@@ -205,14 +355,40 @@ class MessageItemComponent:
         await action.click(timeout=15_000)
         return 2
 
+    async def context_menu(self, item: Any, capability: str) -> Any:
+        menu = await require_target(
+            CHAT_ADAPTER.locator(self.page, "message_context_menu"),
+            component=self.name,
+            version=self.version,
+            capability=capability,
+            strategy="target message -> unique versioned local action popup",
+            anchor=item,
+            max_anchor_distance=700,
+            filter_by_geometry=True,
+        )
+        return menu
+
+    async def context_menu_probe(self) -> dict[str, Any]:
+        visible = await visible_candidates(
+            CHAT_ADAPTER.locator(self.page, "message_context_menu")
+        )
+        return not_exercised_probe(
+            component=self.name,
+            version=self.version,
+            capability="chat.message.context_menu",
+            strategy="target message -> versioned local action popup",
+            reason="context_menu_not_open" if not visible else "target_message_not_bound",
+        )
+
 
 class ImagePreviewComponent:
     name = "chat-image-preview"
-    version = "2026-08-02.2"
+    version = "2026-08-03.1"
     upload_selector = '[role="button"].semi-upload-add'
 
     def __init__(self, page: Any) -> None:
         self.page = page
+        self.source: Path | None = None
 
     def candidates(self) -> Any:
         return self.page.locator('[data-e2e="msg-input"]').locator(
@@ -256,28 +432,75 @@ class ImagePreviewComponent:
         async with self.page.expect_file_chooser(timeout=10_000) as chooser_info:
             await upload.click(timeout=10_000)
         await (await chooser_info.value).set_files(str(source))
+        self.source = source
         return 2
 
     async def send(self) -> int:
-        actions = self.page.get_by_text("发送", exact=True)
-        action = await require_target(
-            actions,
+        preview = await self.preview()
+        image = await require_target(
+            preview.locator("img"),
             component=self.name,
             version=self.version,
             capability="chat.image.send",
-            strategy="semantic send label -> unique visible preview action",
-            require_enabled=True,
+            strategy="preview dialog -> unique visible image",
+            scope=preview,
         )
-        preview = action.locator(
-            "xpath=ancestor::*[@role='dialog' or contains(@class,'semi-modal') or contains(@class,'preview')][1]"
-        )
+        if self.source is None:
+            raise DoudouError(
+                "PAGE_ADAPTER_DRIFTED",
+                "The image preview is not bound to a selected source file.",
+                {
+                    "component": self.name,
+                    "component_version": self.version,
+                    "capability": "chat.image.send",
+                    "strategy": "selected source -> preview dialog -> exact file label",
+                    "geometry_reason": "image_source_not_bound",
+                },
+            )
         await require_target(
-            preview,
+            preview.get_by_text(self.source.name, exact=True),
             component=self.name,
             version=self.version,
             capability="chat.image.send",
-            strategy="send action -> unique preview/dialog ancestor",
-            scope=self.page.locator("body"),
+            strategy="selected source -> preview dialog -> exact file label",
+            scope=preview,
+        )
+        action = await require_target(
+            preview.locator(CHAT_ADAPTER.selectors["image_preview_send"]),
+            component=self.name,
+            version=self.version,
+            capability="chat.image.send",
+            strategy="preview dialog -> exact source label -> versioned send action",
+            require_enabled=True,
+            scope=preview,
+            anchor=image,
+            relation="below",
+            max_anchor_distance=1000,
         )
         await action.click(timeout=10_000)
         return 1
+
+    async def preview(self) -> Any:
+        return await require_target(
+            CHAT_ADAPTER.locator(self.page, "image_preview_dialog"),
+            component=self.name,
+            version=self.version,
+            capability="chat.image.send",
+            strategy="uploaded image -> unique visible preview/dialog",
+        )
+
+    async def preview_probe(self) -> dict[str, Any]:
+        visible = bool(
+            await visible_candidates(
+                CHAT_ADAPTER.locator(self.page, "image_preview_dialog")
+            )
+        )
+        return await resolution_probe(
+            self.preview,
+            component=self.name,
+            version=self.version,
+            capability="chat.image.send",
+            strategy="uploaded image -> unique preview dialog -> local action",
+            exercised=visible,
+            not_exercised_reason="image_preview_not_open",
+        )

@@ -20,7 +20,7 @@ test("records every managed Skill target without duplicates", (t) => {
   const root = temporaryDirectory(t);
   const options = {
     platform: "linux",
-    env: { XDG_CACHE_HOME: path.join(root, "cache") },
+    env: { DOUDOU_HOME: path.join(root, ".doudou") },
     home: root,
   };
   const first = path.join(root, "first");
@@ -43,7 +43,7 @@ test("rejects a filesystem root as a managed Skill", (t) => {
     () =>
       recordManagedSkill(path.parse(root).root, {
         platform: "linux",
-        env: { XDG_CACHE_HOME: path.join(root, "cache") },
+        env: { DOUDOU_HOME: path.join(root, ".doudou") },
         home: root,
       }),
     /filesystem root/,

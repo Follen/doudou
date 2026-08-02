@@ -1,0 +1,28 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "manual-evidence",
+  "role": "acceptance-evidence",
+  "status": "passed",
+  "bindings": {
+    "change": "harden-setup-identity-enrichment-and-updates",
+    "sourceRevision": 9,
+    "contractHash": "f5f099d3e4c79e2d4bb08db432beff2d7be1aeca3234a5e5d1f7dee7103a1d7d",
+    "scopeHash": "8de7730ab07abc8866aa417dd1325c3308b48117da6b0a92080304c045770c8f",
+    "snapshotHash": "ab7c2bca4af213e4c960a926b3d9e501f80dd7e32b75698b3a8aa09821db4c35",
+    "artifactHash": "b1f3a8adc2e1ca4adc05edf8a84fb186c5f6c6f50617408b2727a24fe69a6f3f"
+  },
+  "acceptanceIds": [
+    "acceptance-f97ed6271950125dea4c93533024be142755ae7381178adc729c076e1da4940c"
+  ],
+  "actor": "native-runtime:manual-evidence",
+  "issuedAt": "2026-08-02T18:33:10.980Z",
+  "evidence": {
+    "steps": [
+      "运行完整 Node/Python/Ruff/Skill/manifest/pack/install 门禁及授权真机读写回归。"
+    ],
+    "observations": [
+      "Node 52 项、Python 114 项加 5 个子测试、Ruff、Skill、manifest、pack、install 和版本校验全部通过；真机读写与后台 broker 验收完成。"
+    ]
+  },
+  "receiptHash": "fb83c2927ceca5949885a3aab5c1b1993931875aa4cad2a86f34741ab1aad428"
+}

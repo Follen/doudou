@@ -1,0 +1,28 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "manual-evidence",
+  "role": "acceptance-evidence",
+  "status": "passed",
+  "bindings": {
+    "change": "harden-setup-identity-enrichment-and-updates",
+    "sourceRevision": 9,
+    "contractHash": "f5f099d3e4c79e2d4bb08db432beff2d7be1aeca3234a5e5d1f7dee7103a1d7d",
+    "scopeHash": "8de7730ab07abc8866aa417dd1325c3308b48117da6b0a92080304c045770c8f",
+    "snapshotHash": "ab7c2bca4af213e4c960a926b3d9e501f80dd7e32b75698b3a8aa09821db4c35",
+    "artifactHash": "b1f3a8adc2e1ca4adc05edf8a84fb186c5f6c6f50617408b2727a24fe69a6f3f"
+  },
+  "acceptanceIds": [
+    "acceptance-0107fb504f22015647608068f615982b3adf5b068e345f10ec3e9fb5a02aa8b3"
+  ],
+  "actor": "native-runtime:manual-evidence",
+  "issuedAt": "2026-08-02T18:31:59.619Z",
+  "evidence": {
+    "steps": [
+      "运行 npm update 单测、真实 update --check、全局安装与回滚回归。"
+    ],
+    "observations": [
+      "update 测试 9 项通过；真实检查返回 current=0.0.2、latest=0.0.1、changed=false；安装回归通过。"
+    ]
+  },
+  "receiptHash": "4dca8e04d7dcff02308ca4feb6836c309b054a15665df26eb2b53627acef5e7f"
+}

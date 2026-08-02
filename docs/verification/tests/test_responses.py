@@ -96,6 +96,7 @@ class _Session:
 
     async def classify_login(self) -> dict:
         return {
+            "valid": True,
             "authenticated_cookie_count": 1,
             "verification_visible": False,
             "verification_kind": None,

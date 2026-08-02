@@ -1,0 +1,841 @@
+{
+  "schema": "comet.native.implementation-scope.v2",
+  "contractHash": "a89d25d2231a74c9e742dc2f8618382ebc4beab4e9bea2bda6a0b9a2135c5b92",
+  "baselineProjectionRef": "runtime/evidence/snapshots/6f954e75e91b5ca8d9cda3afce71d20d825b2e8df84d39ede00056cbe28898b3.json",
+  "baselineProjectionHash": "6f954e75e91b5ca8d9cda3afce71d20d825b2e8df84d39ede00056cbe28898b3",
+  "currentProjectionRef": "runtime/evidence/snapshots/561dccce08625fec9c40b559487c35a2027f039d6fe1b62a449c14234f1963a1.json",
+  "currentProjectionHash": "561dccce08625fec9c40b559487c35a2027f039d6fe1b62a449c14234f1963a1",
+  "complete": true,
+  "declaredArtifacts": [
+    {
+      "path": ".github/workflows/publish-npm.yml",
+      "kind": "file"
+    },
+    {
+      "path": "AGENTS.md",
+      "kind": "file"
+    },
+    {
+      "path": "README.md",
+      "kind": "file"
+    },
+    {
+      "path": "docs/verification/tests",
+      "kind": "directory"
+    },
+    {
+      "path": "doudou",
+      "kind": "directory"
+    },
+    {
+      "path": "npm",
+      "kind": "directory"
+    },
+    {
+      "path": "package-lock.json",
+      "kind": "file"
+    },
+    {
+      "path": "package.json",
+      "kind": "file"
+    }
+  ],
+  "changes": [
+    {
+      "path": ".github/workflows/publish-npm.yml",
+      "kind": "modified",
+      "before": {
+        "hash": "fd7f14c722e46152b741b4ab436ad07a1fceea9f59a00b5a92f4dcf16cc51169",
+        "size": 2292
+      },
+      "after": {
+        "hash": "995da4ee35323dc094711632522f6305d7c29da1a05b096db146a72ae5327827",
+        "size": 2914
+      },
+      "attributedTo": [
+        {
+          "path": ".github/workflows/publish-npm.yml",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "AGENTS.md",
+      "kind": "modified",
+      "before": {
+        "hash": "ffcf9de0ebb0d4abfb0330defa4c938065cff3fefa6d6987bc6f41c44845041e",
+        "size": 5644
+      },
+      "after": {
+        "hash": "d6cf9b12e9c95d756c3ef2f200b9421ab110180439863eadd3c919f6ff17ba8c",
+        "size": 5623
+      },
+      "attributedTo": [
+        {
+          "path": "AGENTS.md",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "README.md",
+      "kind": "modified",
+      "before": {
+        "hash": "0c97713306050dd268a1c35acfea8a38a2f08c0f1370afe94dc65cc0b62a2adb",
+        "size": 5202
+      },
+      "after": {
+        "hash": "3d35fc1a7994eb5a5bc9cc5e8672866c87a8e9c73e01fd49a3d32b1183f4f7bc",
+        "size": 5924
+      },
+      "attributedTo": [
+        {
+          "path": "README.md",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "docs/verification/tests/test_core.py",
+      "kind": "modified",
+      "before": {
+        "hash": "253ca1b3a5d7a8432cc07ce51a8aafe04f77dc581800ff3f685802682bcb6b2f",
+        "size": 1102
+      },
+      "after": {
+        "hash": "5e04cf16aa328cbad0e80ac050150dca625d53989f6ac046374cd91d4e9da6a8",
+        "size": 1644
+      },
+      "attributedTo": [
+        {
+          "path": "docs/verification/tests",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "docs/verification/tests/test_identity.py",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "b9178671228d24023daa5294e381db23f0389fcc77024facc1a7c394d8c30214",
+        "size": 5196
+      },
+      "attributedTo": [
+        {
+          "path": "docs/verification/tests",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "docs/verification/tests/test_profile.py",
+      "kind": "modified",
+      "before": {
+        "hash": "a78839c9fa9216f3f8d998ea7fdda9b680132820d14776cad73cb45b1cfa3618",
+        "size": 4968
+      },
+      "after": {
+        "hash": "481395494178c3b8afa75dbcc960a3ddbf3815cea9d7294ea32e0eacac96958c",
+        "size": 5091
+      },
+      "attributedTo": [
+        {
+          "path": "docs/verification/tests",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "docs/verification/tests/test_runtime_home.py",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "4a0092abfe7d6ddc6b69625ae37fe1fe096dd956e2f42b32887ac83c0ae60f15",
+        "size": 1837
+      },
+      "attributedTo": [
+        {
+          "path": "docs/verification/tests",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/SKILL.md",
+      "kind": "modified",
+      "before": {
+        "hash": "2c86b0df1d26c8240d78411cb7ed8d28138fba8556265ee468e8b33060388022",
+        "size": 3963
+      },
+      "after": {
+        "hash": "ecb0aab41b8c0cd77f36db4773e65023152de4bdd4836e5deaeb828ee3ca515a",
+        "size": 4465
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/references/cli.md",
+      "kind": "modified",
+      "before": {
+        "hash": "9677600ccf68f8e8a6223d4c4893d353f75f1435e4dddb38b97fb41d51bef4ef",
+        "size": 2917
+      },
+      "after": {
+        "hash": "350c2ea53bd66970ef55fc40641105358c6575123309c68bea4ef9b16c676fc3",
+        "size": 3024
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/references/layout.md",
+      "kind": "modified",
+      "before": {
+        "hash": "2099064dac751e34e803bb9f71f5ab3a5626c441903d9d42bb71276d77265f94",
+        "size": 1893
+      },
+      "after": {
+        "hash": "e858ecf18bdfd1955d21ca257c1ea739214b0a4a0dcd243cdc7e21e3f7ac7eeb",
+        "size": 1879
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/references/runtime.md",
+      "kind": "modified",
+      "before": {
+        "hash": "5479f595f3a0a7327509d08b6f7312958bb4e8efe8b7a960d1e7fd022d5e992e",
+        "size": 3130
+      },
+      "after": {
+        "hash": "db5aa119d9556bca6d46cb2a86209ff43d15bc26b181dcc18187512b7faf9d77",
+        "size": 4316
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/scripts/doudou.py",
+      "kind": "modified",
+      "before": {
+        "hash": "d9e7776705faff322b5c7c1f02a8db05137c30b6a8167106c3a6d3035d79b27f",
+        "size": 1037
+      },
+      "after": {
+        "hash": "1121176c47a5e3662b0f5263f75ea54fd95d2ffd4fad99ad1e552288869a98a9",
+        "size": 1002
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/scripts/doudou/cli.py",
+      "kind": "modified",
+      "before": {
+        "hash": "a73b7234f93e4b6ac6a9ce6d33ce3288a44216ed81329e90d5bb91c18860b80a",
+        "size": 17704
+      },
+      "after": {
+        "hash": "fe13df849970e72f0498af8c01bf08858c3e7a6bef3d04945574c01bcc7531f8",
+        "size": 17905
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/scripts/doudou/common/core.py",
+      "kind": "modified",
+      "before": {
+        "hash": "25fd0af670554d6a7ea5653d06dbf682216f55481a302501933d2c6ce357dd78",
+        "size": 4437
+      },
+      "after": {
+        "hash": "9afaeaee3b23d3547dbb5bbdb43c43e05d2a4f6905de1bb2e0296110cf3f0352",
+        "size": 4404
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/scripts/doudou/features/chat/service.py",
+      "kind": "modified",
+      "before": {
+        "hash": "fa30e422023d67fdd6f0dc2d4d6e264af122f94c51638723f6dc14f0cb8c9a0a",
+        "size": 17095
+      },
+      "after": {
+        "hash": "e7753cf96eabf4bb0910e0056c146e5315c2bc3cae71f64f232d12f9247280a0",
+        "size": 17145
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/scripts/doudou/models/identity.py",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "552b9949ad993954b7e93c9e6e4722e24776425078dba6bf28e07541183a938b",
+        "size": 9393
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/scripts/doudou/models/records.py",
+      "kind": "modified",
+      "before": {
+        "hash": "523a2e0113f5444df6dd2af5750e468d756b70887f23de4cc975844ccbd29688",
+        "size": 875
+      },
+      "after": {
+        "hash": "491f72ec13f19c47db768811a108e89162db609645bc37129d1f60bab4e5b0d0",
+        "size": 981
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/scripts/doudou/protocol/im.py",
+      "kind": "modified",
+      "before": {
+        "hash": "dabc64c9e8cc1df75d91beef15ce0939c8b98d4771158d99beba92c28b762699",
+        "size": 17322
+      },
+      "after": {
+        "hash": "a336af0d8070ab6b7e8f80eb36dbcbe667beef0c7aba8235cf1d816d0bd7c2c7",
+        "size": 17789
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/scripts/doudou/protocol/web.py",
+      "kind": "modified",
+      "before": {
+        "hash": "a411e7de2ff3721076e79160a657ef5587c4aede0ae73e9abe4f99459ad4b320",
+        "size": 5838
+      },
+      "after": {
+        "hash": "8da72ba7a3a101cafa7a51a7770bf29c9dbdfee280a283794d400f8c6640c238",
+        "size": 5355
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/scripts/doudou/reads/chat.py",
+      "kind": "modified",
+      "before": {
+        "hash": "34d4ff71f98dd8f9ca4aafd054546193dcf69a5fdc79a76885f0382d09fa88ef",
+        "size": 15592
+      },
+      "after": {
+        "hash": "98ca090e285a7ab0e9beea3bef0a7ad8ec52a6adaab9ebe92ba9e592004b1aea",
+        "size": 17083
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/scripts/doudou/reads/video.py",
+      "kind": "modified",
+      "before": {
+        "hash": "19ff3a9d084d2aa72449a54b06da5b15ddeeda27d775d3aca17561bded16ddcb",
+        "size": 27249
+      },
+      "after": {
+        "hash": "7571b4608a3257f5e7afdcadcdd4a56500ec4e01a6255ba7fa6bf2303d546e3f",
+        "size": 28366
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/scripts/doudou/runtime/browser/session.py",
+      "kind": "modified",
+      "before": {
+        "hash": "d04b38c73e43d8dded5161345b2e096c7cd113d529004c712c519126e4a0a063",
+        "size": 28985
+      },
+      "after": {
+        "hash": "137365a2358770672dc6d5463de18de6c9afa9db8a54923a3f3f686467adf3ed",
+        "size": 29073
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/scripts/doudou/runtime/camoufox_asset.py",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "a091ab378225af6e24bc1fd32542684d3a26586c62c461a7501b2e5260617c11",
+        "size": 5241
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/scripts/doudou/runtime/environment.py",
+      "kind": "modified",
+      "before": {
+        "hash": "c2150b64b5d12534f6a47280eca7c9d2ddf79db3af997a0042ae637815cc2167",
+        "size": 16971
+      },
+      "after": {
+        "hash": "504b83fb1becbc311d22066f3386dacd775470a3dd66e0b6a39f12a49e7ae6c0",
+        "size": 12115
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/scripts/doudou/runtime/home.py",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "c1d7335769ee8b24adfd67450a8d5c0354860afa89debeb46dbfa9952d0dc642",
+        "size": 434
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/scripts/doudou/runtime/paths.py",
+      "kind": "modified",
+      "before": {
+        "hash": "1c1330f635e357ac06b8e11652b4bb1d1c94b8f9db1538b3ec6f31a216399474",
+        "size": 2560
+      },
+      "after": {
+        "hash": "a1f270abcc1c66026319acbede04d21102a42d66c79d2abfd795260767d69e2f",
+        "size": 2624
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/scripts/doudou/runtime/profile.py",
+      "kind": "modified",
+      "before": {
+        "hash": "38bbb4432781bf079fe082b25ac715dd36c779fcd97ad936d6e806781e9a22b3",
+        "size": 9406
+      },
+      "after": {
+        "hash": "8eae76a1acc3bb6486d816b371605fac1bf81c5ab55a61dadf87465d11b5e633",
+        "size": 9499
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/scripts/doudou/storage/identity_migration.py",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "76305765c58103132d95189ce3362aae5b3cc2dcbda7c89ecddbc97ef6bf0b93",
+        "size": 2143
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/scripts/runtime-manifest.json",
+      "kind": "modified",
+      "before": {
+        "hash": "084b9dd8b7167bdef476a4cc1ddbdb51b1c1188a3c140ea1cc53820063fd78b4",
+        "size": 357
+      },
+      "after": {
+        "hash": "ac32b2f25c91c37dbfb4f36ae833d0411606e8a9389521b18fa8343fb3959c48",
+        "size": 1754
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "npm/bin/doudou.mjs",
+      "kind": "modified",
+      "before": {
+        "hash": "cf5b82bbd3597f486e5c5972fcbebdd8637ffe0d82daaab00406957254a43d14",
+        "size": 2897
+      },
+      "after": {
+        "hash": "952f4e8884f46444c758e5d63b108126cf50f186c7bfd0ea336fdd8bbda5fcc4",
+        "size": 4209
+      },
+      "attributedTo": [
+        {
+          "path": "npm",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "npm/lib/controlled-download.mjs",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "cfb3375867ba5335234966427a3e054e1eef2545e519294e8e2799c71c6a1c04",
+        "size": 11755
+      },
+      "attributedTo": [
+        {
+          "path": "npm",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "npm/lib/options.mjs",
+      "kind": "modified",
+      "before": {
+        "hash": "bd6b069178828bb2ae3d6129d8e64f05f4ae4bab596ab939c31679ecdc705844",
+        "size": 1738
+      },
+      "after": {
+        "hash": "3cd024a7e6f41705767b13d16d7e73d3b4351e484346738feb92dc7bdd1e97f6",
+        "size": 1750
+      },
+      "attributedTo": [
+        {
+          "path": "npm",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "npm/lib/python.mjs",
+      "kind": "modified",
+      "before": {
+        "hash": "98a7712659608c2d52727e0c22c7451d5987a24c4b98bd38d2996d01f5b63d91",
+        "size": 3170
+      },
+      "after": {
+        "hash": "d56c717e623f858dd36396bf934e5781edcccfe56f8f69cc71367f9758244ec1",
+        "size": 1800
+      },
+      "attributedTo": [
+        {
+          "path": "npm",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "npm/lib/runtime-setup.mjs",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "4d7617de37b22de23739768fe70aa7059b7ed591ed43b9bd51b549eb8dba8c75",
+        "size": 21278
+      },
+      "attributedTo": [
+        {
+          "path": "npm",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "npm/lib/uninstall.mjs",
+      "kind": "modified",
+      "before": {
+        "hash": "e2c1df4a1e08135979dd04a6dc6a8d58b2c7ff8b420431cb0e398e905fcc7b0e",
+        "size": 11099
+      },
+      "after": {
+        "hash": "2ae89d495ea9fb8868e65bdc0cf91c78737f760308cf62fa8a9ffad42d27cd27",
+        "size": 11796
+      },
+      "attributedTo": [
+        {
+          "path": "npm",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "npm/lib/update.mjs",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "6e4b4040befb08aeb685e519ff01fb862b364f68567498351daaff27ea74c8ed",
+        "size": 3704
+      },
+      "attributedTo": [
+        {
+          "path": "npm",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "npm/scripts/test-install.mjs",
+      "kind": "modified",
+      "before": {
+        "hash": "6a12c42c5e05e62ee45187058b03b48955fed82cafe2dd52b52c280cb0b24b7e",
+        "size": 6949
+      },
+      "after": {
+        "hash": "a581f19eb6d8a0989ba8d449e226d84948b967a28c7ab0b25bc30975f31f8e18",
+        "size": 7296
+      },
+      "attributedTo": [
+        {
+          "path": "npm",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "npm/skill-manifest.json",
+      "kind": "modified",
+      "before": {
+        "hash": "af52c8e697f02a8da053ff7dff2cfee6281ea696b11bb6a583aea5ad7df68a95",
+        "size": 11296
+      },
+      "after": {
+        "hash": "7a0d15b69a4e46a29310591ed784a8c7b3c4da7b49bbfbdb56204951a739071a",
+        "size": 11983
+      },
+      "attributedTo": [
+        {
+          "path": "npm",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "npm/test/controlled-download.test.mjs",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "2e64412f6496fbf9c07e611e108c920ddced3b8a754bba39371939b9f32726fc",
+        "size": 5737
+      },
+      "attributedTo": [
+        {
+          "path": "npm",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "npm/test/managed-install.test.mjs",
+      "kind": "modified",
+      "before": {
+        "hash": "01b847b4ee0c6cf17deb1ad6e9dfdc7bf8f101c53de38facfc5d5bd89b7169e6",
+        "size": 1509
+      },
+      "after": {
+        "hash": "7e85981889ff3899809ffff6012d3c37f5039acda78102071143a061995df110",
+        "size": 1507
+      },
+      "attributedTo": [
+        {
+          "path": "npm",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "npm/test/python.test.mjs",
+      "kind": "modified",
+      "before": {
+        "hash": "d51d6a97084bed2e587722882854ab4b6bdad1820bf96bb4c92f99acf1e57b95",
+        "size": 2272
+      },
+      "after": {
+        "hash": "6b52d7ff8bf05de2f7eb0e523aa91800ed16aecc85e12a549e4ea8bca8736a68",
+        "size": 4217
+      },
+      "attributedTo": [
+        {
+          "path": "npm",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "npm/test/runtime-setup.test.mjs",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "ff1aec9e490fa39d207e67c421b78977d46ca033d46a77a72dc0a17dfadff475",
+        "size": 7084
+      },
+      "attributedTo": [
+        {
+          "path": "npm",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "npm/test/uninstall.test.mjs",
+      "kind": "modified",
+      "before": {
+        "hash": "6178564b0c5ab74c491f17bd56cb4382d1bff75aaee373d2ca7c051b3c195dbb",
+        "size": 5921
+      },
+      "after": {
+        "hash": "e5308822e5acf0b5321af77122f272d2168c4b9c2f433eb1338d759d142103c8",
+        "size": 6227
+      },
+      "attributedTo": [
+        {
+          "path": "npm",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "npm/test/update.test.mjs",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "892c8a22508327070d33914f78f2f72c5eca0199ef136a994092fdca3b7b8be4",
+        "size": 4435
+      },
+      "attributedTo": [
+        {
+          "path": "npm",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "package-lock.json",
+      "kind": "modified",
+      "before": {
+        "hash": "c7fdd7c78476fca5030507738a26ba421144f66b2f9b0808c509c116261f4226",
+        "size": 379
+      },
+      "after": {
+        "hash": "f964202d069789ddafab731f900dd963796243dc074c4386eff971f9963e3900",
+        "size": 773
+      },
+      "attributedTo": [
+        {
+          "path": "package-lock.json",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "package.json",
+      "kind": "modified",
+      "before": {
+        "hash": "265335a521c8bfeaa05d27b98b6e7c91c372f3e987a0207588868e965e2ad0e5",
+        "size": 1129
+      },
+      "after": {
+        "hash": "3f1715b4b478bb5028c0b54645cc949df61de39330227119eff55572974fb27f",
+        "size": 1178
+      },
+      "attributedTo": [
+        {
+          "path": "package.json",
+          "kind": "file"
+        }
+      ]
+    }
+  ],
+  "unattributed": [],
+  "unresolvedScopes": [],
+  "noCodeReason": null,
+  "scopeHash": "0109b3e2dbea9a6762f0711fe5591780f014dad3996ec46c5425ad06d1fa531a"
+}

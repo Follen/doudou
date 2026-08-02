@@ -9,7 +9,7 @@ from .common.core import emit, resolve_data_root
 from .common.errors import DoudouError
 from .models.resolver import parse_selection, resolve_conversation
 from .runtime.broker.client import BrokerClient
-from .runtime.environment import doctor, setup
+from .runtime.environment import doctor
 from .runtime.paths import initialize_data_root
 from .runtime.profile import create_profile, list_profiles, load_profile, update_profile
 
@@ -30,8 +30,6 @@ def parser() -> argparse.ArgumentParser:
     doctor_probe = doctor_parser.add_mutually_exclusive_group()
     doctor_probe.add_argument("--launch-probe", action="store_true")
     doctor_probe.add_argument("--skip-launch", action="store_true", help=argparse.SUPPRESS)
-    commands.add_parser("setup")
-
     profile = commands.add_parser("profile").add_subparsers(
         dest="profile_command", required=True
     )
@@ -96,7 +94,9 @@ def parser() -> argparse.ArgumentParser:
     send.add_argument("--conversation-id")
     send.add_argument("--text")
     send.add_argument("--image", type=Path)
-    send.add_argument("--at", action="append", default=[])
+    send.add_argument(
+        "--at", action="append", default=[], help=argparse.SUPPRESS
+    )
     send.add_argument("--reply")
     send.add_argument("--confirm", action="store_true")
     send.add_argument("--plan-id")
@@ -135,6 +135,8 @@ def parser() -> argparse.ArgumentParser:
     identity_resolve = identity.add_parser("resolve")
     _profile_argument(identity_resolve)
     identity_resolve.add_argument("--douyin-id", required=True)
+    identity_migrate = identity.add_parser("migrate")
+    _profile_argument(identity_migrate)
 
     videos = commands.add_parser("videos").add_subparsers(
         dest="videos_command", required=True
@@ -203,8 +205,6 @@ def dispatch(args: argparse.Namespace, skill_root: Path) -> dict[str, Any]:
     if args.command == "doctor":
         initialize_data_root(data_root)
         return doctor(data_root, launch_probe=args.launch_probe)
-    if args.command == "setup":
-        return setup(skill_root)
     initialize_data_root(data_root)
 
     if args.command == "profile":
@@ -262,10 +262,27 @@ def dispatch(args: argparse.Namespace, skill_root: Path) -> dict[str, Any]:
         if args.broker_command == "ping":
             return client.request("ping")["result"]
         if args.broker_command == "stop":
-            return client.request("shutdown", semantics="control", start=False)[
+            result = client.request("shutdown", semantics="control", start=False)[
                 "result"
             ]
+            if not client.wait_stopped(timeout=60):
+                raise DoudouError(
+                    "BROKER_STOP_TIMEOUT",
+                    "The Profile broker did not release its process and lock in time.",
+                    {"profile_id": args.profile, "timeout_seconds": 60},
+                )
+            return {**result, "stopped": True}
         return client.request("status")["result"]
+
+    if (
+        args.command == "protocol"
+        and args.protocol_command == "send"
+        and _mentions(args.at)
+    ):
+        raise DoudouError(
+            "MENTION_UNSUPPORTED",
+            "Group mentions are not supported.",
+        )
 
     client = _client(data_root, args.profile)
     if args.command == "session":
@@ -372,6 +389,10 @@ def dispatch(args: argparse.Namespace, skill_root: Path) -> dict[str, Any]:
         return client.request(
             "chat.like.preview", {"target": args.conversation, "message": args.message}
         )["result"]
+    if args.command == "identity" and args.identity_command == "migrate":
+        from .storage.identity_migration import migrate_identity_records
+
+        return migrate_identity_records(data_root, args.profile)
     if args.command == "identity":
         return client.request("identity.resolve", {"douyin_id": args.douyin_id})[
             "result"
@@ -417,7 +438,7 @@ def dispatch(args: argparse.Namespace, skill_root: Path) -> dict[str, Any]:
             "video.interaction.preview", {"operation": operation, "payload": payload}
         )["result"]
     if args.command == "page-doctor":
-        return client.request("page.doctor")["result"]
+        return client.request("page.doctor", {})["result"]
     raise DoudouError("UNKNOWN_COMMAND", "Unknown command.")
 
 

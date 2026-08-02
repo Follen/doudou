@@ -1,9 +1,11 @@
 from __future__ import annotations
 
+import asyncio
 import json
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import AsyncMock, MagicMock, patch
 from urllib.parse import parse_qs, urlsplit
 
 from cryptography.exceptions import InvalidTag
@@ -25,12 +27,13 @@ from doudou.protocol.protobuf import (
     varint_field,
 )
 from doudou.protocol.web import normalize_comment
-from doudou.reads.video import _reply_url
+from doudou.reads.video import _reply_url, _url_matches_aweme
 from doudou.runtime.profile import create_profile
 from doudou.storage.content import read_comment_checkpoint, write_comment_checkpoint
 from doudou.storage.media import decrypt_image, exact_md5, match_image_md5
 from doudou.storage.repository import merge_messages, read_messages
 from doudou.ui.adapters import CHAT_ADAPTER
+from doudou.ui.chat import _send_verification, open_conversation
 
 
 def embedded(number: int, fields: list[Field]) -> Field:
@@ -38,7 +41,40 @@ def embedded(number: int, fields: list[Field]) -> Field:
 
 
 class ProtocolStorageTests(unittest.TestCase):
-    def test_chat_write_readback_uses_server_ids_and_current_user_reaction(self) -> None:
+    def test_comment_template_must_match_the_current_video(self) -> None:
+        self.assertTrue(
+            _url_matches_aweme(
+                "https://www.douyin.com/aweme/v1/web/comment/list/?aweme_id=video-1",
+                "video-1",
+            )
+        )
+        self.assertFalse(
+            _url_matches_aweme(
+                "https://www.douyin.com/aweme/v1/web/comment/list/?aweme_id=old-video",
+                "video-1",
+            )
+        )
+
+    def test_reply_url_uses_reported_count_with_current_endpoint_cap(self) -> None:
+        template = (
+            "https://www.douyin.com/aweme/v1/web/comment/list/"
+            "?aweme_id=video&count=5&cursor=0&a_bogus=old&msToken=old"
+        )
+        small = parse_qs(urlsplit(_reply_url(template, "video", "comment", 0, 2)).query)
+        large = parse_qs(
+            urlsplit(_reply_url(template, "video", "comment", 10, 99)).query
+        )
+        self.assertEqual(small["count"], ["2"])
+        self.assertEqual(large["count"], ["10"])
+        self.assertEqual(large["cursor"], ["10"])
+        self.assertEqual(large["comment_id"], ["comment"])
+        self.assertEqual(large["pc_img_format"], ["webp"])
+        self.assertNotIn("a_bogus", small)
+        self.assertNotIn("msToken", small)
+
+    def test_chat_write_readback_uses_server_ids_and_current_user_reaction(
+        self,
+    ) -> None:
         payload = {
             "mode": "reply",
             "text": "收到",
@@ -71,10 +107,11 @@ class ProtocolStorageTests(unittest.TestCase):
         value = _reply_url(
             "https://www.douyin.com/aweme/v1/web/comment/list/?"
             "aweme_id=video&cursor=5&msToken=old&a_bogus=old&"
-            "insert_ids=old&rcFT=old&aid=6383",
+            "insert_ids=old&rcFT=old&aid=6383&pc_img_format=webp",
             "video-1",
             "root-1",
             20,
+            3,
         )
         parsed = urlsplit(value)
         query = parse_qs(parsed.query)
@@ -83,7 +120,9 @@ class ProtocolStorageTests(unittest.TestCase):
         self.assertEqual(query["comment_id"], ["root-1"])
         self.assertEqual(query["cursor"], ["20"])
         self.assertEqual(query["item_type"], ["0"])
+        self.assertEqual(query["count"], ["3"])
         self.assertEqual(query["aid"], ["6383"])
+        self.assertEqual(query["pc_img_format"], ["webp"])
         self.assertFalse(
             {"aweme_id", "msToken", "a_bogus", "insert_ids", "rcFT"} & query.keys()
         )
@@ -98,24 +137,49 @@ class ProtocolStorageTests(unittest.TestCase):
             },
             "video-1",
         )
-        reply = normalize_comment(
-            {"cid": "reply-1", "reply_id": "root-1"}, "video-1"
-        )
+        reply = normalize_comment({"cid": "reply-1", "reply_id": "root-1"}, "video-1")
         self.assertEqual(root["reply_id"], "root-1")
         self.assertIsNone(root["reply_to_reply_id"])
         self.assertTrue(root["parent_resolved"])
         self.assertEqual(reply["reply_id"], "root-1")
 
     def test_chat_send_adapter_targets_the_visible_publish_svg(self) -> None:
-        self.assertEqual(CHAT_ADAPTER.version, "2026-08-02.2")
+        self.assertEqual(CHAT_ADAPTER.version, "2026-08-03.1")
         self.assertEqual(CHAT_ADAPTER.selectors["send_button"], "svg.e2e-send-msg-btn")
+        self.assertEqual(
+            CHAT_ADAPTER.selectors["message_context_menu"],
+            ".MessageOperatePopWindowwrapper",
+        )
+        self.assertIn(
+            "MsgInputSendFileModalbox",
+            CHAT_ADAPTER.selectors["image_preview_dialog"],
+        )
+
+    def test_open_conversation_returns_to_chat_from_another_business_page(
+        self,
+    ) -> None:
+        session = MagicMock()
+        session.page.url = "https://www.douyin.com/note/video-1"
+        session.page.wait_for_timeout = AsyncMock()
+        session.ensure_ready = AsyncMock()
+
+        async def open_page(url: str) -> None:
+            session.page.url = url
+
+        session.open = AsyncMock(side_effect=open_page)
+        with patch("doudou.ui.chat.ConversationListComponent") as component:
+            component.return_value.open = AsyncMock(return_value=1)
+            operations = asyncio.run(open_conversation(session, "group"))
+        self.assertEqual(operations, 1)
+        session.open.assert_awaited_once_with("https://www.douyin.com/chat")
+        component.return_value.open.assert_awaited_once_with("group")
 
     def test_send_request_and_response_are_parsed_for_receipt_verification(
         self,
     ) -> None:
         content = json.dumps(
             {
-                "text": "@露露缇娅\u2005很好",
+                "text": "@露露缇娅 很好",
                 "aweType": 700,
                 "richTextInfos": [
                     {"infoType": 1, "location": 0, "length": 6, "info": {"uid": "106"}}
@@ -166,6 +230,26 @@ class ProtocolStorageTests(unittest.TestCase):
         self.assertEqual(parsed_response["server_message_id"], "8001")
         self.assertEqual(parsed_response["business_status"], 0)
         self.assertEqual(parsed_response["client_message_id"], "client-id")
+
+        capture = MagicMock()
+        capture.request_bodies = [("/v1/message/send", request)]
+        capture.response_bodies = [("/v1/message/send", response)]
+        verification = _send_verification(
+            capture,
+            {
+                "payload": {
+                    "mode": "text",
+                    "text": "@露露缇娅 很好",
+                    "conversation": {
+                        "conversation_id": "conversation",
+                        "conversation_short_id": "123",
+                        "conversation_type": 2,
+                    },
+                }
+            },
+        )
+        self.assertTrue(verification["passed"])
+        self.assertTrue(verification["text_match"])
 
     def test_comment_checkpoint_round_trip_deduplicates_partial_records(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -336,9 +420,7 @@ class ProtocolStorageTests(unittest.TestCase):
             "21baf2fc08a986aea3571262ca8a397a",
         )
         self.assertIsNone(
-            exact_md5(
-                "5e06b60d0ce3875b56b0bc57e1d53482243370295296IMG_20260801.jpeg"
-            )
+            exact_md5("5e06b60d0ce3875b56b0bc57e1d53482243370295296IMG_20260801.jpeg")
         )
         self.assertIsNone(exact_md5("21baf2fc08a986aea3571262ca8a397"))
 
@@ -380,6 +462,7 @@ class ProtocolStorageTests(unittest.TestCase):
                 "create_time_ms": 1,
                 "text": None,
                 "type": "text",
+                "message_type": 1,
                 "images": [{"status": "failed"}],
             }
             second = {
@@ -388,6 +471,7 @@ class ProtocolStorageTests(unittest.TestCase):
                 "create_time_ms": 1,
                 "text": "hello",
                 "type": "image",
+                "message_type": 2,
                 "images": [{"status": "downloaded"}],
             }
             merge_messages(root, "work", conversation, [first])
@@ -395,8 +479,62 @@ class ProtocolStorageTests(unittest.TestCase):
             self.assertEqual(result["total"], 1)
             self.assertEqual(result["duplicates"], 1)
             self.assertEqual(result["conflicts"], 1)
+            self.assertEqual(result["conflicts_total"], 1)
             stored = read_messages(root, "work", conversation)
+            self.assertEqual(stored[0]["schema"], "doudou.message.v2")
+            self.assertEqual(stored[0]["type"], "image")
             self.assertEqual(stored[0]["images"], [{"status": "downloaded"}])
+
+            repeated = merge_messages(root, "work", conversation, [second])
+            self.assertEqual(repeated["conflicts"], 0)
+            self.assertEqual(repeated["conflicts_total"], 1)
+
+    def test_message_merge_enriches_identity_lists_without_conflicts(self) -> None:
+        conversation = {
+            "conversation_id": "group:2",
+            "kind": "group",
+            "display_name": "group",
+        }
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            first = {
+                "schema": "doudou.message.v2",
+                "message_id": "1",
+                "create_time_ms": 1,
+                "sender": {"uid": "7", "sec_uid": "SEC", "unique_id": None},
+                "mentioned_users": [{"uid": "8", "unique_id": None}],
+                "system_event": {
+                    "kind": "member_joined",
+                    "source_users": [{"uid": "7", "nickname": None}],
+                    "joined_users": [{"uid": "8", "nickname": None}],
+                },
+            }
+            enriched = {
+                **first,
+                "sender": {
+                    "uid": "7",
+                    "sec_uid": "SEC",
+                    "unique_id": "douyin-7",
+                    "nickname": "Sender",
+                },
+                "mentioned_users": [
+                    {"uid": "8", "unique_id": "douyin-8", "nickname": "Mentioned"}
+                ],
+                "system_event": {
+                    "kind": "member_joined",
+                    "source_users": [{"uid": "7", "nickname": "Sender"}],
+                    "joined_users": [{"uid": "8", "nickname": "Mentioned"}],
+                },
+            }
+            merge_messages(root, "work", conversation, [first])
+            result = merge_messages(root, "work", conversation, [enriched])
+            self.assertEqual(result["conflicts"], 0)
+            [stored] = read_messages(root, "work", conversation)
+            self.assertEqual(stored["sender"]["unique_id"], "douyin-7")
+            self.assertEqual(stored["mentioned_users"][0]["unique_id"], "douyin-8")
+            self.assertEqual(
+                stored["system_event"]["joined_users"][0]["nickname"], "Mentioned"
+            )
 
 
 if __name__ == "__main__":

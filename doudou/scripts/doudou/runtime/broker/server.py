@@ -20,6 +20,8 @@ from ..profile import load_profile
 from .registration import register_broker, unregister_broker
 
 MAX_REQUEST_BYTES = 4 * 1024 * 1024
+DEFAULT_COMMAND_TIMEOUT_SECONDS = 90.0
+MAX_COMMAND_TIMEOUT_SECONDS = 900.0
 DETERMINISTIC_WRITE_ERRORS = {
     "PAGE_ADAPTER_DRIFTED",
     "PROTOCOL_SCHEMA_DRIFTED",
@@ -76,6 +78,8 @@ class BrokerServer:
             self.server = await asyncio.start_server(
                 self._handle_client, "127.0.0.1", 0
             )
+            self.last_completed_monotonic = asyncio.get_running_loop().time()
+            self.last_completed_at = utc_now()
             host, port = self.server.sockets[0].getsockname()[:2]
             identity = process_identity(os.getpid()) or {
                 "pid": os.getpid(),
@@ -188,9 +192,17 @@ class BrokerServer:
                 self.active_request = request_id
                 started = utc_now()
                 try:
-                    result = await self._dispatch_with_read_recovery(
-                        command, request.get("params") or {}, semantics
+                    requested_timeout = float(
+                        request.get("command_timeout_seconds")
+                        or DEFAULT_COMMAND_TIMEOUT_SECONDS
                     )
+                    command_timeout = min(
+                        max(requested_timeout, 0.1), MAX_COMMAND_TIMEOUT_SECONDS
+                    )
+                    async with asyncio.timeout(command_timeout):
+                        result = await self._dispatch_with_read_recovery(
+                            command, request.get("params") or {}, semantics
+                        )
                     response = {
                         "ok": True,
                         "request_id": request_id,
@@ -199,6 +211,29 @@ class BrokerServer:
                         "completed_at": utc_now(),
                         "result": result,
                     }
+                except TimeoutError:
+                    code = (
+                        "WRITE_RESULT_UNKNOWN"
+                        if semantics == "write"
+                        else "BROKER_COMMAND_TIMEOUT"
+                    )
+                    response = {
+                        "ok": False,
+                        "request_id": request_id,
+                        "error": DoudouError(
+                            code,
+                            "The broker command exceeded its total time limit; writes are not replayed automatically.",
+                            {
+                                "request_id": request_id,
+                                "command": command,
+                                "timeout_seconds": command_timeout,
+                                "write_started": semantics == "write",
+                            },
+                        ).as_event(),
+                    }
+                    if semantics == "write":
+                        self.request_results[request_id] = response
+                    return response
                 except asyncio.CancelledError:
                     if semantics != "write" or self.stop_event.is_set():
                         raise
@@ -283,6 +318,7 @@ class BrokerServer:
                         return response
                     raise
                 finally:
+                    await self.browser.finalize_takeover_for_current_page()
                     self.active_request = None
                     self.last_completed_monotonic = asyncio.get_running_loop().time()
                     self.last_completed_at = utc_now()
@@ -300,19 +336,22 @@ class BrokerServer:
         self, command: str, params: dict[str, Any], semantics: str
     ) -> dict[str, Any]:
         try:
-            return await self._dispatch(command, params)
-        except DoudouError as error:
-            if semantics != "read" or error.code not in {
-                "LOGIN_REQUIRED",
-                "VERIFICATION_REQUIRED",
-            }:
-                raise
-            kind = await self.browser._verification_kind()
-            if error.code == "VERIFICATION_REQUIRED" and kind is None:
-                raise
-            await self.browser.present_for_takeover(error.code, kind)
-            await self.browser.wait_for_takeover_completion(600)
-            return await self._dispatch(command, params)
+            try:
+                return await self._dispatch(command, params)
+            except DoudouError as error:
+                if semantics != "read" or error.code not in {
+                    "LOGIN_REQUIRED",
+                    "VERIFICATION_REQUIRED",
+                }:
+                    raise
+                kind = await self.browser._verification_kind()
+                if error.code == "VERIFICATION_REQUIRED" and kind is None:
+                    raise
+                await self.browser.present_for_takeover(error.code, kind)
+                await self.browser.wait_for_takeover_completion(600)
+                return await self._dispatch(command, params)
+        finally:
+            await self.browser.finalize_takeover_for_current_page()
 
     async def _dispatch(self, command: str, params: dict[str, Any]) -> dict[str, Any]:
         if command == "ping":

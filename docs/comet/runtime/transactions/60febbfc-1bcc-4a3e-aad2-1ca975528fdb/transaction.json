@@ -1,0 +1,67 @@
+{
+  "schema": "comet.native.transaction.v2",
+  "id": "60febbfc-1bcc-4a3e-aad2-1ca975528fdb",
+  "kind": "archive",
+  "status": "committed",
+  "change": "harden-setup-identity-enrichment-and-updates",
+  "createdAt": "2026-08-02T18:38:57.039Z",
+  "preflightHash": "851237100787f937d094d6e491575f81008579c6df56a94ebaf583abf17fdead",
+  "operations": [
+    {
+      "id": "spec-1-broker-auth-state",
+      "type": "write",
+      "target": "specs/broker-auth-state/spec.md",
+      "staged": "runtime/transactions/60febbfc-1bcc-4a3e-aad2-1ca975528fdb/staged/specs/broker-auth-state/spec.md",
+      "expectedTargetHash": null,
+      "stagedHash": "e935c5334a34f1f3b9cae5bb7aa42f903bbd522034165b63689c340c559c3245"
+    },
+    {
+      "id": "spec-2-cli-version-and-update",
+      "type": "write",
+      "target": "specs/cli-version-and-update/spec.md",
+      "staged": "runtime/transactions/60febbfc-1bcc-4a3e-aad2-1ca975528fdb/staged/specs/cli-version-and-update/spec.md",
+      "expectedTargetHash": null,
+      "stagedHash": "f8db51f14390be02d12ef5c3ed87ee80e7590e1379f76de2bfe1ebd62005b3d8"
+    },
+    {
+      "id": "spec-3-controlled-camoufox-download",
+      "type": "write",
+      "target": "specs/controlled-camoufox-download/spec.md",
+      "staged": "runtime/transactions/60febbfc-1bcc-4a3e-aad2-1ca975528fdb/staged/specs/controlled-camoufox-download/spec.md",
+      "expectedTargetHash": null,
+      "stagedHash": "f2e7bb393894bcdd03309374045ee274a8984595910142f3be20933c2f0dc849"
+    },
+    {
+      "id": "spec-4-page-component-safety",
+      "type": "write",
+      "target": "specs/page-component-safety/spec.md",
+      "staged": "runtime/transactions/60febbfc-1bcc-4a3e-aad2-1ca975528fdb/staged/specs/page-component-safety/spec.md",
+      "expectedTargetHash": null,
+      "stagedHash": "047a1372032f3d0dc0f21e74e5265840c756eb63536a902767962b84a563dafc"
+    },
+    {
+      "id": "spec-5-resilient-runtime-setup",
+      "type": "write",
+      "target": "specs/resilient-runtime-setup/spec.md",
+      "staged": "runtime/transactions/60febbfc-1bcc-4a3e-aad2-1ca975528fdb/staged/specs/resilient-runtime-setup/spec.md",
+      "expectedTargetHash": null,
+      "stagedHash": "8528a33001056261d065697b57fa4e32dbbc228d6a79916c124901374cda3c41"
+    },
+    {
+      "id": "spec-6-user-identity-enrichment",
+      "type": "write",
+      "target": "specs/user-identity-enrichment/spec.md",
+      "staged": "runtime/transactions/60febbfc-1bcc-4a3e-aad2-1ca975528fdb/staged/specs/user-identity-enrichment/spec.md",
+      "expectedTargetHash": null,
+      "stagedHash": "b9ef7ac231f81339df2a0766140472dd6a80a25947121b641d0596512890c6ac"
+    },
+    {
+      "id": "archive-change",
+      "type": "move",
+      "source": "changes/harden-setup-identity-enrichment-and-updates",
+      "target": "archive/2026-08-02-harden-setup-identity-enrichment-and-updates",
+      "expectedSourceHash": "a0598dd82a11e2c9597d0da5e4088d26d7d8a80710224b45de382bd7c83ae064",
+      "expectedTargetHash": null
+    }
+  ]
+}

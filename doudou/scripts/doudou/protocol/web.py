@@ -4,6 +4,8 @@ import json
 from typing import Any
 from urllib.parse import unquote
 
+from ..models.identity import normalize_identity
+
 
 def first_url(value: Any) -> str | None:
     if isinstance(value, str) and value:
@@ -23,33 +25,34 @@ def first_url(value: Any) -> str | None:
 def identity_from(value: dict[str, Any]) -> dict[str, Any] | None:
     unique_id = value.get("unique_id", value.get("uniqueId"))
     sec_uid = value.get("sec_uid", value.get("secUid"))
-    if unique_id is None and sec_uid is None:
+    if unique_id is None and sec_uid is None and not value.get("uid"):
         return None
-    return {
-        "unique_id": str(unique_id or ""),
-        "sec_uid": str(sec_uid or ""),
-        "uid": str(value.get("uid") or ""),
-        "nickname": value.get("nickname"),
-    }
+    return normalize_identity(value, source="web-protocol")
 
 
 def identities_in(value: Any) -> list[dict[str, Any]]:
     output: dict[tuple[str, str, str], dict[str, Any]] = {}
-    pending = [value]
+    pending = [(value, 0)]
     while pending:
-        current = pending.pop()
+        current, depth = pending.pop()
+        if depth > 8:
+            continue
         if isinstance(current, dict):
             identity = identity_from(current)
             if identity:
                 output[
                     (identity["unique_id"], identity["sec_uid"], identity["uid"])
                 ] = identity
-            pending.extend(current.values())
+            pending.extend((item, depth + 1) for item in current.values())
         elif isinstance(current, list):
-            pending.extend(current)
+            pending.extend((item, depth + 1) for item in current)
     return sorted(
         output.values(),
-        key=lambda item: (item["unique_id"].casefold(), item["sec_uid"], item["uid"]),
+        key=lambda item: (
+            (item["unique_id"] or "").casefold(),
+            item["sec_uid"] or "",
+            item["uid"] or "",
+        ),
     )
 
 
@@ -62,12 +65,7 @@ def normalize_video(raw: dict[str, Any]) -> dict[str, Any]:
         "description": raw.get("desc") or "",
         "create_time": raw.get("create_time"),
         "aweme_type": raw.get("aweme_type"),
-        "author": {
-            "uid": str(author.get("uid") or ""),
-            "sec_uid": author.get("sec_uid") or author.get("secUid"),
-            "unique_id": author.get("unique_id") or author.get("uniqueId"),
-            "nickname": author.get("nickname"),
-        },
+        "author": normalize_identity(author, source="video-list"),
         "statistics": raw.get("statistics") or raw.get("stats") or {},
         "cover_url": first_url(
             video.get("cover") or video.get("origin_cover") or video.get("originCover")
@@ -103,12 +101,7 @@ def normalize_video_detail(detail: dict[str, Any]) -> dict[str, Any]:
             if item.get("hashtagName")
         ],
         "create_time": detail.get("createTime") or detail.get("create_time"),
-        "author": {
-            "uid": str(author.get("uid") or ""),
-            "sec_uid": author.get("secUid") or author.get("sec_uid"),
-            "unique_id": author.get("uniqueId") or author.get("unique_id"),
-            "nickname": author.get("nickname"),
-        },
+        "author": normalize_identity(author, source="video-detail"),
         "statistics": detail.get("stats") or detail.get("statistics") or {},
         "duration_ms": video.get("duration"),
         "width": video.get("width"),
@@ -141,12 +134,7 @@ def normalize_comment(raw: dict[str, Any], aweme_id: str) -> dict[str, Any]:
         "reply_id": root_id,
         "reply_to_reply_id": direct_parent,
         "parent_resolved": direct_parent is None,
-        "user": {
-            "uid": str(user.get("uid") or ""),
-            "sec_uid": user.get("sec_uid") or user.get("secUid"),
-            "unique_id": user.get("unique_id") or user.get("uniqueId"),
-            "nickname": user.get("nickname"),
-        },
+        "user": normalize_identity(user, source="comment"),
     }
 
 

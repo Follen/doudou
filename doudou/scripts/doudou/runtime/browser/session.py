@@ -58,6 +58,10 @@ class BrowserSession:
         self._init_request_future: asyncio.Future[bytes] | None = None
         self._init_response_future: asyncio.Future[bytes] | None = None
         self._network_tasks: set[asyncio.Task[Any]] = set()
+        self._auth_state_event = asyncio.Event()
+        self._auth_event_generation = 0
+        self._auth_reconciled_generation = 0
+        self._auth_reconcile_task: asyncio.Task[None] | None = None
         self.takeover_active = False
         self.takeover_reason: str | None = None
         self.takeover_kind: str | None = None
@@ -108,6 +112,9 @@ class BrowserSession:
             self.started_at = utc_now()
             return
         try:
+            from ..camoufox_asset import configure_cache
+
+            configure_cache()
             from camoufox.async_api import AsyncCamoufox
         except ImportError as error:
             raise DoudouError(
@@ -155,6 +162,7 @@ class BrowserSession:
                 await route.continue_()
 
         await self.context.route("**/*", route_media)
+        await self._attach_auth_state_observer()
         self._attach_im_capture()
         self.started_at = utc_now()
 
@@ -171,9 +179,11 @@ class BrowserSession:
             await asyncio.sleep(delay)
 
     async def _adopt_single_business_page(self) -> None:
-        pages = [page for page in self.context.pages if not page.is_closed()]
-        self.page = pages[0] if pages else await self.context.new_page()
-        for extra in pages[1:]:
+        restored_pages = [
+            page for page in self.context.pages if not page.is_closed()
+        ]
+        self.page = await self.context.new_page()
+        for extra in restored_pages:
             with contextlib.suppress(Exception):
                 await extra.close()
 
@@ -208,6 +218,7 @@ class BrowserSession:
         self.takeover_reason = reason
         self.takeover_kind = kind
         self.takeover_started_at = self.takeover_started_at or utc_now()
+        await self._set_page_auth_observer_active(True)
         presentation = await self.set_visible(True)
         return {
             "active": True,
@@ -224,23 +235,25 @@ class BrowserSession:
         self.takeover_kind = None
         self.takeover_started_at = None
         self.takeover_sms_requested = False
+        await self._set_page_auth_observer_active(False)
         await self.set_visible(False)
+
+    async def finalize_takeover_for_current_page(self) -> bool:
+        if not self.takeover_active:
+            return False
+        if await self._verification_kind() is not None:
+            return False
+        await self.finish_takeover()
+        return True
 
     async def request_sms_code_if_available(self) -> bool:
         if self.fake or not self.page or self.takeover_sms_requested:
             return False
-        from ...ui.adapters import AUTH_ADAPTER
+        from ...ui.components import AuthChallengeComponent
 
-        for key in ("get_code", "send_code"):
-            controls = AUTH_ADAPTER.text(self.page, key, exact=False)
-            for index in range(min(await controls.count(), 5)):
-                control = controls.nth(index)
-                with contextlib.suppress(Exception):
-                    if await control.is_visible() and await control.is_enabled():
-                        await control.click(timeout=10_000)
-                        self.takeover_sms_requested = True
-                        return True
-        return False
+        requested = await AuthChallengeComponent(self.page).request_sms_code()
+        self.takeover_sms_requested = requested
+        return requested
 
     async def wait_for_takeover_completion(
         self, timeout_seconds: float
@@ -287,7 +300,68 @@ class BrowserSession:
                 "BROKER_BROWSER_UNAVAILABLE", "The broker browser is not running."
             )
         await self.page.goto(url, wait_until=wait_until, timeout=60_000)
+        await self._set_page_auth_observer_active(self.takeover_active)
         return {"url": self.page.url, "title": await self.page.title()}
+
+    def _signal_auth_state_change(self) -> None:
+        self._auth_event_generation += 1
+        self._auth_state_event.set()
+        self._schedule_auth_reconciliation()
+
+    async def _attach_auth_state_observer(self) -> None:
+        if self.fake or not self.context or not self.page:
+            return
+
+        def on_auth_state_changed(_source: Any = None) -> None:
+            self._signal_auth_state_change()
+
+        await self.context.expose_binding(
+            "__doudouAuthStateChanged", on_auth_state_changed
+        )
+        script = """() => {
+          if (globalThis.__doudouAuthObserverInstalled || !document.documentElement) return;
+          globalThis.__doudouAuthObserverInstalled = true;
+          globalThis.__doudouAuthObserverActive = false;
+          let timer = null;
+          const observer = new MutationObserver(() => {
+            if (!globalThis.__doudouAuthObserverActive) return;
+            clearTimeout(timer);
+            timer = setTimeout(() => {
+              const callback = globalThis.__doudouAuthStateChanged;
+              if (typeof callback === 'function') callback().catch(() => {});
+            }, 150);
+          });
+          observer.observe(document.documentElement, {
+            childList: true,
+            subtree: true,
+            attributes: true,
+            attributeFilter: ['class', 'style', 'hidden', 'aria-hidden', 'disabled']
+          });
+        }"""
+        await self.context.add_init_script(f"({script})()")
+        await self.page.evaluate(script)
+
+        def on_frame_navigated(frame: Any) -> None:
+            if frame != self.page.main_frame:
+                return
+            task = asyncio.create_task(self._restore_auth_observer_after_navigation())
+            self._network_tasks.add(task)
+            task.add_done_callback(self._network_tasks.discard)
+
+        self.page.on("framenavigated", on_frame_navigated)
+
+    async def _restore_auth_observer_after_navigation(self) -> None:
+        await self._set_page_auth_observer_active(self.takeover_active)
+        self._signal_auth_state_change()
+
+    async def _set_page_auth_observer_active(self, active: bool) -> None:
+        if self.fake or not self.page:
+            return
+        with contextlib.suppress(Exception):
+            await self.page.evaluate(
+                "active => { globalThis.__doudouAuthObserverActive = active; }",
+                active,
+            )
 
     def _attach_im_capture(self) -> None:
         if self.fake or not self.page:
@@ -307,6 +381,10 @@ class BrowserSession:
                     self._init_request_future.set_result(self.init_request)
 
         async def consume_response(response: Any) -> None:
+            if response.url.startswith(
+                ("https://www.douyin.com/", "https://imapi.douyin.com/")
+            ):
+                self._signal_auth_state_change()
             if (
                 "/v1/message/get_message_by_init" not in response.url
                 or response.status != 200
@@ -328,39 +406,63 @@ class BrowserSession:
         self.page.on("request", on_request)
         self.page.on("response", on_response)
 
+    def _schedule_auth_reconciliation(self) -> None:
+        if not self.takeover_active or self._auth_reconcile_task is not None:
+            return
+        self._auth_reconcile_task = asyncio.create_task(
+            self._reconcile_auth_state_after_event()
+        )
+        self._network_tasks.add(self._auth_reconcile_task)
+        self._auth_reconcile_task.add_done_callback(self._network_tasks.discard)
+
+    async def _reconcile_auth_state_after_event(self) -> None:
+        try:
+            while (
+                self.takeover_active
+                and self._auth_reconciled_generation < self._auth_event_generation
+            ):
+                target_generation = self._auth_event_generation
+                await asyncio.sleep(0.15)
+                login = await self.classify_login()
+                self._record_login_state(login)
+                self._auth_reconciled_generation = target_generation
+                if login["valid"]:
+                    await self.finalize_takeover_for_current_page()
+                    break
+        except Exception:  # noqa: BLE001 - asynchronous observer is best effort
+            return
+        finally:
+            self._auth_reconcile_task = None
+            if (
+                self.takeover_active
+                and self._auth_reconciled_generation < self._auth_event_generation
+            ):
+                self._schedule_auth_reconciliation()
+            self._auth_state_event.set()
+
     async def _verification_kind(self) -> str | None:
         if self.fake or not self.page:
             return None
-        from ...ui.adapters import AUTH_ADAPTER
+        from ...ui.components import AuthChallengeComponent
 
-        for kind in ("sms_code", "slider", "qr_login", "generic_verification"):
-            locator = AUTH_ADAPTER.locator(self.page, kind)
-            for index in range(min(await locator.count(), 5)):
-                with contextlib.suppress(Exception):
-                    candidate = locator.nth(index)
-                    if await candidate.is_visible():
-                        if kind == "generic_verification":
-                            tag_name = await candidate.evaluate(
-                                "element => element.tagName"
-                            )
-                            text = (await candidate.inner_text(timeout=1000)).casefold()
-                            if tag_name != "IFRAME" and not any(
-                                marker in text
-                                for marker in ("验证", "验证码", "安全", "滑块", "拖动")
-                            ):
-                                continue
-                        if kind == "sms_code":
-                            quick = AUTH_ADAPTER.text(
-                                self.page, "quick_login", exact=False
-                            )
-                            for item in range(min(await quick.count(), 5)):
-                                if await quick.nth(item).is_visible():
-                                    return "quick_login_sms"
-                        return kind
-        return None
+        return await AuthChallengeComponent(self.page).detect()
 
     async def _verification_visible(self) -> bool:
         return await self._verification_kind() is not None
+
+    async def _chat_session_evidence(self) -> dict[str, Any]:
+        if self.fake:
+            return {"chat_route": True, "loaded": True, "candidate_count": 1}
+        if not self.page or not str(self.page.url).startswith(
+            "https://www.douyin.com/chat"
+        ):
+            return {"chat_route": False, "loaded": False, "candidate_count": 0}
+        try:
+            from ...ui.components import ConversationListComponent
+
+            return await ConversationListComponent(self.page).evidence()
+        except Exception:  # noqa: BLE001 - login classification remains bounded
+            return {"chat_route": True, "loaded": False, "candidate_count": 0}
 
     async def classify_login(self) -> dict[str, Any]:
         if self.fake:
@@ -376,13 +478,7 @@ class BrowserSession:
         cookies = await self.context.cookies(
             ["https://www.douyin.com/", "https://imapi.douyin.com/"]
         )
-        authenticated = [
-            item
-            for item in cookies
-            if item.get("name")
-            in {"sessionid", "sessionid_ss", "sid_guard", "uid_tt", "uid_tt_ss"}
-            and item.get("value")
-        ]
+        nonempty_cookie_count = sum(bool(item.get("value")) for item in cookies)
         verification_kind = await self._verification_kind()
         verification_visible = verification_kind is not None
         im_initialized = bool(
@@ -390,17 +486,26 @@ class BrowserSession:
             and self.init_response
             and not self.init_response.lstrip().startswith((b"{", b"["))
         )
-        if not authenticated:
+        chat_session = await self._chat_session_evidence()
+        account_session_valid = im_initialized or bool(chat_session.get("loaded"))
+        if verification_kind == "qr_login":
             status, code = "login_required", "LOGIN_REQUIRED"
-        elif verification_visible or not im_initialized:
+        elif verification_visible:
             status, code = "verification_required", "VERIFICATION_REQUIRED"
-        else:
+        elif account_session_valid:
             status, code = "valid", None
+        else:
+            status, code = "login_required", "LOGIN_REQUIRED"
         return {
             "status": status,
             "valid": status == "valid",
             "reason_code": code,
-            "authenticated_cookie_count": len(authenticated),
+            "authenticated_cookie_count": nonempty_cookie_count
+            if status == "valid"
+            else 0,
+            "cookie_count": nonempty_cookie_count,
+            "account_session_valid": account_session_valid,
+            "chat_session": chat_session,
             "im_initialized": im_initialized,
             "verification_visible": verification_visible,
             "verification_kind": verification_kind,
@@ -413,39 +518,63 @@ class BrowserSession:
         await self.present_for_takeover("LOGIN_REQUIRED", "qr_login")
         if not str(self.page.url).startswith("https://www.douyin.com"):
             await self.open("https://www.douyin.com/")
-        while asyncio.get_running_loop().time() < deadline:
-            cookies = await self.context.cookies(["https://www.douyin.com/"])
-            authenticated = any(
-                item.get("name")
-                in {"sessionid", "sessionid_ss", "sid_guard", "uid_tt", "uid_tt_ss"}
-                and item.get("value")
-                for item in cookies
-            )
-            if authenticated and not await self._verification_visible():
+        try:
+            while asyncio.get_running_loop().time() < deadline:
+                observed_generation = self._auth_event_generation
+                login = await self.classify_login()
+                self._record_login_state(login)
+                if login["valid"]:
+                    await self.finalize_takeover_for_current_page()
+                    return await self.ensure_ready(force_refresh=True)
+                if self._auth_event_generation != observed_generation:
+                    continue
+                self._auth_state_event.clear()
+                if self._auth_event_generation != observed_generation:
+                    self._auth_state_event.set()
+                    continue
+                remaining = deadline - asyncio.get_running_loop().time()
                 try:
-                    result = await self.ensure_ready(force_refresh=True)
-                except DoudouError as error:
-                    if error.code != "VERIFICATION_REQUIRED":
-                        raise
-                else:
-                    await self.finish_takeover()
-                    return result
-            await self.page.wait_for_timeout(1000)
-        login = await self.classify_login()
-        code = (
-            "VERIFICATION_REQUIRED"
-            if login.get("authenticated_cookie_count")
-            else "LOGIN_TIMEOUT"
-        )
-        kind = login.get("verification_kind") or (
-            "qr_login" if code == "LOGIN_TIMEOUT" else "generic_verification"
-        )
-        login["takeover"] = await self.present_for_takeover(code, kind)
-        raise DoudouError(
-            code,
-            "Headed login or verification did not complete before the timeout.",
-            login,
-        )
+                    await asyncio.wait_for(
+                        self._auth_state_event.wait(), timeout=min(remaining, 5)
+                    )
+                except TimeoutError:
+                    continue
+            login = await self.classify_login()
+            kind = login.get("verification_kind")
+            code = (
+                "LOGIN_TIMEOUT"
+                if kind in {None, "qr_login"}
+                else "VERIFICATION_REQUIRED"
+            )
+            raise DoudouError(
+                code,
+                "Headed login or verification did not complete before the timeout.",
+                login,
+            )
+        finally:
+            await self.finalize_takeover_for_current_page()
+
+    def _require_im_initialization(self, login: dict[str, Any]) -> None:
+        if self.fake:
+            return
+        details = {
+            "page_url": self.page.url if self.page else None,
+            "login": login,
+            "init_request_bytes": len(self.init_request or b""),
+            "init_response_bytes": len(self.init_response or b""),
+        }
+        if not self.init_request:
+            raise DoudouError(
+                "IM_CAPTURE_MISSING",
+                "The account is logged in, but this broker did not capture the IM initialization request.",
+                details,
+            )
+        if not self.init_response or self.init_response.lstrip().startswith((b"{", b"[")):
+            raise DoudouError(
+                "IM_INITIALIZATION_MISSING",
+                "The account is logged in, but IM initialization did not produce a usable Protobuf response.",
+                details,
+            )
 
     async def ensure_ready(self, force_refresh: bool = False) -> dict[str, Any]:
         if not self.page:
@@ -469,6 +598,7 @@ class BrowserSession:
                     "The Profile requires headed login or verification.",
                     login,
                 )
+            self._require_im_initialization(login)
             return {
                 "status": "ready",
                 "source": "existing_session",
@@ -507,8 +637,8 @@ class BrowserSession:
                 "The Profile requires headed login or verification.",
                 login,
             )
-        if self.takeover_active:
-            await self.finish_takeover()
+        await self.finalize_takeover_for_current_page()
+        self._require_im_initialization(login)
         self.ready = True
         self.ready_at = utc_now()
         self.initialization_count += 1
@@ -675,6 +805,11 @@ class BrowserSession:
                 elif self.context is not None:
                     await self.context.close()
         finally:
+            if self._auth_reconcile_task is not None:
+                self._auth_reconcile_task.cancel()
+                with contextlib.suppress(asyncio.CancelledError):
+                    await self._auth_reconcile_task
+                self._auth_reconcile_task = None
             if self._visibility_task is not None:
                 self._visibility_task.cancel()
                 with contextlib.suppress(asyncio.CancelledError):

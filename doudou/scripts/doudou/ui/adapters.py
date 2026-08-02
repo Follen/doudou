@@ -54,7 +54,7 @@ class PageAdapter:
 
 CHAT_ADAPTER = PageAdapter(
     name="douyin-chat",
-    version="2026-08-02.2",
+    version="2026-08-03.1",
     route_prefix="/chat",
     route_aliases=(),
     selectors={
@@ -62,6 +62,13 @@ CHAT_ADAPTER = PageAdapter(
         "message_item": '[data-e2e="msg-item-content"]',
         "image_upload": '[role="button"].semi-upload-add',
         "send_button": "svg.e2e-send-msg-btn",
+        "conversation_list": 'div.conversationConversationListwrapper:has([data-e2e="conversation-item"])',
+        "session_candidates": '[data-e2e="conversation-item"]',
+        "session_avatars": "img",
+        "message_context_menu": ".MessageOperatePopWindowwrapper",
+        "message_context_action": ".MessageOperatePopBodybuttonItem",
+        "image_preview_dialog": '[role="dialog"].semi-modal-content:has(.MsgInputSendFileModalbox img)',
+        "image_preview_send": "button.MsgInputSendFileModalbtnSure",
     },
     labels={"reply": "回复", "send": "发送", "like": "点赞"},
 )
@@ -69,7 +76,7 @@ CHAT_ADAPTER = PageAdapter(
 
 VIDEO_ADAPTER = PageAdapter(
     name="douyin-video",
-    version="2026-08-02.4",
+    version="2026-08-03.1",
     route_prefix="/video/",
     route_aliases=("/note/",),
     selectors={
@@ -77,7 +84,7 @@ VIDEO_ADAPTER = PageAdapter(
         "inventory_controls": "button, [role=button], [data-e2e]",
         "comment_button": '[data-e2e="feed-comment-icon"], [data-e2e*="comment" i], button[aria-label*="评论"], [title*="评论"]',
         "comment_item": '[data-e2e="comment-item"]',
-        "comment_container": ".comment-input-container",
+        "comment_container": ".comment-input-inner-container",
         "comment_placeholder": ".public-DraftEditorPlaceholder-root:visible",
         "comment_send_controls": ".commentInput-right-ct span",
         "comment_editor": 'textarea, input, [contenteditable="true"]',

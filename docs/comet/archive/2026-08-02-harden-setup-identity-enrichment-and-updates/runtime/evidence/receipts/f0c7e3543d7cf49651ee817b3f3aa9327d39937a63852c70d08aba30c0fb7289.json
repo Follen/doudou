@@ -1,0 +1,28 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "manual-evidence",
+  "role": "acceptance-evidence",
+  "status": "passed",
+  "bindings": {
+    "change": "harden-setup-identity-enrichment-and-updates",
+    "sourceRevision": 9,
+    "contractHash": "f5f099d3e4c79e2d4bb08db432beff2d7be1aeca3234a5e5d1f7dee7103a1d7d",
+    "scopeHash": "8de7730ab07abc8866aa417dd1325c3308b48117da6b0a92080304c045770c8f",
+    "snapshotHash": "ab7c2bca4af213e4c960a926b3d9e501f80dd7e32b75698b3a8aa09821db4c35",
+    "artifactHash": "b1f3a8adc2e1ca4adc05edf8a84fb186c5f6c6f50617408b2727a24fe69a6f3f"
+  },
+  "acceptanceIds": [
+    "acceptance-6debf7a01f369e7b4ca1645712f41b9eac7bf97a45ee88dc86f1680ecbaae471"
+  ],
+  "actor": "native-runtime:manual-evidence",
+  "issuedAt": "2026-08-02T18:32:49.583Z",
+  "evidence": {
+    "steps": [
+      "运行 runtime setup、并发、取消、原子切换和 doctor 测试。"
+    ],
+    "observations": [
+      "setup 单飞、陈旧锁、取消进程树、失败回滚和 Windows Scripts 路径测试通过；doctor 报告 runtime active 且浏览器启动成功。"
+    ]
+  },
+  "receiptHash": "f0c7e3543d7cf49651ee817b3f3aa9327d39937a63852c70d08aba30c0fb7289"
+}

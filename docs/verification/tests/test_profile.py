@@ -100,6 +100,9 @@ class ProfileTests(unittest.TestCase):
             backups = list((root / "profile").glob("work__chromium-backup-*"))
             self.assertEqual(len(backups), 1)
             self.assertTrue((backups[0] / "browser-data" / "Default").is_dir())
+            self.assertEqual(
+                [item["profile_id"] for item in list_profiles(root)], ["work"]
+            )
             self.assertTrue(
                 any(
                     (root / "message" / "profiles" / "work" / "migrations").glob(

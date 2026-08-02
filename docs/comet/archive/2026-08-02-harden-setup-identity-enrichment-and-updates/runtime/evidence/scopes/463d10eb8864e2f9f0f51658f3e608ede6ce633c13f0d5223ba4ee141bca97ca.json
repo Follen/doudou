@@ -1,0 +1,2141 @@
+{
+  "schema": "comet.native.implementation-scope.v2",
+  "contractHash": "f5f099d3e4c79e2d4bb08db432beff2d7be1aeca3234a5e5d1f7dee7103a1d7d",
+  "baselineProjectionRef": "runtime/evidence/snapshots/6f954e75e91b5ca8d9cda3afce71d20d825b2e8df84d39ede00056cbe28898b3.json",
+  "baselineProjectionHash": "6f954e75e91b5ca8d9cda3afce71d20d825b2e8df84d39ede00056cbe28898b3",
+  "currentProjectionRef": "runtime/evidence/snapshots/ab7c2bca4af213e4c960a926b3d9e501f80dd7e32b75698b3a8aa09821db4c35.json",
+  "currentProjectionHash": "ab7c2bca4af213e4c960a926b3d9e501f80dd7e32b75698b3a8aa09821db4c35",
+  "complete": false,
+  "declaredArtifacts": [
+    {
+      "path": "doudou/SKILL.md",
+      "kind": "file"
+    }
+  ],
+  "changes": [
+    {
+      "path": ".github/workflows/publish-npm.yml",
+      "kind": "modified",
+      "before": {
+        "hash": "fd7f14c722e46152b741b4ab436ad07a1fceea9f59a00b5a92f4dcf16cc51169",
+        "size": 2292
+      },
+      "after": {
+        "hash": "995da4ee35323dc094711632522f6305d7c29da1a05b096db146a72ae5327827",
+        "size": 2914
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "AGENTS.md",
+      "kind": "modified",
+      "before": {
+        "hash": "ffcf9de0ebb0d4abfb0330defa4c938065cff3fefa6d6987bc6f41c44845041e",
+        "size": 5644
+      },
+      "after": {
+        "hash": "d6cf9b12e9c95d756c3ef2f200b9421ab110180439863eadd3c919f6ff17ba8c",
+        "size": 5623
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "README.md",
+      "kind": "modified",
+      "before": {
+        "hash": "0c97713306050dd268a1c35acfea8a38a2f08c0f1370afe94dc65cc0b62a2adb",
+        "size": 5202
+      },
+      "after": {
+        "hash": "6357ca7592d2961d817ea0d2df4ce2aed3119bf7fb940a2f248d20f1f4ecdd8a",
+        "size": 5920
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "docs/verification/tests/test_broker.py",
+      "kind": "modified",
+      "before": {
+        "hash": "14994f53dacfdf0b256876a27cd64b4873434397c80ae8f7369f9431780ceb80",
+        "size": 18485
+      },
+      "after": {
+        "hash": "905ad7fc5a0a992593c4d8e5a331c7e2bd6602d9ea2f9b29cda467820a6bde16",
+        "size": 33645
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "docs/verification/tests/test_cli_doctor.py",
+      "kind": "modified",
+      "before": {
+        "hash": "26644aaeccebedb9f4fd4a67f41f773fbc36d89d1ab58a3f4868d92850b7212d",
+        "size": 1075
+      },
+      "after": {
+        "hash": "628c08f6f3610ba670400693e5be99db201a0642bb99713b3edffea73abf22c6",
+        "size": 1920
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "docs/verification/tests/test_component_geometry.py",
+      "kind": "modified",
+      "before": {
+        "hash": "e164f8f011ec87882ffef09bf88eb37f0d4edd07ca588f855722de1d270d2e73",
+        "size": 5261
+      },
+      "after": {
+        "hash": "4ba216737929ee53216640255ed9539826d36eea3541240a2ebbb89657e7bd15",
+        "size": 5978
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "docs/verification/tests/test_core.py",
+      "kind": "modified",
+      "before": {
+        "hash": "253ca1b3a5d7a8432cc07ce51a8aafe04f77dc581800ff3f685802682bcb6b2f",
+        "size": 1102
+      },
+      "after": {
+        "hash": "5e04cf16aa328cbad0e80ac050150dca625d53989f6ac046374cd91d4e9da6a8",
+        "size": 1644
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "docs/verification/tests/test_identity.py",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "b9178671228d24023daa5294e381db23f0389fcc77024facc1a7c394d8c30214",
+        "size": 5196
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "docs/verification/tests/test_profile.py",
+      "kind": "modified",
+      "before": {
+        "hash": "a78839c9fa9216f3f8d998ea7fdda9b680132820d14776cad73cb45b1cfa3618",
+        "size": 4968
+      },
+      "after": {
+        "hash": "481395494178c3b8afa75dbcc960a3ddbf3815cea9d7294ea32e0eacac96958c",
+        "size": 5091
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "docs/verification/tests/test_protocol_storage.py",
+      "kind": "modified",
+      "before": {
+        "hash": "8c353ece949d47efb0c980938b6ae7f351cae5f411532e905eefcbeeb562c4a7",
+        "size": 15260
+      },
+      "after": {
+        "hash": "b7006b0f762cf4603b341bd752da3dabb4ebed3b8e794bba9022bb1d7066cb2e",
+        "size": 21132
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "docs/verification/tests/test_responses.py",
+      "kind": "modified",
+      "before": {
+        "hash": "b12e29216ab63b81b1e409219cf5f5778f00b4555989393db580dd352e13321a",
+        "size": 5886
+      },
+      "after": {
+        "hash": "8aa6ce5c8803dc21428e75de88f56937b9e3a9e5d9a41794c2da49e68a830a98",
+        "size": 5913
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "docs/verification/tests/test_runtime_home.py",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "af670fab82b6b8fa562664935c30ba205319146c7181d6c4e7c25c8ad2f562d3",
+        "size": 2884
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "docs/verification/tests/test_video_writes.py",
+      "kind": "modified",
+      "before": {
+        "hash": "05d984e649e1f2e9a4e2b9703160e7a1db2e4b72d70871b1cac6895c3872dad1",
+        "size": 3107
+      },
+      "after": {
+        "hash": "1846bf42633e4dcc1d844b8df12688197f6e2ae40cb8c9de31bc9a48c79261f3",
+        "size": 5581
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "doudou/SKILL.md",
+      "kind": "modified",
+      "before": {
+        "hash": "2c86b0df1d26c8240d78411cb7ed8d28138fba8556265ee468e8b33060388022",
+        "size": 3963
+      },
+      "after": {
+        "hash": "5592e46b311d1f84937ea1d74bc16618aa7d1efd8eea8705989883ef2de19462",
+        "size": 5106
+      },
+      "attributedTo": [
+        {
+          "path": "doudou/SKILL.md",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "doudou/references/cli.md",
+      "kind": "modified",
+      "before": {
+        "hash": "9677600ccf68f8e8a6223d4c4893d353f75f1435e4dddb38b97fb41d51bef4ef",
+        "size": 2917
+      },
+      "after": {
+        "hash": "0ddaa3a1932482808fc4f01578bc594c138efaf025e3da81be084f9fdc0c6c04",
+        "size": 3208
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "doudou/references/layout.md",
+      "kind": "modified",
+      "before": {
+        "hash": "2099064dac751e34e803bb9f71f5ab3a5626c441903d9d42bb71276d77265f94",
+        "size": 1893
+      },
+      "after": {
+        "hash": "e858ecf18bdfd1955d21ca257c1ea739214b0a4a0dcd243cdc7e21e3f7ac7eeb",
+        "size": 1879
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "doudou/references/runtime.md",
+      "kind": "modified",
+      "before": {
+        "hash": "5479f595f3a0a7327509d08b6f7312958bb4e8efe8b7a960d1e7fd022d5e992e",
+        "size": 3130
+      },
+      "after": {
+        "hash": "d2814d45992b47df571e806fcd30c5d22305aafd37e1e139158a517045fdac44",
+        "size": 5276
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "doudou/scripts/doudou.py",
+      "kind": "modified",
+      "before": {
+        "hash": "d9e7776705faff322b5c7c1f02a8db05137c30b6a8167106c3a6d3035d79b27f",
+        "size": 1037
+      },
+      "after": {
+        "hash": "1121176c47a5e3662b0f5263f75ea54fd95d2ffd4fad99ad1e552288869a98a9",
+        "size": 1002
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "doudou/scripts/doudou/cli.py",
+      "kind": "modified",
+      "before": {
+        "hash": "a73b7234f93e4b6ac6a9ce6d33ce3288a44216ed81329e90d5bb91c18860b80a",
+        "size": 17704
+      },
+      "after": {
+        "hash": "831993faec902218307fa7c5bd3db8c45def6b88b29155556ec36e9274730baa",
+        "size": 18553
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "doudou/scripts/doudou/common/core.py",
+      "kind": "modified",
+      "before": {
+        "hash": "25fd0af670554d6a7ea5653d06dbf682216f55481a302501933d2c6ce357dd78",
+        "size": 4437
+      },
+      "after": {
+        "hash": "9afaeaee3b23d3547dbb5bbdb43c43e05d2a4f6905de1bb2e0296110cf3f0352",
+        "size": 4404
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "doudou/scripts/doudou/features/broker.py",
+      "kind": "modified",
+      "before": {
+        "hash": "225f866a3ee4ad701196bf7fd354eec588262151f7d0433bcb13bd8d5279325d",
+        "size": 3479
+      },
+      "after": {
+        "hash": "a0bd3436fe67780968dff40c5b79d85beb00106d91b2b85c6912b88a2d45185a",
+        "size": 3487
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "doudou/scripts/doudou/features/chat/service.py",
+      "kind": "modified",
+      "before": {
+        "hash": "fa30e422023d67fdd6f0dc2d4d6e264af122f94c51638723f6dc14f0cb8c9a0a",
+        "size": 17095
+      },
+      "after": {
+        "hash": "d53ae96c47d0872ad304cdfaef0003e33cfa64fe4a875ae2b8c38421458a8291",
+        "size": 16901
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "doudou/scripts/doudou/features/diagnostics.py",
+      "kind": "modified",
+      "before": {
+        "hash": "9a942c9d742fb578658580bf8d38ff936f2a01367f40aa258498acef0724ec3e",
+        "size": 8232
+      },
+      "after": {
+        "hash": "5b832aa9c2f039ea5d5a696d203487f1fcf2d6c6ccddc5f43adb490c6e640ca7",
+        "size": 9996
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "doudou/scripts/doudou/features/video/service.py",
+      "kind": "modified",
+      "before": {
+        "hash": "85b533ac4fe1161bb5590e427985e59b664361eb3cbe9aa28452c0e3f0111077",
+        "size": 8012
+      },
+      "after": {
+        "hash": "ad25783a93cf7132aafc864db52edf1e33266b89af53d800d36aec5a7838e082",
+        "size": 8352
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "doudou/scripts/doudou/models/identity.py",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "552b9949ad993954b7e93c9e6e4722e24776425078dba6bf28e07541183a938b",
+        "size": 9393
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "doudou/scripts/doudou/models/records.py",
+      "kind": "modified",
+      "before": {
+        "hash": "523a2e0113f5444df6dd2af5750e468d756b70887f23de4cc975844ccbd29688",
+        "size": 875
+      },
+      "after": {
+        "hash": "491f72ec13f19c47db768811a108e89162db609645bc37129d1f60bab4e5b0d0",
+        "size": 981
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "doudou/scripts/doudou/protocol/im.py",
+      "kind": "modified",
+      "before": {
+        "hash": "dabc64c9e8cc1df75d91beef15ce0939c8b98d4771158d99beba92c28b762699",
+        "size": 17322
+      },
+      "after": {
+        "hash": "a336af0d8070ab6b7e8f80eb36dbcbe667beef0c7aba8235cf1d816d0bd7c2c7",
+        "size": 17789
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "doudou/scripts/doudou/protocol/web.py",
+      "kind": "modified",
+      "before": {
+        "hash": "a411e7de2ff3721076e79160a657ef5587c4aede0ae73e9abe4f99459ad4b320",
+        "size": 5838
+      },
+      "after": {
+        "hash": "8da72ba7a3a101cafa7a51a7770bf29c9dbdfee280a283794d400f8c6640c238",
+        "size": 5355
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "doudou/scripts/doudou/reads/chat.py",
+      "kind": "modified",
+      "before": {
+        "hash": "34d4ff71f98dd8f9ca4aafd054546193dcf69a5fdc79a76885f0382d09fa88ef",
+        "size": 15592
+      },
+      "after": {
+        "hash": "98ca090e285a7ab0e9beea3bef0a7ad8ec52a6adaab9ebe92ba9e592004b1aea",
+        "size": 17083
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "doudou/scripts/doudou/reads/transport.py",
+      "kind": "modified",
+      "before": {
+        "hash": "8077d8f3b1c8f1e1b53f96688b8e484469e1dbc520d9c56d986b882ad9cadbb7",
+        "size": 2164
+      },
+      "after": {
+        "hash": "8d6cf8482378652f4ea6c607a9d5e03683de863e6049105959b341f7d0359333",
+        "size": 2143
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "doudou/scripts/doudou/reads/video.py",
+      "kind": "modified",
+      "before": {
+        "hash": "19ff3a9d084d2aa72449a54b06da5b15ddeeda27d775d3aca17561bded16ddcb",
+        "size": 27249
+      },
+      "after": {
+        "hash": "69cb48f027442cd220836cdc73be926e02c13fd97758bbe2e4ba2e495320c0a3",
+        "size": 26406
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "doudou/scripts/doudou/runtime/broker/client.py",
+      "kind": "modified",
+      "before": {
+        "hash": "add4c540b22183e7e9f240d06f135206e1434ec11abd343681178970f71d04e8",
+        "size": 9118
+      },
+      "after": {
+        "hash": "49b4aaaf6c8aeb9214dcce9711aefa297a7583ec9da732e6231b94b360295424",
+        "size": 12129
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "doudou/scripts/doudou/runtime/broker/server.py",
+      "kind": "modified",
+      "before": {
+        "hash": "282431bb59dc540e4648df76896a6eaa78c9d0514d0428ee39ec234642ec07bf",
+        "size": 17257
+      },
+      "after": {
+        "hash": "f02c2f5c166d2decb5fa2ec3d246c859474487dccc9205a33dd20f722e6ba3a5",
+        "size": 19177
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "doudou/scripts/doudou/runtime/browser/session.py",
+      "kind": "modified",
+      "before": {
+        "hash": "d04b38c73e43d8dded5161345b2e096c7cd113d529004c712c519126e4a0a063",
+        "size": 28985
+      },
+      "after": {
+        "hash": "9ebe726e9c4bde63ec340fe2768df2419aa5d1b83957594937fd8d656e9c6eea",
+        "size": 34506
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "doudou/scripts/doudou/runtime/camoufox_asset.py",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "a091ab378225af6e24bc1fd32542684d3a26586c62c461a7501b2e5260617c11",
+        "size": 5241
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "doudou/scripts/doudou/runtime/environment.py",
+      "kind": "modified",
+      "before": {
+        "hash": "c2150b64b5d12534f6a47280eca7c9d2ddf79db3af997a0042ae637815cc2167",
+        "size": 16971
+      },
+      "after": {
+        "hash": "b0eb9517a33f19985ec48888d2e99e194cda721c78b482571e008ad1e96b128e",
+        "size": 12215
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "doudou/scripts/doudou/runtime/home.py",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "c1d7335769ee8b24adfd67450a8d5c0354860afa89debeb46dbfa9952d0dc642",
+        "size": 434
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "doudou/scripts/doudou/runtime/paths.py",
+      "kind": "modified",
+      "before": {
+        "hash": "1c1330f635e357ac06b8e11652b4bb1d1c94b8f9db1538b3ec6f31a216399474",
+        "size": 2560
+      },
+      "after": {
+        "hash": "a1f270abcc1c66026319acbede04d21102a42d66c79d2abfd795260767d69e2f",
+        "size": 2624
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "doudou/scripts/doudou/runtime/profile.py",
+      "kind": "modified",
+      "before": {
+        "hash": "38bbb4432781bf079fe082b25ac715dd36c779fcd97ad936d6e806781e9a22b3",
+        "size": 9406
+      },
+      "after": {
+        "hash": "8eae76a1acc3bb6486d816b371605fac1bf81c5ab55a61dadf87465d11b5e633",
+        "size": 9499
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "doudou/scripts/doudou/storage/identity_migration.py",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "76305765c58103132d95189ce3362aae5b3cc2dcbda7c89ecddbc97ef6bf0b93",
+        "size": 2143
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "doudou/scripts/doudou/storage/repository.py",
+      "kind": "modified",
+      "before": {
+        "hash": "ce25b281ec2bb4c0d83efc0024f5eaf0595f5f3cd64d7ac293beaddf0572a380",
+        "size": 5784
+      },
+      "after": {
+        "hash": "46d319e051e352c4131d2fb3924b30a97cb3b693359fa969c0f4ce16746e903d",
+        "size": 8553
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "doudou/scripts/doudou/ui/adapters.py",
+      "kind": "modified",
+      "before": {
+        "hash": "b5f191832715782546373d697424e560a1c44c58c3c0a7f258c970813192e87f",
+        "size": 4258
+      },
+      "after": {
+        "hash": "97b1140255b2170ebbca51feee030e63abb987d00bb3c9d7b6b1e71c4a811831",
+        "size": 4781
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "doudou/scripts/doudou/ui/chat.py",
+      "kind": "modified",
+      "before": {
+        "hash": "7a77990e9d1d2e084c66155b2dd1d683ca238c639e5c369f5408b9ac429eb7cc",
+        "size": 13181
+      },
+      "after": {
+        "hash": "da1c9424490070b0b18ad458ccea77932d59c4323a56cce5062e0c3a8842bc70",
+        "size": 11904
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "doudou/scripts/doudou/ui/components/__init__.py",
+      "kind": "modified",
+      "before": {
+        "hash": "c62d457e1e59c82e0090f8ec686315ac019e03620287a3151c36ece4ee07fba0",
+        "size": 484
+      },
+      "after": {
+        "hash": "23b4057fe6c6fa91797e320ad34f75729a050fdc37ec14a41e373310c6fae308",
+        "size": 733
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "doudou/scripts/doudou/ui/components/auth.py",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "7d263d2f844d19b0fa1fa735959d9ce32dea9e631be2ff9747ca17f5cc70f628",
+        "size": 6071
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "doudou/scripts/doudou/ui/components/base.py",
+      "kind": "modified",
+      "before": {
+        "hash": "be315036496c4ba3216a852ebb6487fb16cede1e7e9b1fb997ea166683c69e2c",
+        "size": 10595
+      },
+      "after": {
+        "hash": "4c9b498722a780a297af2c2e9db36f980a1ca4df036c507ce5886d24f8616bbc",
+        "size": 12568
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "doudou/scripts/doudou/ui/components/chat.py",
+      "kind": "modified",
+      "before": {
+        "hash": "c727796e464372020440aa2b70a28f11ba48308d67f527115fb87bfc4a15b077",
+        "size": 9774
+      },
+      "after": {
+        "hash": "460cd0e93c8ab97c010417249746067dce1656d71fb072fb460a8f58d0317ace",
+        "size": 18730
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "doudou/scripts/doudou/ui/components/video.py",
+      "kind": "modified",
+      "before": {
+        "hash": "16812ace0e6771123d2b85bce8baf514358e632a893aba48395c2d47e9cf12b0",
+        "size": 16729
+      },
+      "after": {
+        "hash": "c2da9ef1d7324caf95eb32590ec92760387d1d493c5a3d8e3cd7c32904c64353",
+        "size": 26287
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "doudou/scripts/doudou/ui/video.py",
+      "kind": "modified",
+      "before": {
+        "hash": "1302f3c17d9de2a6ac80fdb0c2e1115a2d55f9028714082504e8a4e8d4778346",
+        "size": 7131
+      },
+      "after": {
+        "hash": "d76f985ebc0096110e9e211eb50b05b00e44ea0be59d18d626b84cb714e3705b",
+        "size": 7063
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "doudou/scripts/runtime-manifest.json",
+      "kind": "modified",
+      "before": {
+        "hash": "084b9dd8b7167bdef476a4cc1ddbdb51b1c1188a3c140ea1cc53820063fd78b4",
+        "size": 357
+      },
+      "after": {
+        "hash": "ac32b2f25c91c37dbfb4f36ae833d0411606e8a9389521b18fa8343fb3959c48",
+        "size": 1754
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "npm/bin/doudou.mjs",
+      "kind": "modified",
+      "before": {
+        "hash": "cf5b82bbd3597f486e5c5972fcbebdd8637ffe0d82daaab00406957254a43d14",
+        "size": 2897
+      },
+      "after": {
+        "hash": "952f4e8884f46444c758e5d63b108126cf50f186c7bfd0ea336fdd8bbda5fcc4",
+        "size": 4209
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "npm/lib/controlled-download.mjs",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "cfb3375867ba5335234966427a3e054e1eef2545e519294e8e2799c71c6a1c04",
+        "size": 11755
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "npm/lib/options.mjs",
+      "kind": "modified",
+      "before": {
+        "hash": "bd6b069178828bb2ae3d6129d8e64f05f4ae4bab596ab939c31679ecdc705844",
+        "size": 1738
+      },
+      "after": {
+        "hash": "3cd024a7e6f41705767b13d16d7e73d3b4351e484346738feb92dc7bdd1e97f6",
+        "size": 1750
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "npm/lib/python.mjs",
+      "kind": "modified",
+      "before": {
+        "hash": "98a7712659608c2d52727e0c22c7451d5987a24c4b98bd38d2996d01f5b63d91",
+        "size": 3170
+      },
+      "after": {
+        "hash": "d56c717e623f858dd36396bf934e5781edcccfe56f8f69cc71367f9758244ec1",
+        "size": 1800
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "npm/lib/runtime-setup.mjs",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "4d7617de37b22de23739768fe70aa7059b7ed591ed43b9bd51b549eb8dba8c75",
+        "size": 21278
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "npm/lib/uninstall.mjs",
+      "kind": "modified",
+      "before": {
+        "hash": "e2c1df4a1e08135979dd04a6dc6a8d58b2c7ff8b420431cb0e398e905fcc7b0e",
+        "size": 11099
+      },
+      "after": {
+        "hash": "2ae89d495ea9fb8868e65bdc0cf91c78737f760308cf62fa8a9ffad42d27cd27",
+        "size": 11796
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "npm/lib/update.mjs",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "e6258add5d82a5b948783d2d93ce306c32538dd90332176ac99b11e8cc93a393",
+        "size": 6179
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "npm/scripts/test-install.mjs",
+      "kind": "modified",
+      "before": {
+        "hash": "6a12c42c5e05e62ee45187058b03b48955fed82cafe2dd52b52c280cb0b24b7e",
+        "size": 6949
+      },
+      "after": {
+        "hash": "a581f19eb6d8a0989ba8d449e226d84948b967a28c7ab0b25bc30975f31f8e18",
+        "size": 7296
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "npm/skill-manifest.json",
+      "kind": "modified",
+      "before": {
+        "hash": "af52c8e697f02a8da053ff7dff2cfee6281ea696b11bb6a583aea5ad7df68a95",
+        "size": 11296
+      },
+      "after": {
+        "hash": "727b4ac427fa0ab9fe12c34743afc0b6a08700f320f142ecec53127fb2e85c31",
+        "size": 12156
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "npm/test/controlled-download.test.mjs",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "2e64412f6496fbf9c07e611e108c920ddced3b8a754bba39371939b9f32726fc",
+        "size": 5737
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "npm/test/managed-install.test.mjs",
+      "kind": "modified",
+      "before": {
+        "hash": "01b847b4ee0c6cf17deb1ad6e9dfdc7bf8f101c53de38facfc5d5bd89b7169e6",
+        "size": 1509
+      },
+      "after": {
+        "hash": "7e85981889ff3899809ffff6012d3c37f5039acda78102071143a061995df110",
+        "size": 1507
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "npm/test/python.test.mjs",
+      "kind": "modified",
+      "before": {
+        "hash": "d51d6a97084bed2e587722882854ab4b6bdad1820bf96bb4c92f99acf1e57b95",
+        "size": 2272
+      },
+      "after": {
+        "hash": "6b52d7ff8bf05de2f7eb0e523aa91800ed16aecc85e12a549e4ea8bca8736a68",
+        "size": 4217
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "npm/test/runtime-setup.test.mjs",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "ff1aec9e490fa39d207e67c421b78977d46ca033d46a77a72dc0a17dfadff475",
+        "size": 7084
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "npm/test/uninstall.test.mjs",
+      "kind": "modified",
+      "before": {
+        "hash": "6178564b0c5ab74c491f17bd56cb4382d1bff75aaee373d2ca7c051b3c195dbb",
+        "size": 5921
+      },
+      "after": {
+        "hash": "e5308822e5acf0b5321af77122f272d2168c4b9c2f433eb1338d759d142103c8",
+        "size": 6227
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "npm/test/update.test.mjs",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "7537b3c5afe8709018a3638593e7d876b0741f234e4ac1873da13cc4bd9e9933",
+        "size": 6308
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "package-lock.json",
+      "kind": "modified",
+      "before": {
+        "hash": "c7fdd7c78476fca5030507738a26ba421144f66b2f9b0808c509c116261f4226",
+        "size": 379
+      },
+      "after": {
+        "hash": "f964202d069789ddafab731f900dd963796243dc074c4386eff971f9963e3900",
+        "size": 773
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "package.json",
+      "kind": "modified",
+      "before": {
+        "hash": "265335a521c8bfeaa05d27b98b6e7c91c372f3e987a0207588868e965e2ad0e5",
+        "size": 1129
+      },
+      "after": {
+        "hash": "3f1715b4b478bb5028c0b54645cc949df61de39330227119eff55572974fb27f",
+        "size": 1178
+      },
+      "attributedTo": []
+    }
+  ],
+  "unattributed": [
+    {
+      "path": ".github/workflows/publish-npm.yml",
+      "kind": "modified",
+      "before": {
+        "hash": "fd7f14c722e46152b741b4ab436ad07a1fceea9f59a00b5a92f4dcf16cc51169",
+        "size": 2292
+      },
+      "after": {
+        "hash": "995da4ee35323dc094711632522f6305d7c29da1a05b096db146a72ae5327827",
+        "size": 2914
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "AGENTS.md",
+      "kind": "modified",
+      "before": {
+        "hash": "ffcf9de0ebb0d4abfb0330defa4c938065cff3fefa6d6987bc6f41c44845041e",
+        "size": 5644
+      },
+      "after": {
+        "hash": "d6cf9b12e9c95d756c3ef2f200b9421ab110180439863eadd3c919f6ff17ba8c",
+        "size": 5623
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "README.md",
+      "kind": "modified",
+      "before": {
+        "hash": "0c97713306050dd268a1c35acfea8a38a2f08c0f1370afe94dc65cc0b62a2adb",
+        "size": 5202
+      },
+      "after": {
+        "hash": "6357ca7592d2961d817ea0d2df4ce2aed3119bf7fb940a2f248d20f1f4ecdd8a",
+        "size": 5920
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "docs/verification/tests/test_broker.py",
+      "kind": "modified",
+      "before": {
+        "hash": "14994f53dacfdf0b256876a27cd64b4873434397c80ae8f7369f9431780ceb80",
+        "size": 18485
+      },
+      "after": {
+        "hash": "905ad7fc5a0a992593c4d8e5a331c7e2bd6602d9ea2f9b29cda467820a6bde16",
+        "size": 33645
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "docs/verification/tests/test_cli_doctor.py",
+      "kind": "modified",
+      "before": {
+        "hash": "26644aaeccebedb9f4fd4a67f41f773fbc36d89d1ab58a3f4868d92850b7212d",
+        "size": 1075
+      },
+      "after": {
+        "hash": "628c08f6f3610ba670400693e5be99db201a0642bb99713b3edffea73abf22c6",
+        "size": 1920
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "docs/verification/tests/test_component_geometry.py",
+      "kind": "modified",
+      "before": {
+        "hash": "e164f8f011ec87882ffef09bf88eb37f0d4edd07ca588f855722de1d270d2e73",
+        "size": 5261
+      },
+      "after": {
+        "hash": "4ba216737929ee53216640255ed9539826d36eea3541240a2ebbb89657e7bd15",
+        "size": 5978
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "docs/verification/tests/test_core.py",
+      "kind": "modified",
+      "before": {
+        "hash": "253ca1b3a5d7a8432cc07ce51a8aafe04f77dc581800ff3f685802682bcb6b2f",
+        "size": 1102
+      },
+      "after": {
+        "hash": "5e04cf16aa328cbad0e80ac050150dca625d53989f6ac046374cd91d4e9da6a8",
+        "size": 1644
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "docs/verification/tests/test_identity.py",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "b9178671228d24023daa5294e381db23f0389fcc77024facc1a7c394d8c30214",
+        "size": 5196
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "docs/verification/tests/test_profile.py",
+      "kind": "modified",
+      "before": {
+        "hash": "a78839c9fa9216f3f8d998ea7fdda9b680132820d14776cad73cb45b1cfa3618",
+        "size": 4968
+      },
+      "after": {
+        "hash": "481395494178c3b8afa75dbcc960a3ddbf3815cea9d7294ea32e0eacac96958c",
+        "size": 5091
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "docs/verification/tests/test_protocol_storage.py",
+      "kind": "modified",
+      "before": {
+        "hash": "8c353ece949d47efb0c980938b6ae7f351cae5f411532e905eefcbeeb562c4a7",
+        "size": 15260
+      },
+      "after": {
+        "hash": "b7006b0f762cf4603b341bd752da3dabb4ebed3b8e794bba9022bb1d7066cb2e",
+        "size": 21132
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "docs/verification/tests/test_responses.py",
+      "kind": "modified",
+      "before": {
+        "hash": "b12e29216ab63b81b1e409219cf5f5778f00b4555989393db580dd352e13321a",
+        "size": 5886
+      },
+      "after": {
+        "hash": "8aa6ce5c8803dc21428e75de88f56937b9e3a9e5d9a41794c2da49e68a830a98",
+        "size": 5913
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "docs/verification/tests/test_runtime_home.py",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "af670fab82b6b8fa562664935c30ba205319146c7181d6c4e7c25c8ad2f562d3",
+        "size": 2884
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "docs/verification/tests/test_video_writes.py",
+      "kind": "modified",
+      "before": {
+        "hash": "05d984e649e1f2e9a4e2b9703160e7a1db2e4b72d70871b1cac6895c3872dad1",
+        "size": 3107
+      },
+      "after": {
+        "hash": "1846bf42633e4dcc1d844b8df12688197f6e2ae40cb8c9de31bc9a48c79261f3",
+        "size": 5581
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "doudou/references/cli.md",
+      "kind": "modified",
+      "before": {
+        "hash": "9677600ccf68f8e8a6223d4c4893d353f75f1435e4dddb38b97fb41d51bef4ef",
+        "size": 2917
+      },
+      "after": {
+        "hash": "0ddaa3a1932482808fc4f01578bc594c138efaf025e3da81be084f9fdc0c6c04",
+        "size": 3208
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "doudou/references/layout.md",
+      "kind": "modified",
+      "before": {
+        "hash": "2099064dac751e34e803bb9f71f5ab3a5626c441903d9d42bb71276d77265f94",
+        "size": 1893
+      },
+      "after": {
+        "hash": "e858ecf18bdfd1955d21ca257c1ea739214b0a4a0dcd243cdc7e21e3f7ac7eeb",
+        "size": 1879
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "doudou/references/runtime.md",
+      "kind": "modified",
+      "before": {
+        "hash": "5479f595f3a0a7327509d08b6f7312958bb4e8efe8b7a960d1e7fd022d5e992e",
+        "size": 3130
+      },
+      "after": {
+        "hash": "d2814d45992b47df571e806fcd30c5d22305aafd37e1e139158a517045fdac44",
+        "size": 5276
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "doudou/scripts/doudou.py",
+      "kind": "modified",
+      "before": {
+        "hash": "d9e7776705faff322b5c7c1f02a8db05137c30b6a8167106c3a6d3035d79b27f",
+        "size": 1037
+      },
+      "after": {
+        "hash": "1121176c47a5e3662b0f5263f75ea54fd95d2ffd4fad99ad1e552288869a98a9",
+        "size": 1002
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "doudou/scripts/doudou/cli.py",
+      "kind": "modified",
+      "before": {
+        "hash": "a73b7234f93e4b6ac6a9ce6d33ce3288a44216ed81329e90d5bb91c18860b80a",
+        "size": 17704
+      },
+      "after": {
+        "hash": "831993faec902218307fa7c5bd3db8c45def6b88b29155556ec36e9274730baa",
+        "size": 18553
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "doudou/scripts/doudou/common/core.py",
+      "kind": "modified",
+      "before": {
+        "hash": "25fd0af670554d6a7ea5653d06dbf682216f55481a302501933d2c6ce357dd78",
+        "size": 4437
+      },
+      "after": {
+        "hash": "9afaeaee3b23d3547dbb5bbdb43c43e05d2a4f6905de1bb2e0296110cf3f0352",
+        "size": 4404
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "doudou/scripts/doudou/features/broker.py",
+      "kind": "modified",
+      "before": {
+        "hash": "225f866a3ee4ad701196bf7fd354eec588262151f7d0433bcb13bd8d5279325d",
+        "size": 3479
+      },
+      "after": {
+        "hash": "a0bd3436fe67780968dff40c5b79d85beb00106d91b2b85c6912b88a2d45185a",
+        "size": 3487
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "doudou/scripts/doudou/features/chat/service.py",
+      "kind": "modified",
+      "before": {
+        "hash": "fa30e422023d67fdd6f0dc2d4d6e264af122f94c51638723f6dc14f0cb8c9a0a",
+        "size": 17095
+      },
+      "after": {
+        "hash": "d53ae96c47d0872ad304cdfaef0003e33cfa64fe4a875ae2b8c38421458a8291",
+        "size": 16901
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "doudou/scripts/doudou/features/diagnostics.py",
+      "kind": "modified",
+      "before": {
+        "hash": "9a942c9d742fb578658580bf8d38ff936f2a01367f40aa258498acef0724ec3e",
+        "size": 8232
+      },
+      "after": {
+        "hash": "5b832aa9c2f039ea5d5a696d203487f1fcf2d6c6ccddc5f43adb490c6e640ca7",
+        "size": 9996
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "doudou/scripts/doudou/features/video/service.py",
+      "kind": "modified",
+      "before": {
+        "hash": "85b533ac4fe1161bb5590e427985e59b664361eb3cbe9aa28452c0e3f0111077",
+        "size": 8012
+      },
+      "after": {
+        "hash": "ad25783a93cf7132aafc864db52edf1e33266b89af53d800d36aec5a7838e082",
+        "size": 8352
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "doudou/scripts/doudou/models/identity.py",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "552b9949ad993954b7e93c9e6e4722e24776425078dba6bf28e07541183a938b",
+        "size": 9393
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "doudou/scripts/doudou/models/records.py",
+      "kind": "modified",
+      "before": {
+        "hash": "523a2e0113f5444df6dd2af5750e468d756b70887f23de4cc975844ccbd29688",
+        "size": 875
+      },
+      "after": {
+        "hash": "491f72ec13f19c47db768811a108e89162db609645bc37129d1f60bab4e5b0d0",
+        "size": 981
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "doudou/scripts/doudou/protocol/im.py",
+      "kind": "modified",
+      "before": {
+        "hash": "dabc64c9e8cc1df75d91beef15ce0939c8b98d4771158d99beba92c28b762699",
+        "size": 17322
+      },
+      "after": {
+        "hash": "a336af0d8070ab6b7e8f80eb36dbcbe667beef0c7aba8235cf1d816d0bd7c2c7",
+        "size": 17789
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "doudou/scripts/doudou/protocol/web.py",
+      "kind": "modified",
+      "before": {
+        "hash": "a411e7de2ff3721076e79160a657ef5587c4aede0ae73e9abe4f99459ad4b320",
+        "size": 5838
+      },
+      "after": {
+        "hash": "8da72ba7a3a101cafa7a51a7770bf29c9dbdfee280a283794d400f8c6640c238",
+        "size": 5355
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "doudou/scripts/doudou/reads/chat.py",
+      "kind": "modified",
+      "before": {
+        "hash": "34d4ff71f98dd8f9ca4aafd054546193dcf69a5fdc79a76885f0382d09fa88ef",
+        "size": 15592
+      },
+      "after": {
+        "hash": "98ca090e285a7ab0e9beea3bef0a7ad8ec52a6adaab9ebe92ba9e592004b1aea",
+        "size": 17083
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "doudou/scripts/doudou/reads/transport.py",
+      "kind": "modified",
+      "before": {
+        "hash": "8077d8f3b1c8f1e1b53f96688b8e484469e1dbc520d9c56d986b882ad9cadbb7",
+        "size": 2164
+      },
+      "after": {
+        "hash": "8d6cf8482378652f4ea6c607a9d5e03683de863e6049105959b341f7d0359333",
+        "size": 2143
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "doudou/scripts/doudou/reads/video.py",
+      "kind": "modified",
+      "before": {
+        "hash": "19ff3a9d084d2aa72449a54b06da5b15ddeeda27d775d3aca17561bded16ddcb",
+        "size": 27249
+      },
+      "after": {
+        "hash": "69cb48f027442cd220836cdc73be926e02c13fd97758bbe2e4ba2e495320c0a3",
+        "size": 26406
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "doudou/scripts/doudou/runtime/broker/client.py",
+      "kind": "modified",
+      "before": {
+        "hash": "add4c540b22183e7e9f240d06f135206e1434ec11abd343681178970f71d04e8",
+        "size": 9118
+      },
+      "after": {
+        "hash": "49b4aaaf6c8aeb9214dcce9711aefa297a7583ec9da732e6231b94b360295424",
+        "size": 12129
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "doudou/scripts/doudou/runtime/broker/server.py",
+      "kind": "modified",
+      "before": {
+        "hash": "282431bb59dc540e4648df76896a6eaa78c9d0514d0428ee39ec234642ec07bf",
+        "size": 17257
+      },
+      "after": {
+        "hash": "f02c2f5c166d2decb5fa2ec3d246c859474487dccc9205a33dd20f722e6ba3a5",
+        "size": 19177
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "doudou/scripts/doudou/runtime/browser/session.py",
+      "kind": "modified",
+      "before": {
+        "hash": "d04b38c73e43d8dded5161345b2e096c7cd113d529004c712c519126e4a0a063",
+        "size": 28985
+      },
+      "after": {
+        "hash": "9ebe726e9c4bde63ec340fe2768df2419aa5d1b83957594937fd8d656e9c6eea",
+        "size": 34506
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "doudou/scripts/doudou/runtime/camoufox_asset.py",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "a091ab378225af6e24bc1fd32542684d3a26586c62c461a7501b2e5260617c11",
+        "size": 5241
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "doudou/scripts/doudou/runtime/environment.py",
+      "kind": "modified",
+      "before": {
+        "hash": "c2150b64b5d12534f6a47280eca7c9d2ddf79db3af997a0042ae637815cc2167",
+        "size": 16971
+      },
+      "after": {
+        "hash": "b0eb9517a33f19985ec48888d2e99e194cda721c78b482571e008ad1e96b128e",
+        "size": 12215
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "doudou/scripts/doudou/runtime/home.py",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "c1d7335769ee8b24adfd67450a8d5c0354860afa89debeb46dbfa9952d0dc642",
+        "size": 434
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "doudou/scripts/doudou/runtime/paths.py",
+      "kind": "modified",
+      "before": {
+        "hash": "1c1330f635e357ac06b8e11652b4bb1d1c94b8f9db1538b3ec6f31a216399474",
+        "size": 2560
+      },
+      "after": {
+        "hash": "a1f270abcc1c66026319acbede04d21102a42d66c79d2abfd795260767d69e2f",
+        "size": 2624
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "doudou/scripts/doudou/runtime/profile.py",
+      "kind": "modified",
+      "before": {
+        "hash": "38bbb4432781bf079fe082b25ac715dd36c779fcd97ad936d6e806781e9a22b3",
+        "size": 9406
+      },
+      "after": {
+        "hash": "8eae76a1acc3bb6486d816b371605fac1bf81c5ab55a61dadf87465d11b5e633",
+        "size": 9499
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "doudou/scripts/doudou/storage/identity_migration.py",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "76305765c58103132d95189ce3362aae5b3cc2dcbda7c89ecddbc97ef6bf0b93",
+        "size": 2143
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "doudou/scripts/doudou/storage/repository.py",
+      "kind": "modified",
+      "before": {
+        "hash": "ce25b281ec2bb4c0d83efc0024f5eaf0595f5f3cd64d7ac293beaddf0572a380",
+        "size": 5784
+      },
+      "after": {
+        "hash": "46d319e051e352c4131d2fb3924b30a97cb3b693359fa969c0f4ce16746e903d",
+        "size": 8553
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "doudou/scripts/doudou/ui/adapters.py",
+      "kind": "modified",
+      "before": {
+        "hash": "b5f191832715782546373d697424e560a1c44c58c3c0a7f258c970813192e87f",
+        "size": 4258
+      },
+      "after": {
+        "hash": "97b1140255b2170ebbca51feee030e63abb987d00bb3c9d7b6b1e71c4a811831",
+        "size": 4781
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "doudou/scripts/doudou/ui/chat.py",
+      "kind": "modified",
+      "before": {
+        "hash": "7a77990e9d1d2e084c66155b2dd1d683ca238c639e5c369f5408b9ac429eb7cc",
+        "size": 13181
+      },
+      "after": {
+        "hash": "da1c9424490070b0b18ad458ccea77932d59c4323a56cce5062e0c3a8842bc70",
+        "size": 11904
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "doudou/scripts/doudou/ui/components/__init__.py",
+      "kind": "modified",
+      "before": {
+        "hash": "c62d457e1e59c82e0090f8ec686315ac019e03620287a3151c36ece4ee07fba0",
+        "size": 484
+      },
+      "after": {
+        "hash": "23b4057fe6c6fa91797e320ad34f75729a050fdc37ec14a41e373310c6fae308",
+        "size": 733
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "doudou/scripts/doudou/ui/components/auth.py",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "7d263d2f844d19b0fa1fa735959d9ce32dea9e631be2ff9747ca17f5cc70f628",
+        "size": 6071
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "doudou/scripts/doudou/ui/components/base.py",
+      "kind": "modified",
+      "before": {
+        "hash": "be315036496c4ba3216a852ebb6487fb16cede1e7e9b1fb997ea166683c69e2c",
+        "size": 10595
+      },
+      "after": {
+        "hash": "4c9b498722a780a297af2c2e9db36f980a1ca4df036c507ce5886d24f8616bbc",
+        "size": 12568
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "doudou/scripts/doudou/ui/components/chat.py",
+      "kind": "modified",
+      "before": {
+        "hash": "c727796e464372020440aa2b70a28f11ba48308d67f527115fb87bfc4a15b077",
+        "size": 9774
+      },
+      "after": {
+        "hash": "460cd0e93c8ab97c010417249746067dce1656d71fb072fb460a8f58d0317ace",
+        "size": 18730
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "doudou/scripts/doudou/ui/components/video.py",
+      "kind": "modified",
+      "before": {
+        "hash": "16812ace0e6771123d2b85bce8baf514358e632a893aba48395c2d47e9cf12b0",
+        "size": 16729
+      },
+      "after": {
+        "hash": "c2da9ef1d7324caf95eb32590ec92760387d1d493c5a3d8e3cd7c32904c64353",
+        "size": 26287
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "doudou/scripts/doudou/ui/video.py",
+      "kind": "modified",
+      "before": {
+        "hash": "1302f3c17d9de2a6ac80fdb0c2e1115a2d55f9028714082504e8a4e8d4778346",
+        "size": 7131
+      },
+      "after": {
+        "hash": "d76f985ebc0096110e9e211eb50b05b00e44ea0be59d18d626b84cb714e3705b",
+        "size": 7063
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "doudou/scripts/runtime-manifest.json",
+      "kind": "modified",
+      "before": {
+        "hash": "084b9dd8b7167bdef476a4cc1ddbdb51b1c1188a3c140ea1cc53820063fd78b4",
+        "size": 357
+      },
+      "after": {
+        "hash": "ac32b2f25c91c37dbfb4f36ae833d0411606e8a9389521b18fa8343fb3959c48",
+        "size": 1754
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "npm/bin/doudou.mjs",
+      "kind": "modified",
+      "before": {
+        "hash": "cf5b82bbd3597f486e5c5972fcbebdd8637ffe0d82daaab00406957254a43d14",
+        "size": 2897
+      },
+      "after": {
+        "hash": "952f4e8884f46444c758e5d63b108126cf50f186c7bfd0ea336fdd8bbda5fcc4",
+        "size": 4209
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "npm/lib/controlled-download.mjs",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "cfb3375867ba5335234966427a3e054e1eef2545e519294e8e2799c71c6a1c04",
+        "size": 11755
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "npm/lib/options.mjs",
+      "kind": "modified",
+      "before": {
+        "hash": "bd6b069178828bb2ae3d6129d8e64f05f4ae4bab596ab939c31679ecdc705844",
+        "size": 1738
+      },
+      "after": {
+        "hash": "3cd024a7e6f41705767b13d16d7e73d3b4351e484346738feb92dc7bdd1e97f6",
+        "size": 1750
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "npm/lib/python.mjs",
+      "kind": "modified",
+      "before": {
+        "hash": "98a7712659608c2d52727e0c22c7451d5987a24c4b98bd38d2996d01f5b63d91",
+        "size": 3170
+      },
+      "after": {
+        "hash": "d56c717e623f858dd36396bf934e5781edcccfe56f8f69cc71367f9758244ec1",
+        "size": 1800
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "npm/lib/runtime-setup.mjs",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "4d7617de37b22de23739768fe70aa7059b7ed591ed43b9bd51b549eb8dba8c75",
+        "size": 21278
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "npm/lib/uninstall.mjs",
+      "kind": "modified",
+      "before": {
+        "hash": "e2c1df4a1e08135979dd04a6dc6a8d58b2c7ff8b420431cb0e398e905fcc7b0e",
+        "size": 11099
+      },
+      "after": {
+        "hash": "2ae89d495ea9fb8868e65bdc0cf91c78737f760308cf62fa8a9ffad42d27cd27",
+        "size": 11796
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "npm/lib/update.mjs",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "e6258add5d82a5b948783d2d93ce306c32538dd90332176ac99b11e8cc93a393",
+        "size": 6179
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "npm/scripts/test-install.mjs",
+      "kind": "modified",
+      "before": {
+        "hash": "6a12c42c5e05e62ee45187058b03b48955fed82cafe2dd52b52c280cb0b24b7e",
+        "size": 6949
+      },
+      "after": {
+        "hash": "a581f19eb6d8a0989ba8d449e226d84948b967a28c7ab0b25bc30975f31f8e18",
+        "size": 7296
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "npm/skill-manifest.json",
+      "kind": "modified",
+      "before": {
+        "hash": "af52c8e697f02a8da053ff7dff2cfee6281ea696b11bb6a583aea5ad7df68a95",
+        "size": 11296
+      },
+      "after": {
+        "hash": "727b4ac427fa0ab9fe12c34743afc0b6a08700f320f142ecec53127fb2e85c31",
+        "size": 12156
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "npm/test/controlled-download.test.mjs",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "2e64412f6496fbf9c07e611e108c920ddced3b8a754bba39371939b9f32726fc",
+        "size": 5737
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "npm/test/managed-install.test.mjs",
+      "kind": "modified",
+      "before": {
+        "hash": "01b847b4ee0c6cf17deb1ad6e9dfdc7bf8f101c53de38facfc5d5bd89b7169e6",
+        "size": 1509
+      },
+      "after": {
+        "hash": "7e85981889ff3899809ffff6012d3c37f5039acda78102071143a061995df110",
+        "size": 1507
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "npm/test/python.test.mjs",
+      "kind": "modified",
+      "before": {
+        "hash": "d51d6a97084bed2e587722882854ab4b6bdad1820bf96bb4c92f99acf1e57b95",
+        "size": 2272
+      },
+      "after": {
+        "hash": "6b52d7ff8bf05de2f7eb0e523aa91800ed16aecc85e12a549e4ea8bca8736a68",
+        "size": 4217
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "npm/test/runtime-setup.test.mjs",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "ff1aec9e490fa39d207e67c421b78977d46ca033d46a77a72dc0a17dfadff475",
+        "size": 7084
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "npm/test/uninstall.test.mjs",
+      "kind": "modified",
+      "before": {
+        "hash": "6178564b0c5ab74c491f17bd56cb4382d1bff75aaee373d2ca7c051b3c195dbb",
+        "size": 5921
+      },
+      "after": {
+        "hash": "e5308822e5acf0b5321af77122f272d2168c4b9c2f433eb1338d759d142103c8",
+        "size": 6227
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "npm/test/update.test.mjs",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "7537b3c5afe8709018a3638593e7d876b0741f234e4ac1873da13cc4bd9e9933",
+        "size": 6308
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "package-lock.json",
+      "kind": "modified",
+      "before": {
+        "hash": "c7fdd7c78476fca5030507738a26ba421144f66b2f9b0808c509c116261f4226",
+        "size": 379
+      },
+      "after": {
+        "hash": "f964202d069789ddafab731f900dd963796243dc074c4386eff971f9963e3900",
+        "size": 773
+      },
+      "attributedTo": []
+    },
+    {
+      "path": "package.json",
+      "kind": "modified",
+      "before": {
+        "hash": "265335a521c8bfeaa05d27b98b6e7c91c372f3e987a0207588868e965e2ad0e5",
+        "size": 1129
+      },
+      "after": {
+        "hash": "3f1715b4b478bb5028c0b54645cc949df61de39330227119eff55572974fb27f",
+        "size": 1178
+      },
+      "attributedTo": []
+    }
+  ],
+  "unresolvedScopes": [
+    {
+      "id": "scope:b6262330e1be7e393f9c71e2c7b41673cb24b178d3487929c3714768854a5e3b",
+      "kind": "unattributed-change",
+      "source": "implementation-scope",
+      "path": ".github/workflows/publish-npm.yml",
+      "reason": "Changed path is not covered by a declared artifact: .github/workflows/publish-npm.yml"
+    },
+    {
+      "id": "scope:4fe4b927b6540d42b8a4530f899ffdfc7bc8d4428017de2f75dab44c4cf55c64",
+      "kind": "unattributed-change",
+      "source": "implementation-scope",
+      "path": "AGENTS.md",
+      "reason": "Changed path is not covered by a declared artifact: AGENTS.md"
+    },
+    {
+      "id": "scope:c8c2cdd4fa1c8811e1d592b953c4b8bc2918793b36a089c29a8f5ed2c0745225",
+      "kind": "unattributed-change",
+      "source": "implementation-scope",
+      "path": "README.md",
+      "reason": "Changed path is not covered by a declared artifact: README.md"
+    },
+    {
+      "id": "scope:1c64b5e2ef5c208c5e9139552e012ad2b1fa38fd086ff2ce6bbfffb2ca199737",
+      "kind": "unattributed-change",
+      "source": "implementation-scope",
+      "path": "docs/verification/tests/test_broker.py",
+      "reason": "Changed path is not covered by a declared artifact: docs/verification/tests/test_broker.py"
+    },
+    {
+      "id": "scope:b24b1881b12749a6f10193cf61cafd12d2cf4efd557b566856eaac7ab39a30ad",
+      "kind": "unattributed-change",
+      "source": "implementation-scope",
+      "path": "docs/verification/tests/test_cli_doctor.py",
+      "reason": "Changed path is not covered by a declared artifact: docs/verification/tests/test_cli_doctor.py"
+    },
+    {
+      "id": "scope:2bd94b4268ba7251ce39e0540226c35c8ca9bc29d404eb2a54576639f160756d",
+      "kind": "unattributed-change",
+      "source": "implementation-scope",
+      "path": "docs/verification/tests/test_component_geometry.py",
+      "reason": "Changed path is not covered by a declared artifact: docs/verification/tests/test_component_geometry.py"
+    },
+    {
+      "id": "scope:9ffd9aa54a361be330fae810c85ebe26747fd98dcf088b916152ee61cdbb6b50",
+      "kind": "unattributed-change",
+      "source": "implementation-scope",
+      "path": "docs/verification/tests/test_core.py",
+      "reason": "Changed path is not covered by a declared artifact: docs/verification/tests/test_core.py"
+    },
+    {
+      "id": "scope:df7d4fe8b2eb15ccbb4f26edbd11887711f80b5bcb2986b89ad73a888557d772",
+      "kind": "unattributed-change",
+      "source": "implementation-scope",
+      "path": "docs/verification/tests/test_identity.py",
+      "reason": "Changed path is not covered by a declared artifact: docs/verification/tests/test_identity.py"
+    },
+    {
+      "id": "scope:25aa6a7ec6e55387be250bbe74d9195a4daf6aa7f1de92bce5161665aaf5e91c",
+      "kind": "unattributed-change",
+      "source": "implementation-scope",
+      "path": "docs/verification/tests/test_profile.py",
+      "reason": "Changed path is not covered by a declared artifact: docs/verification/tests/test_profile.py"
+    },
+    {
+      "id": "scope:0bf1ccad8346112d85f0946e10c48cf249a6531a572c2cd0230a8914afbc9e47",
+      "kind": "unattributed-change",
+      "source": "implementation-scope",
+      "path": "docs/verification/tests/test_protocol_storage.py",
+      "reason": "Changed path is not covered by a declared artifact: docs/verification/tests/test_protocol_storage.py"
+    },
+    {
+      "id": "scope:b6d27ad639c01b15744995f3136734a25be3e6f726710f1a4da57d486e3b86c8",
+      "kind": "unattributed-change",
+      "source": "implementation-scope",
+      "path": "docs/verification/tests/test_responses.py",
+      "reason": "Changed path is not covered by a declared artifact: docs/verification/tests/test_responses.py"
+    },
+    {
+      "id": "scope:b84a40f593373cabbbfe9de0880dd682141fa83aacda935fe6a422de77e6aa4e",
+      "kind": "unattributed-change",
+      "source": "implementation-scope",
+      "path": "docs/verification/tests/test_runtime_home.py",
+      "reason": "Changed path is not covered by a declared artifact: docs/verification/tests/test_runtime_home.py"
+    },
+    {
+      "id": "scope:a173e43433014b97a3a46d9dc5c42488287670eeeffeb7de43baacfd34e7ba4a",
+      "kind": "unattributed-change",
+      "source": "implementation-scope",
+      "path": "docs/verification/tests/test_video_writes.py",
+      "reason": "Changed path is not covered by a declared artifact: docs/verification/tests/test_video_writes.py"
+    },
+    {
+      "id": "scope:19c6adc21181762b5a2a7603c51e7d2a11621eed310f0ef3ea1f0aa31362d9f6",
+      "kind": "unattributed-change",
+      "source": "implementation-scope",
+      "path": "doudou/references/cli.md",
+      "reason": "Changed path is not covered by a declared artifact: doudou/references/cli.md"
+    },
+    {
+      "id": "scope:2d409663862b478cbe74054df799c8cd5988b639109aa068ad4cbb1114ddfd21",
+      "kind": "unattributed-change",
+      "source": "implementation-scope",
+      "path": "doudou/references/layout.md",
+      "reason": "Changed path is not covered by a declared artifact: doudou/references/layout.md"
+    },
+    {
+      "id": "scope:93b83cc3e8b15bd406cd64753856656cfb67b852af1e4cca2f14819475f3d00c",
+      "kind": "unattributed-change",
+      "source": "implementation-scope",
+      "path": "doudou/references/runtime.md",
+      "reason": "Changed path is not covered by a declared artifact: doudou/references/runtime.md"
+    },
+    {
+      "id": "scope:b9be520d6137ff21d4a10d5c4113aada28905c9dd9daa02b1213d1ca0b5a2ebd",
+      "kind": "unattributed-change",
+      "source": "implementation-scope",
+      "path": "doudou/scripts/doudou.py",
+      "reason": "Changed path is not covered by a declared artifact: doudou/scripts/doudou.py"
+    },
+    {
+      "id": "scope:74692a5e1e2dfe9eeac05e23477c3b2a42c91e229afdc5a2da857edb9de58f7f",
+      "kind": "unattributed-change",
+      "source": "implementation-scope",
+      "path": "doudou/scripts/doudou/cli.py",
+      "reason": "Changed path is not covered by a declared artifact: doudou/scripts/doudou/cli.py"
+    },
+    {
+      "id": "scope:0d9091de8469c08fcc8a618dc4677eaa1303a2c93f028e2b83731026adb388be",
+      "kind": "unattributed-change",
+      "source": "implementation-scope",
+      "path": "doudou/scripts/doudou/common/core.py",
+      "reason": "Changed path is not covered by a declared artifact: doudou/scripts/doudou/common/core.py"
+    },
+    {
+      "id": "scope:7eebe798b48b4f983b3ce555626857f07a83d6c3fa07493efcab1825e6962d8f",
+      "kind": "unattributed-change",
+      "source": "implementation-scope",
+      "path": "doudou/scripts/doudou/features/broker.py",
+      "reason": "Changed path is not covered by a declared artifact: doudou/scripts/doudou/features/broker.py"
+    },
+    {
+      "id": "scope:c2a1165173a311caa5e2fca1785b448364086a6de4f1470e920f26fd0fb45f76",
+      "kind": "unattributed-change",
+      "source": "implementation-scope",
+      "path": "doudou/scripts/doudou/features/chat/service.py",
+      "reason": "Changed path is not covered by a declared artifact: doudou/scripts/doudou/features/chat/service.py"
+    },
+    {
+      "id": "scope:f8a12a6bda1aeeec57eeb202f50af47bc191bd2a95635341f5b1839a760aad48",
+      "kind": "unattributed-change",
+      "source": "implementation-scope",
+      "path": "doudou/scripts/doudou/features/diagnostics.py",
+      "reason": "Changed path is not covered by a declared artifact: doudou/scripts/doudou/features/diagnostics.py"
+    },
+    {
+      "id": "scope:4bcc95e5d08e7ea8a06e5094484baad5fb1f63aeaf9fec49e5327b36db8d107d",
+      "kind": "unattributed-change",
+      "source": "implementation-scope",
+      "path": "doudou/scripts/doudou/features/video/service.py",
+      "reason": "Changed path is not covered by a declared artifact: doudou/scripts/doudou/features/video/service.py"
+    },
+    {
+      "id": "scope:997a4037a1c26f78f91c8f28c25abbf5b056484c0eb435ad666ecf0e6955be37",
+      "kind": "unattributed-change",
+      "source": "implementation-scope",
+      "path": "doudou/scripts/doudou/models/identity.py",
+      "reason": "Changed path is not covered by a declared artifact: doudou/scripts/doudou/models/identity.py"
+    },
+    {
+      "id": "scope:595342217e18353081ec9208606d79ce05de7c95bf95ca5609074b317c3cfd3f",
+      "kind": "unattributed-change",
+      "source": "implementation-scope",
+      "path": "doudou/scripts/doudou/models/records.py",
+      "reason": "Changed path is not covered by a declared artifact: doudou/scripts/doudou/models/records.py"
+    },
+    {
+      "id": "scope:fae02b723202eec944ceb662d4ca779d19082af4a02a79f0cf53abf4f252c5ed",
+      "kind": "unattributed-change",
+      "source": "implementation-scope",
+      "path": "doudou/scripts/doudou/protocol/im.py",
+      "reason": "Changed path is not covered by a declared artifact: doudou/scripts/doudou/protocol/im.py"
+    },
+    {
+      "id": "scope:0013c5d128bb57d0743ea197f0b8004f0b698c06c35435caa467298e0885e55a",
+      "kind": "unattributed-change",
+      "source": "implementation-scope",
+      "path": "doudou/scripts/doudou/protocol/web.py",
+      "reason": "Changed path is not covered by a declared artifact: doudou/scripts/doudou/protocol/web.py"
+    },
+    {
+      "id": "scope:e4bf5e8a26fac202bb9b3cacc4b8f467cd4f61a6ca66a6031020e509a136179f",
+      "kind": "unattributed-change",
+      "source": "implementation-scope",
+      "path": "doudou/scripts/doudou/reads/chat.py",
+      "reason": "Changed path is not covered by a declared artifact: doudou/scripts/doudou/reads/chat.py"
+    },
+    {
+      "id": "scope:0ccac03834a0e5a4791ba189f45e7a30398b515dc6c637320fd2853adf338974",
+      "kind": "unattributed-change",
+      "source": "implementation-scope",
+      "path": "doudou/scripts/doudou/reads/transport.py",
+      "reason": "Changed path is not covered by a declared artifact: doudou/scripts/doudou/reads/transport.py"
+    },
+    {
+      "id": "scope:0e524a32ef5d622a2ce9289f5e7cdb7cae3108d4c6ec10754eb3cb41b292520e",
+      "kind": "unattributed-change",
+      "source": "implementation-scope",
+      "path": "doudou/scripts/doudou/reads/video.py",
+      "reason": "Changed path is not covered by a declared artifact: doudou/scripts/doudou/reads/video.py"
+    },
+    {
+      "id": "scope:7308efd46341331945949b0adc2140ef80b7db0d10cd1b87a950655786562c60",
+      "kind": "unattributed-change",
+      "source": "implementation-scope",
+      "path": "doudou/scripts/doudou/runtime/broker/client.py",
+      "reason": "Changed path is not covered by a declared artifact: doudou/scripts/doudou/runtime/broker/client.py"
+    },
+    {
+      "id": "scope:4ca4f97516a4cd14ff2349a882696d683dbd36ac1326739ecf7be0ad24f03b5b",
+      "kind": "unattributed-change",
+      "source": "implementation-scope",
+      "path": "doudou/scripts/doudou/runtime/broker/server.py",
+      "reason": "Changed path is not covered by a declared artifact: doudou/scripts/doudou/runtime/broker/server.py"
+    },
+    {
+      "id": "scope:c6deb9dd8f7242727a9557b5ed6fe285446e952257dfb26fa6f6f02ad34c66be",
+      "kind": "unattributed-change",
+      "source": "implementation-scope",
+      "path": "doudou/scripts/doudou/runtime/browser/session.py",
+      "reason": "Changed path is not covered by a declared artifact: doudou/scripts/doudou/runtime/browser/session.py"
+    },
+    {
+      "id": "scope:db5a143f7117d67578516ea8c05a4146f3850265aaa896714459a663d9462a97",
+      "kind": "unattributed-change",
+      "source": "implementation-scope",
+      "path": "doudou/scripts/doudou/runtime/camoufox_asset.py",
+      "reason": "Changed path is not covered by a declared artifact: doudou/scripts/doudou/runtime/camoufox_asset.py"
+    },
+    {
+      "id": "scope:760a5d968efbc67ea0e3d3ea185babd3cd7d8332e3228cbe8e0b0a1a99b51799",
+      "kind": "unattributed-change",
+      "source": "implementation-scope",
+      "path": "doudou/scripts/doudou/runtime/environment.py",
+      "reason": "Changed path is not covered by a declared artifact: doudou/scripts/doudou/runtime/environment.py"
+    },
+    {
+      "id": "scope:72fbe29f42aa1d8f49a6f5b652a568f6320960e795ed15525022daee0cec619d",
+      "kind": "unattributed-change",
+      "source": "implementation-scope",
+      "path": "doudou/scripts/doudou/runtime/home.py",
+      "reason": "Changed path is not covered by a declared artifact: doudou/scripts/doudou/runtime/home.py"
+    },
+    {
+      "id": "scope:b7c505330bd6dc36b1d319b67ceb988e08e0ccda9737d035e18a6487b98980d5",
+      "kind": "unattributed-change",
+      "source": "implementation-scope",
+      "path": "doudou/scripts/doudou/runtime/paths.py",
+      "reason": "Changed path is not covered by a declared artifact: doudou/scripts/doudou/runtime/paths.py"
+    },
+    {
+      "id": "scope:e86b0d35787e4d9c30e50f85008fda3c246e1e73ca41150bedabdd3c50cd2ff2",
+      "kind": "unattributed-change",
+      "source": "implementation-scope",
+      "path": "doudou/scripts/doudou/runtime/profile.py",
+      "reason": "Changed path is not covered by a declared artifact: doudou/scripts/doudou/runtime/profile.py"
+    },
+    {
+      "id": "scope:24ef76e0ef8d80737dcd0ab4dd621c2003ecdbdbd0391ba7e1367523a0cce3de",
+      "kind": "unattributed-change",
+      "source": "implementation-scope",
+      "path": "doudou/scripts/doudou/storage/identity_migration.py",
+      "reason": "Changed path is not covered by a declared artifact: doudou/scripts/doudou/storage/identity_migration.py"
+    },
+    {
+      "id": "scope:d798ff0e3c73ac619588c1026e086bbeabf5bcd64c575f0418125a2bdc07208d",
+      "kind": "unattributed-change",
+      "source": "implementation-scope",
+      "path": "doudou/scripts/doudou/storage/repository.py",
+      "reason": "Changed path is not covered by a declared artifact: doudou/scripts/doudou/storage/repository.py"
+    },
+    {
+      "id": "scope:d5ac6a5a7a0c8dadbbc21075d2bca668e2825793f952027548578d1887a01d18",
+      "kind": "unattributed-change",
+      "source": "implementation-scope",
+      "path": "doudou/scripts/doudou/ui/adapters.py",
+      "reason": "Changed path is not covered by a declared artifact: doudou/scripts/doudou/ui/adapters.py"
+    },
+    {
+      "id": "scope:eccbe9bae65f89234e5dd5dc5d0d13af175a0fefb91cbd801b9565b630858df4",
+      "kind": "unattributed-change",
+      "source": "implementation-scope",
+      "path": "doudou/scripts/doudou/ui/chat.py",
+      "reason": "Changed path is not covered by a declared artifact: doudou/scripts/doudou/ui/chat.py"
+    },
+    {
+      "id": "scope:859c50f6905050f75b879e6cba53864858e8edcaf1091ea77eb24f175c084df0",
+      "kind": "unattributed-change",
+      "source": "implementation-scope",
+      "path": "doudou/scripts/doudou/ui/components/__init__.py",
+      "reason": "Changed path is not covered by a declared artifact: doudou/scripts/doudou/ui/components/__init__.py"
+    },
+    {
+      "id": "scope:0a1fde05cfaf1ac010eaebdcf910b7378b799cd1285428635dbb53738f16bf9d",
+      "kind": "unattributed-change",
+      "source": "implementation-scope",
+      "path": "doudou/scripts/doudou/ui/components/auth.py",
+      "reason": "Changed path is not covered by a declared artifact: doudou/scripts/doudou/ui/components/auth.py"
+    },
+    {
+      "id": "scope:6af8d6c60d2b90e295183e43519594b9db1b0228fee3124e833859519db5f6c7",
+      "kind": "unattributed-change",
+      "source": "implementation-scope",
+      "path": "doudou/scripts/doudou/ui/components/base.py",
+      "reason": "Changed path is not covered by a declared artifact: doudou/scripts/doudou/ui/components/base.py"
+    },
+    {
+      "id": "scope:eebe8e63db588a8911bc28c7ec2787137c4c01d1846619a791f8107b0653844c",
+      "kind": "unattributed-change",
+      "source": "implementation-scope",
+      "path": "doudou/scripts/doudou/ui/components/chat.py",
+      "reason": "Changed path is not covered by a declared artifact: doudou/scripts/doudou/ui/components/chat.py"
+    },
+    {
+      "id": "scope:127df8aa08f4469a49c17f08434612b9a8b6e2bdbca4e4205965fd78b66349a2",
+      "kind": "unattributed-change",
+      "source": "implementation-scope",
+      "path": "doudou/scripts/doudou/ui/components/video.py",
+      "reason": "Changed path is not covered by a declared artifact: doudou/scripts/doudou/ui/components/video.py"
+    },
+    {
+      "id": "scope:f3acd6e27bf3a39340ab10435679bccdd2c56ef9e4a5dbad9de287ff4eef4781",
+      "kind": "unattributed-change",
+      "source": "implementation-scope",
+      "path": "doudou/scripts/doudou/ui/video.py",
+      "reason": "Changed path is not covered by a declared artifact: doudou/scripts/doudou/ui/video.py"
+    },
+    {
+      "id": "scope:c8649df3a58d602b69a95bed3aa89ce75ebbc7e544e73e89832fbb5a882cb784",
+      "kind": "unattributed-change",
+      "source": "implementation-scope",
+      "path": "doudou/scripts/runtime-manifest.json",
+      "reason": "Changed path is not covered by a declared artifact: doudou/scripts/runtime-manifest.json"
+    },
+    {
+      "id": "scope:2840cad813c388b41b25d9697049d19fddcdfa81a380b0005f04126c36eb6822",
+      "kind": "unattributed-change",
+      "source": "implementation-scope",
+      "path": "npm/bin/doudou.mjs",
+      "reason": "Changed path is not covered by a declared artifact: npm/bin/doudou.mjs"
+    },
+    {
+      "id": "scope:497ff9a5b8143626237be015a1fab191b97427bf9e17d1b4594d298e6855f104",
+      "kind": "unattributed-change",
+      "source": "implementation-scope",
+      "path": "npm/lib/controlled-download.mjs",
+      "reason": "Changed path is not covered by a declared artifact: npm/lib/controlled-download.mjs"
+    },
+    {
+      "id": "scope:de9fae7793839e5c93ac17ae837bd55580b4a80420613aca99b2e7e194d2aecc",
+      "kind": "unattributed-change",
+      "source": "implementation-scope",
+      "path": "npm/lib/options.mjs",
+      "reason": "Changed path is not covered by a declared artifact: npm/lib/options.mjs"
+    },
+    {
+      "id": "scope:c50e45daa34eceaae76607f708db3ee9e4ea4a58c013b9bd2b3e1326f72d8186",
+      "kind": "unattributed-change",
+      "source": "implementation-scope",
+      "path": "npm/lib/python.mjs",
+      "reason": "Changed path is not covered by a declared artifact: npm/lib/python.mjs"
+    },
+    {
+      "id": "scope:e72ef516bf4d312394d41b4c60632e5d7a9708739ebaf85e8ca05bde6fb6d5dc",
+      "kind": "unattributed-change",
+      "source": "implementation-scope",
+      "path": "npm/lib/runtime-setup.mjs",
+      "reason": "Changed path is not covered by a declared artifact: npm/lib/runtime-setup.mjs"
+    },
+    {
+      "id": "scope:db4e1efbd785988f398955bf85031473804facd931b1b74e8587a326c43cab00",
+      "kind": "unattributed-change",
+      "source": "implementation-scope",
+      "path": "npm/lib/uninstall.mjs",
+      "reason": "Changed path is not covered by a declared artifact: npm/lib/uninstall.mjs"
+    },
+    {
+      "id": "scope:7fd5013db50d748342ad2290e31b932a300d7dca161b8526634276040edd8d89",
+      "kind": "unattributed-change",
+      "source": "implementation-scope",
+      "path": "npm/lib/update.mjs",
+      "reason": "Changed path is not covered by a declared artifact: npm/lib/update.mjs"
+    },
+    {
+      "id": "scope:78ff5c3df60f50560ca8a1ed4492a7c24ea47b71e4a77bd0848fa752be0d4632",
+      "kind": "unattributed-change",
+      "source": "implementation-scope",
+      "path": "npm/scripts/test-install.mjs",
+      "reason": "Changed path is not covered by a declared artifact: npm/scripts/test-install.mjs"
+    },
+    {
+      "id": "scope:515bf778b639d6b50c6268fde345ecc43d164a15df251b508413f4ae3bbb7c58",
+      "kind": "unattributed-change",
+      "source": "implementation-scope",
+      "path": "npm/skill-manifest.json",
+      "reason": "Changed path is not covered by a declared artifact: npm/skill-manifest.json"
+    },
+    {
+      "id": "scope:ba27f0dd501dbdc1c8bac4e2bb4329c78dcca0e593d9825b9bea18648cd5c00b",
+      "kind": "unattributed-change",
+      "source": "implementation-scope",
+      "path": "npm/test/controlled-download.test.mjs",
+      "reason": "Changed path is not covered by a declared artifact: npm/test/controlled-download.test.mjs"
+    },
+    {
+      "id": "scope:bf70310e55a6190162425b73a922d3d128cb30c0620dae59c4c1b91d6dbe0a40",
+      "kind": "unattributed-change",
+      "source": "implementation-scope",
+      "path": "npm/test/managed-install.test.mjs",
+      "reason": "Changed path is not covered by a declared artifact: npm/test/managed-install.test.mjs"
+    },
+    {
+      "id": "scope:fda23613cc09f6079ae9c52949ee7743b6535febaae0e58ea9c6d363ab473006",
+      "kind": "unattributed-change",
+      "source": "implementation-scope",
+      "path": "npm/test/python.test.mjs",
+      "reason": "Changed path is not covered by a declared artifact: npm/test/python.test.mjs"
+    },
+    {
+      "id": "scope:732adcdc26e913729f82668ea33d7c58c6648f344c5d1ecf97aa5cec34afbe77",
+      "kind": "unattributed-change",
+      "source": "implementation-scope",
+      "path": "npm/test/runtime-setup.test.mjs",
+      "reason": "Changed path is not covered by a declared artifact: npm/test/runtime-setup.test.mjs"
+    },
+    {
+      "id": "scope:2f9e56a28503b496d011656e928d745c3de2110bb16fc2419f779a7756dca961",
+      "kind": "unattributed-change",
+      "source": "implementation-scope",
+      "path": "npm/test/uninstall.test.mjs",
+      "reason": "Changed path is not covered by a declared artifact: npm/test/uninstall.test.mjs"
+    },
+    {
+      "id": "scope:6e677c5e30373f17739c33e6795c615d6c47968c1a24681f9b5f7a3c76bbb1a2",
+      "kind": "unattributed-change",
+      "source": "implementation-scope",
+      "path": "npm/test/update.test.mjs",
+      "reason": "Changed path is not covered by a declared artifact: npm/test/update.test.mjs"
+    },
+    {
+      "id": "scope:7e7f0bb6e5c42978616cca329bf5ac39dd7ba217d021750dc916d4c496721a78",
+      "kind": "unattributed-change",
+      "source": "implementation-scope",
+      "path": "package-lock.json",
+      "reason": "Changed path is not covered by a declared artifact: package-lock.json"
+    },
+    {
+      "id": "scope:bbf05c0d1b12379334d1477b3efb696b4d89c06af7f9667569eef9fcd188397c",
+      "kind": "unattributed-change",
+      "source": "implementation-scope",
+      "path": "package.json",
+      "reason": "Changed path is not covered by a declared artifact: package.json"
+    }
+  ],
+  "noCodeReason": null,
+  "scopeHash": "463d10eb8864e2f9f0f51658f3e608ede6ce633c13f0d5223ba4ee141bca97ca"
+}

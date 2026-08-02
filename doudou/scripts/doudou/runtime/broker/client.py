@@ -14,6 +14,23 @@ from ...common.errors import DoudouError
 from ..process import process_identity, same_process
 from ..profile import load_profile
 
+DEFAULT_COMMAND_TIMEOUT_SECONDS = 90.0
+LONG_RUNNING_COMMANDS = {"login.wait", "protocol.capture"}
+COLLECTION_COMMAND_TIMEOUTS = {
+    "videos.collect": 600.0,
+    "video.collect": 900.0,
+}
+
+
+def command_timeout_seconds(command: str, params: dict[str, Any]) -> float:
+    if command == "page.doctor":
+        return 180.0
+    if command in COLLECTION_COMMAND_TIMEOUTS:
+        return COLLECTION_COMMAND_TIMEOUTS[command]
+    if command in LONG_RUNNING_COMMANDS:
+        return min(max(float(params.get("timeout_seconds") or 600) + 30, 30), 900)
+    return DEFAULT_COMMAND_TIMEOUT_SECONDS
+
 
 def descriptor_is_live(
     descriptor: dict[str, Any] | None, data_root: Path, profile_id: str
@@ -51,6 +68,8 @@ class BrokerClient:
     def _descriptor(self) -> dict[str, Any] | None:
         descriptor = read_json(self.paths.broker_descriptor, optional=True)
         if descriptor_is_live(descriptor, self.data_root, self.paths.profile_id):
+            if not self.paths.broker_token.is_file():
+                return None
             self.last_process_identity = {
                 "pid": descriptor.get("pid"),
                 "start": descriptor.get("process_start"),
@@ -61,10 +80,37 @@ class BrokerClient:
             self.paths.broker_token.unlink(missing_ok=True)
         return None
 
+    def _token(self, descriptor: dict[str, Any]) -> str:
+        deadline = time.monotonic() + 1.0
+        while time.monotonic() < deadline:
+            try:
+                return self.paths.broker_token.read_text(encoding="utf-8").strip()
+            except FileNotFoundError:
+                current = read_json(self.paths.broker_descriptor, optional=True)
+                if not descriptor_is_live(
+                    current, self.data_root, self.paths.profile_id
+                ):
+                    break
+                time.sleep(0.02)
+        raise FileNotFoundError(self.paths.broker_token)
+
     def ensure_started(self) -> dict[str, Any]:
         descriptor = self._descriptor()
         if descriptor:
             return descriptor
+        current = read_json(self.paths.broker_descriptor, optional=True)
+        if descriptor_is_live(current, self.data_root, self.paths.profile_id):
+            deadline = time.monotonic() + 1.0
+            while time.monotonic() < deadline:
+                descriptor = self._descriptor()
+                if descriptor:
+                    return descriptor
+                current = read_json(self.paths.broker_descriptor, optional=True)
+                if not descriptor_is_live(
+                    current, self.data_root, self.paths.profile_id
+                ):
+                    break
+                time.sleep(0.02)
         self.paths.runtime.mkdir(parents=True, exist_ok=True)
         stdout = self.paths.broker_stdout.open("ab")
         stderr = self.paths.broker_stderr.open("ab")
@@ -148,7 +194,7 @@ class BrokerClient:
                 "BROKER_NOT_RUNNING", "The Profile broker is not running."
             )
         endpoint = descriptor["endpoint"]
-        token = self.paths.broker_token.read_text(encoding="utf-8").strip()
+        token = self._token(descriptor)
         payload = {
             "token": token,
             "request_id": request_id or random_id("request"),
@@ -156,6 +202,9 @@ class BrokerClient:
             "semantics": semantics,
             "params": params or {},
         }
+        payload["command_timeout_seconds"] = command_timeout_seconds(
+            command, payload["params"]
+        )
         reader, writer = await asyncio.open_connection(
             endpoint["host"], int(endpoint["port"])
         )
@@ -166,9 +215,33 @@ class BrokerClient:
             + b"\n"
         )
         await writer.drain()
-        line = await reader.readline()
-        writer.close()
-        await writer.wait_closed()
+        try:
+            line = await asyncio.wait_for(
+                reader.readline(),
+                timeout=float(payload["command_timeout_seconds"]) + 5,
+            )
+        except TimeoutError as error:
+            if semantics == "write":
+                raise DoudouError(
+                    "WRITE_RESULT_UNKNOWN",
+                    "The broker response timed out after a write may have started; it was not replayed.",
+                    {
+                        "request_id": payload["request_id"],
+                        "timeout_seconds": payload["command_timeout_seconds"],
+                        "write_started": True,
+                    },
+                ) from error
+            raise DoudouError(
+                "BROKER_COMMAND_TIMEOUT",
+                "The broker response exceeded its total time limit.",
+                {
+                    "request_id": payload["request_id"],
+                    "timeout_seconds": payload["command_timeout_seconds"],
+                },
+            ) from error
+        finally:
+            writer.close()
+            await writer.wait_closed()
         if not line:
             if semantics == "write":
                 raise DoudouError(

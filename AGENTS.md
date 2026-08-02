@@ -89,8 +89,8 @@ python "$HOME\.codex\skills\.system\skill-creator\scripts\quick_validate.py" dou
 用户级安装位置：
 
 - Skill：默认 `~/.agents/skills/doudou/`；可用 `--skill-dir` 或 `DOUDOU_AGENT_HOME` 覆盖。
-- Windows 运行时与 venv：`%LOCALAPPDATA%/doudou/runtimes/`。
-- Linux 运行时与 venv：`${XDG_CACHE_HOME:-~/.cache}/doudou/runtimes/`。
-- Camoufox 浏览器：Camoufox 自己的用户级缓存目录，不放入 Skill 或业务项目。
+- 用户级安装根：`${DOUDOU_HOME:-~/.doudou}/`，Windows 与 Linux 一致。
+- 运行时与 venv：`<DOUDOU_HOME>/runtimes/`。
+- Camoufox 浏览器：`<DOUDOU_HOME>/browsers/`，不复用系统或其他工具缓存。
 
 业务命令的数据根默认是执行命令时的当前项目目录。Skill 可以安装在用户目录，但 Profile 和消息记录始终创建在调用项目的 `profile/` 与 `message/` 下。

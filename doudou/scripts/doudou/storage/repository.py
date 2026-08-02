@@ -12,7 +12,25 @@ from ..common.core import (
     sha256,
     utc_now,
 )
+from ..models.identity import identity_matches, merge_identity
 from ..runtime.paths import profile_paths
+
+IDENTITY_LIST_FIELDS = {
+    "mentioned_users",
+    "system_event.joined_users",
+    "system_event.source_users",
+}
+
+AUTHORITATIVE_INCOMING_FIELDS = {
+    "schema",
+    "type",
+    "text",
+    "content",
+    "system_event",
+    "property_list",
+    "reference_info",
+    "unknown_fields",
+}
 
 
 def conversation_folder(conversation: dict[str, Any]) -> str:
@@ -97,12 +115,86 @@ def merge_messages(
     conflicts: list[dict[str, Any]] = read_jsonl(
         directory / "conflicts.jsonl", optional=True
     )
+    existing_conflict_keys = {
+        (
+            str(item.get("message_id") or ""),
+            str(item.get("field") or ""),
+            str(item.get("existing_sha256") or ""),
+            str(item.get("incoming_sha256") or ""),
+        )
+        for item in conflicts
+    }
+    new_conflicts = 0
+
+    def record_conflict(
+        message_id: str, field_path: str, existing: Any, candidate: Any
+    ) -> None:
+        nonlocal new_conflicts
+        key = (
+            message_id,
+            field_path,
+            sha256(str(existing)),
+            sha256(str(candidate)),
+        )
+        if key in existing_conflict_keys:
+            return
+        existing_conflict_keys.add(key)
+        conflicts.append(
+            {
+                "schema": "doudou.conflict.v2",
+                "message_id": message_id,
+                "field": field_path,
+                "occurred_at": utc_now(),
+                "existing_sha256": key[2],
+                "incoming_sha256": key[3],
+            }
+        )
+        new_conflicts += 1
+
+    def merge_identity_value(
+        existing: dict[str, Any], candidate: dict[str, Any]
+    ) -> dict[str, Any]:
+        merged = {**existing, **candidate}
+        merged.update(merge_identity(existing, candidate))
+        return merged
+
+    def merge_identity_list(existing: list[Any], candidate: list[Any]) -> list[Any]:
+        merged = [dict(item) if isinstance(item, dict) else item for item in existing]
+        for item in candidate:
+            if not isinstance(item, dict):
+                if item not in merged:
+                    merged.append(item)
+                continue
+            for index, current in enumerate(merged):
+                if isinstance(current, dict) and identity_matches(current, item):
+                    merged[index] = merge_identity_value(current, item)
+                    break
+            else:
+                merged.append(dict(item))
+        return merged
 
     def merge_value(
         existing: Any, candidate: Any, message_id: str, field_path: str
     ) -> Any:
         if existing in (None, "", [], {}) and candidate not in (None, "", [], {}):
             return candidate
+        if field_path.endswith(".enrichment.updated_at"):
+            return existing or candidate
+        if (
+            isinstance(existing, list)
+            and isinstance(candidate, list)
+            and field_path in IDENTITY_LIST_FIELDS
+        ):
+            return merge_identity_list(existing, candidate)
+        if (
+            isinstance(existing, dict)
+            and isinstance(candidate, dict)
+            and any(
+                existing.get(key) or candidate.get(key)
+                for key in ("uid", "sec_uid", "unique_id")
+            )
+        ):
+            return merge_identity_value(existing, candidate)
         if isinstance(existing, dict) and isinstance(candidate, dict):
             merged = dict(existing)
             for key, value in candidate.items():
@@ -116,16 +208,9 @@ def merge_messages(
             and existing != candidate
             and field_path not in {"collected_at", "run_id"}
         ):
-            conflicts.append(
-                {
-                    "schema": "doudou.conflict.v2",
-                    "message_id": message_id,
-                    "field": field_path,
-                    "occurred_at": utc_now(),
-                    "existing_sha256": sha256(str(existing)),
-                    "incoming_sha256": sha256(str(candidate)),
-                }
-            )
+            if field_path.split(".", 1)[0] in AUTHORITATIVE_INCOMING_FIELDS:
+                return candidate
+            record_conflict(message_id, field_path, existing, candidate)
         return existing
 
     added = duplicates = 0
@@ -159,7 +244,8 @@ def merge_messages(
         "total": len(records),
         "added": added,
         "duplicates": duplicates,
-        "conflicts": len(conflicts),
+        "conflicts": new_conflicts,
+        "conflicts_total": len(conflicts),
     }
 
 

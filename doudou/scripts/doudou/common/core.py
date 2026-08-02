@@ -58,7 +58,7 @@ def normalize_lookup(value: Any) -> str:
 
 
 def resolve_data_root(candidate: str | Path | None = None) -> Path:
-    selected = candidate or os.environ.get("DOUDOU_HOME") or Path.cwd()
+    selected = candidate or Path.cwd()
     return Path(selected).expanduser().resolve()
 
 

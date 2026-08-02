@@ -27,6 +27,8 @@ SEND_PATHS = (
 
 async def open_conversation(session: BrowserSession, display_name: str) -> int:
     await session.ensure_ready()
+    if not str(session.page.url).startswith("https://www.douyin.com/chat"):
+        await session.open("https://www.douyin.com/chat")
     operations = await ConversationListComponent(session.page).open(display_name)
     await session.page.wait_for_timeout(1200)
     return operations
@@ -36,10 +38,6 @@ async def _select_reply(page: Any, target_text: str) -> int:
     component = MessageItemComponent(page)
     target = await component.target(target_text, "chat.reply")
     return await component.menu_action(target, "回复", "chat.reply")
-
-
-def _utf16_units(value: str) -> int:
-    return len(value.encode("utf-16-le")) // 2
 
 
 def _send_verification(capture: NetworkCapture, plan: dict[str, Any]) -> dict[str, Any]:
@@ -63,22 +61,6 @@ def _send_verification(capture: NetworkCapture, plan: dict[str, Any]) -> dict[st
     content = request.get("content") if isinstance(request.get("content"), dict) else {}
     actual_text = content.get("text") if isinstance(content, dict) else None
     expected_text = None if payload["mode"] == "image" else payload.get("text")
-    mention = payload.get("mention")
-    mention_uid = str(mention["uid"]) if mention else None
-    rich_infos = (
-        content.get("richTextInfos")
-        if isinstance(content.get("richTextInfos"), list)
-        else []
-    )
-    mention_length = _utf16_units(f"@{mention['display_name']}") if mention else None
-    mention_range_match = bool(mention) and any(
-        item.get("infoType") == 1
-        and str((item.get("info") or {}).get("uid")) == mention_uid
-        and item.get("location") == 0
-        and item.get("length") == mention_length
-        for item in rich_infos
-        if isinstance(item, dict)
-    )
     conversation = payload["conversation"]
     expected_type = 27 if payload["mode"] == "image" else 7
     image_shape_match = payload["mode"] != "image" or (
@@ -90,10 +72,6 @@ def _send_verification(capture: NetworkCapture, plan: dict[str, Any]) -> dict[st
     text_match = (
         expected_text is None
         or actual_text == expected_text
-        or (
-            mention
-            and actual_text == f"@{mention['display_name']}\u2005{expected_text}"
-        )
     )
     request_matches = (
         request.get("conversation_id") == str(conversation["conversation_id"])
@@ -104,14 +82,6 @@ def _send_verification(capture: NetworkCapture, plan: dict[str, Any]) -> dict[st
         and bool(request.get("client_message_id"))
         and text_match
         and image_shape_match
-        and (
-            not mention
-            or (
-                mention_uid in request.get("mentioned_users", [])
-                and request.get("ext", {}).get("s:mentioned_users") == mention_uid
-                and mention_range_match
-            )
-        )
         and (
             not payload.get("reply")
             or request.get("referenced_message_id")
@@ -150,9 +120,6 @@ def _send_verification(capture: NetworkCapture, plan: dict[str, Any]) -> dict[st
         "text_match": text_match,
         "reference_match": not payload.get("reply")
         or request.get("referenced_message_id") == str(payload["reply"]["message_id"]),
-        "mention_uid_match": not mention
-        or mention_uid in request.get("mentioned_users", []),
-        "mention_range_match": not mention or mention_range_match,
         "image_shape_match": image_shape_match,
         "server_message_id_present": bool(response.get("server_message_id")),
         "server_message_id": response.get("server_message_id"),
@@ -192,16 +159,7 @@ async def send_message(session: BrowserSession, plan: dict[str, Any]) -> dict[st
                 dom_operations += await _select_reply(page, payload["reply"]["text"])
             composer = ChatComposerComponent(page)
             await composer.clear()
-            if payload.get("mention"):
-                dom_operations += await composer.select_mention(
-                    payload["mention"]["display_name"]
-                )
-                await composer.insert_text(payload["text"])
-                planned_text = (
-                    f"@{payload['mention']['display_name']} {payload['text']}"
-                )
-            else:
-                await composer.insert_text(payload["text"])
+            await composer.insert_text(payload["text"])
             dom_operations += 2
             composed = await composer.text()
             if composed != planned_text:
@@ -214,16 +172,14 @@ async def send_message(session: BrowserSession, plan: dict[str, Any]) -> dict[st
                         "actual_sha256": sha256(composed),
                     },
                 )
-            button = await composer.send_control()
             try:
-                await button.click(timeout=15_000)
+                dom_operations += await composer.send()
             except Exception as error:
                 raise DoudouError(
                     "WRITE_RESULT_UNKNOWN",
                     "The chat send control was invoked but its result is uncertain.",
                     {"plan_id": plan["plan_id"], "write_started": True},
                 ) from error
-            dom_operations += 1
         for _ in range(150):
             if any("/v1/message/send" in path for path, _ in capture.response_bodies):
                 break
@@ -319,15 +275,19 @@ async def like_message(session: BrowserSession, plan: dict[str, Any]) -> dict[st
         for item in capture.responses
         if item["endpoint"]["path"].rstrip("/") == "/v1/message/modify_property"
     ]
-    passed = (
-        len(modify_requests) == 1
-        and len(modify_responses) == 1
-        and modify_responses[0]["http_status"] == 200
+    transport_observed = bool(modify_requests or modify_responses)
+    transport_consistent = (
+        not transport_observed
+        or (
+            len(modify_requests) == 1
+            and len(modify_responses) == 1
+            and modify_responses[0]["http_status"] == 200
+        )
     )
-    if not passed:
+    if not transport_consistent:
         raise DoudouError(
             "WRITE_RESULT_UNKNOWN",
-            "The message-like action did not produce one verified protocol receipt.",
+            "The message-like transport observation was incomplete.",
             {
                 "plan_id": plan["plan_id"],
                 "write_started": True,
@@ -340,5 +300,11 @@ async def like_message(session: BrowserSession, plan: dict[str, Any]) -> dict[st
         "plan_id": plan["plan_id"],
         "dom_operations": dom_operations,
         "network": {"requests": capture.requests, "responses": capture.responses},
-        "verification": {"passed": True, "request_count": 1, "response_count": 1},
+        "verification": {
+            "passed": False,
+            "pending_protocol_recheck": True,
+            "transport_observed": transport_observed,
+            "request_count": len(modify_requests),
+            "response_count": len(modify_responses),
+        },
     }

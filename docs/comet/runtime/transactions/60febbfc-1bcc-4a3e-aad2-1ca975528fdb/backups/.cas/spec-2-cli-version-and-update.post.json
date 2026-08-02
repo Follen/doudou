@@ -1,0 +1,11 @@
+{
+  "schema": "comet.native.archive-cas.v1",
+  "operationId": "spec-2-cli-version-and-update",
+  "role": "post",
+  "hash": "f8db51f14390be02d12ef5c3ed87ee80e7590e1379f76de2bfe1ebd62005b3d8",
+  "identity": {
+    "dev": 2421791372,
+    "ino": 5066549584566313,
+    "birthtimeMs": 1785695940160.4053
+  }
+}

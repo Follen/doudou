@@ -1,0 +1,28 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "manual-evidence",
+  "role": "acceptance-evidence",
+  "status": "passed",
+  "bindings": {
+    "change": "harden-setup-identity-enrichment-and-updates",
+    "sourceRevision": 9,
+    "contractHash": "f5f099d3e4c79e2d4bb08db432beff2d7be1aeca3234a5e5d1f7dee7103a1d7d",
+    "scopeHash": "8de7730ab07abc8866aa417dd1325c3308b48117da6b0a92080304c045770c8f",
+    "snapshotHash": "ab7c2bca4af213e4c960a926b3d9e501f80dd7e32b75698b3a8aa09821db4c35",
+    "artifactHash": "b1f3a8adc2e1ca4adc05edf8a84fb186c5f6c6f50617408b2727a24fe69a6f3f"
+  },
+  "acceptanceIds": [
+    "acceptance-f86da901904c4e98866351d0a5ca226205f1c7222b20b83c53dbdc58575957d8"
+  ],
+  "actor": "native-runtime:manual-evidence",
+  "issuedAt": "2026-08-02T18:33:10.697Z",
+  "evidence": {
+    "steps": [
+      "运行 broker 认证状态机测试并验证短信接管后的真实窗口状态。"
+    ],
+    "observations": [
+      "异步事件、连续唤醒、导航恢复和异常收尾测试通过；短信验证后 Profile=valid，接管结束，窗口隐藏且任务栏与 Alt+Tab 无入口。"
+    ]
+  },
+  "receiptHash": "5733d376702c2cd111cf2df11ce49a4468edd2fdb92268571b367687181aa8bb"
+}

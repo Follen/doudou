@@ -4,14 +4,14 @@
 
 ## 安装
 
-需要 Node.js `>=18.18` 和 Python `>=3.10,<4.0`。npm 包只携带启动器和 Skill 源码，不携带 venv、Python 包或浏览器。
+只要求 Node.js `>=18.18`。npm 包只携带启动器和 Skill 源码；setup 自行下载校验专用 Python，不使用用户系统 Python，也不把 Python、venv、依赖或浏览器打进 npm 包。
 
 ```powershell
 npm install -g @follenfang/doudou
 doudou doctor
 ```
 
-`doudou` 首次运行会把版本匹配的 Skill 原子安装到 `~/.agents/skills/doudou/`。首次业务命令发现运行时缺失时，会自动执行 setup：在用户缓存创建共享 venv、安装锁定依赖、下载并验证 Camoufox `152.0.4-beta.28`，然后继续原命令。也可以提前执行：
+`doudou` 首次运行会把版本匹配的 Skill 原子安装到 `~/.agents/skills/doudou/`。首次业务命令发现运行时缺失时，会自动执行 setup：下载校验专用 Python 3.12.13，在 `${DOUDOU_HOME:-~/.doudou}` 创建版本化 venv、安装锁定依赖、受控下载并验证专用 Camoufox `152.0.4-beta.28`，然后继续原命令。也可以提前执行：
 
 ```powershell
 doudou setup
@@ -26,7 +26,7 @@ npx --yes @follenfang/doudou -- doctor
 npx --yes @follenfang/doudou -- profile list
 ```
 
-Skill 目录可用 `--skill-dir <完整路径>` 临时覆盖，或用 `DOUDOU_AGENT_HOME` 把默认位置改为 `<home>/skills/doudou`。Profile 与业务记录始终留在运行命令时的当前项目：
+Skill 目录可用 `--skill-dir <完整路径>` 临时覆盖，或用 `DOUDOU_AGENT_HOME` 把默认位置改为 `<home>/skills/doudou`。`DOUDOU_HOME` 只覆盖用户级 Python、venv、浏览器和安装状态的位置；Profile 与业务记录始终留在运行命令时的当前项目：
 
 ```text
 profile/<profile>/
@@ -40,7 +40,7 @@ message/profiles/<profile>/
 - broker 串行执行命令，空闲 20 分钟退出。
 - 首条业务命令内部初始化页面与 IM；没有用户侧预热流程。
 - 会话、消息、图片、视频和评论读取使用页面上下文协议。
-- 文字、引用、@、图片、聊天点赞、视频评论/回复/点赞通过一次正常页面动作提交，并用网络回执和只读协议复查验证。
+- 文字、引用、图片、聊天点赞、视频评论/回复/点赞通过一次正常页面动作提交，并用网络回执和只读协议复查验证。
 - 图片下载先校验 AES-GCM，再按平台字段口径校验加密体或明文 MD5、明文大小与实际文件格式。
 - 视频列表从协议响应读取；翻页由版本化 Profile Component 的受控滚动触发，不复用过期签名 URL。
 - 页面读协议统一按 HTTP、Content-Type、Retry-After、响应长度/哈希和 JSON 业务状态分类；评论分页逐页保存检查点，可从失败游标恢复。
@@ -64,17 +64,22 @@ doudou video collect --profile work --sec-uid <sec_uid> --aweme-id <视频ID>
 ## 升级与卸载
 
 ```powershell
-npm install -g @follenfang/doudou@latest
+doudou update --check
+doudou update
 doudou uninstall
 ```
 
-`doudou uninstall` 会停止受管 broker，删除全部 npm 管理的 Skill 和共享 venv/runtime，再删除 npm 包自身。项目中的 `profile/`、`message/` 和共享 Camoufox 浏览器缓存会保留。npm 7+ 不执行卸载 lifecycle，直接使用 `npm uninstall` 不会清理这些运行文件。
+`doudou update` 只升级已有全局 npm 安装并原子更新 Skill；runtime manifest 没变化时复用当前 runtime，变化时并排验证新 runtime 后切换。npx 模式只报告版本状态，不创建全局安装。
+
+`doudou uninstall` 会停止受管 broker，删除全部 npm 管理的 Skill、整个 `${DOUDOU_HOME:-~/.doudou}`，再删除 npm 包自身。项目中的 `profile/`、`message/` 会保留。npm 7+ 不执行卸载 lifecycle，直接使用 `npm uninstall` 不会清理这些运行文件。
 
 ## 故障诊断
 
-- `PYTHON_VERSION_UNSUPPORTED`：安装 Python `>=3.10,<4.0` 后重试。
 - `SKILL_INSTALL_FAILED`：目标 Skill 目录存在未知内容；换用 `--skill-dir`，或先人工核对该目录。
-- `RUNTIME_SETUP_FAILED`：运行 `doudou setup` 查看依赖或浏览器下载阶段的原始错误。
+- `DEPENDENCY_INSTALL_FAILED`：锁定依赖安装失败；再次 setup 会创建新的临时 runtime，不复用半安装 venv。
+- `BROWSER_DOWNLOAD_STALLED`：浏览器下载 90 秒无新字节；网络恢复后再次 setup 会续传有效 `.part`。
+- `BROWSER_DOWNLOAD_CHECKSUM_MISMATCH`：浏览器资产哈希不符，损坏文件不会激活。
+- `RUNTIME_SETUP_FAILED`：运行 `doudou doctor` 查看 setup owner、下载 partial、缓存和可执行修复命令。
 - 登录、短信、滑块或写验证：运行对应命令后，由同一 broker 显示浏览器供人工接管。
 
 ## 发布

@@ -5,6 +5,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 from doudou.cli import dispatch, parser
+from doudou.common.errors import DoudouError
 
 
 class DoctorCliTests(unittest.TestCase):
@@ -27,3 +28,29 @@ class DoctorCliTests(unittest.TestCase):
         ):
             dispatch(args, Path("skill"))
         doctor.assert_called_once_with(Path("data").resolve(), launch_probe=True)
+
+    def test_legacy_at_fails_before_broker_start(self) -> None:
+        args = parser().parse_args(
+            [
+                "--data-root",
+                "data",
+                "protocol",
+                "send",
+                "--profile",
+                "profile-a",
+                "--recipient",
+                "group-a",
+                "--text",
+                "hello",
+                "--at",
+                "member-a",
+            ]
+        )
+        with (
+            patch("doudou.cli.initialize_data_root"),
+            patch("doudou.cli._client") as client,
+            self.assertRaises(DoudouError) as context,
+        ):
+            dispatch(args, Path("skill"))
+        self.assertEqual(context.exception.code, "MENTION_UNSUPPORTED")
+        client.assert_not_called()

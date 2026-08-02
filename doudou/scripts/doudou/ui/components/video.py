@@ -1,13 +1,19 @@
 from __future__ import annotations
 
-import contextlib
+import asyncio
 import re
 from typing import Any
 
 from ...common.errors import DoudouError
 from ...runtime.browser.session import BrowserSession
-from ..common import first_visible
-from .base import component_probe, require_target, visible_candidates
+from ..adapters import PROFILE_ADAPTER, VIDEO_ADAPTER
+from .base import (
+    component_probe,
+    not_exercised_probe,
+    require_target,
+    resolution_probe,
+    visible_candidates,
+)
 
 EMOJI_TOKEN = re.compile(r"\[[^\[\]\r\n]{1,24}\]")
 
@@ -16,22 +22,254 @@ def visible_comment_text(protocol_text: str) -> str:
     return EMOJI_TOKEN.sub("", protocol_text).strip()
 
 
+class TutorialDialogComponent:
+    name = "video-tutorial-dialog"
+    version = "2026-08-02.1"
+
+    async def dismiss(self, page: Any) -> int:
+        labels = page.get_by_text(VIDEO_ADAPTER.labels["tutorial"], exact=True)
+        visible = await visible_candidates(labels, limit=10)
+        if not visible:
+            return 0
+        action = await self.action(page)
+        await action.click(timeout=10_000)
+        return 1
+
+    async def action(self, page: Any) -> Any:
+        labels = page.get_by_text(VIDEO_ADAPTER.labels["tutorial"], exact=True)
+        action = await require_target(
+            labels,
+            component=self.name,
+            version=self.version,
+            capability="video.tutorial.dismiss",
+            strategy="stable tutorial action label",
+            require_enabled=True,
+        )
+        dialog = await require_target(
+            action.locator(
+                "xpath=ancestor::*[@role='dialog' or contains(@class,'modal') or contains(@class,'guide')][1]"
+            ),
+            component=self.name,
+            version=self.version,
+            capability="video.tutorial.dismiss",
+            strategy="tutorial action -> unique local dialog",
+            scope=page.locator("body"),
+        )
+        action = await require_target(
+            dialog.get_by_text(VIDEO_ADAPTER.labels["tutorial"], exact=True),
+            component=self.name,
+            version=self.version,
+            capability="video.tutorial.dismiss",
+            strategy="tutorial dialog -> local semantic action",
+            require_enabled=True,
+            scope=dialog,
+        )
+        return action
+
+    async def probe(self, page: Any) -> dict[str, Any]:
+        visible = bool(
+            await visible_candidates(
+                page.get_by_text(VIDEO_ADAPTER.labels["tutorial"], exact=True),
+                limit=10,
+            )
+        )
+        return await resolution_probe(
+            lambda: self.action(page),
+            component=self.name,
+            version=self.version,
+            capability="video.tutorial.dismiss",
+            strategy="semantic tutorial action -> local dialog -> local action",
+            exercised=visible,
+            not_exercised_reason="tutorial_dialog_not_present",
+        )
+
+
+class ProfileVideoListComponent:
+    name = "profile-video-list"
+    version = "2026-08-02.1"
+
+    def __init__(self, page: Any) -> None:
+        self.page = page
+
+    async def scroll_container(self) -> Any:
+        return await require_target(
+            PROFILE_ADAPTER.locator(self.page, "scroll_container"),
+            component=self.name,
+            version=self.version,
+            capability="video.list.paginate",
+            strategy="profile route -> versioned scroll container",
+            scope=self.page.locator("body"),
+        )
+
+    async def scroll_to_end(self) -> bool:
+        container = await self.scroll_container()
+        return bool(
+            await container.evaluate(
+                "element => { const before=element.scrollTop; element.scrollTop=element.scrollHeight; return element.scrollTop !== before; }"
+            )
+        )
+
+
+class VideoDetailComponent:
+    name = "video-detail"
+    version = "2026-08-02.1"
+
+    def __init__(self, page: Any) -> None:
+        self.page = page
+
+    async def render_data(self) -> str | None:
+        locator = VIDEO_ADAPTER.locator(self.page, "render_data")
+        count = await locator.count()
+        if count == 0:
+            return None
+        if count != 1:
+            raise DoudouError(
+                "PAGE_ADAPTER_DRIFTED",
+                "The structured video detail node is not unique.",
+                {
+                    "component": self.name,
+                    "component_version": self.version,
+                    "capability": "video.detail.read",
+                    "strategy": "video route -> unique structured render node",
+                    "candidate_count": count,
+                },
+            )
+        return await locator.text_content(timeout=3000) or ""
+
+
 class VideoCommentsPanelComponent:
     name = "video-comments-panel"
-    version = "2026-08-02.2"
+    version = "2026-08-03.1"
     comment_button_selector = '[data-e2e="feed-comment-icon"], [data-e2e*="comment" i], button[aria-label*="评论"], [title*="评论"]'
+    reply_expand_selector = "button.comment-reply-expand-btn"
 
     def candidates(self, page: Any) -> Any:
         return page.locator(self.comment_button_selector)
 
-    async def probe(self, page: Any, exercised: bool) -> dict[str, Any]:
-        return await component_probe(
-            self.candidates(page),
+    async def _panel(self, page: Any, *, required: bool) -> Any | None:
+        lists = page.locator('[data-e2e="comment-list"]')
+        visible = await visible_candidates(lists)
+        if not visible and not required:
+            return None
+        comment_list = await require_target(
+            lists,
+            component=self.name,
+            version=self.version,
+            capability="video.comments.panel",
+            strategy="versioned comment list -> visible local panel",
+        )
+        panel = comment_list.locator(
+            "xpath=ancestor::*[.//*[contains(@class,'comment-input-inner-container')]][1]"
+        )
+        if await panel.count() == 0:
+            return comment_list
+        resolved = await require_target(
+            panel,
+            component=self.name,
+            version=self.version,
+            capability="video.comments.panel",
+            strategy="comment list -> local panel containing composer",
+        )
+        await require_target(
+            comment_list,
+            component=self.name,
+            version=self.version,
+            capability="video.comments.panel",
+            strategy="resolved panel -> contained comment list",
+            scope=resolved,
+        )
+        await require_target(
+            VIDEO_ADAPTER.locator(page, "comment_container"),
+            component=self.name,
+            version=self.version,
+            capability="video.comments.panel",
+            strategy="resolved panel -> contained comment composer",
+            scope=resolved,
+        )
+        return resolved
+
+    async def _action_bar_and_button(self, page: Any) -> tuple[Any, Any]:
+        candidates = page.locator(self.comment_button_selector)
+        deadline = asyncio.get_running_loop().time() + 20
+        button = None
+        while asyncio.get_running_loop().time() < deadline:
+            visible = await visible_candidates(candidates)
+            if len(visible) == 1:
+                button = await require_target(
+                    visible[0],
+                    component=self.name,
+                    version=self.version,
+                    capability="video.comments.open",
+                    strategy="bounded render wait -> unique semantic comment action",
+                    require_enabled=True,
+                )
+                break
+            if len(visible) > 1:
+                await require_target(
+                    candidates,
+                    component=self.name,
+                    version=self.version,
+                    capability="video.comments.open",
+                    strategy="bounded render wait -> unique semantic comment action",
+                    require_enabled=True,
+                )
+            await page.wait_for_timeout(250)
+        if button is None:
+            await require_target(
+                candidates,
+                component=self.name,
+                version=self.version,
+                capability="video.comments.open",
+                strategy="bounded render wait -> unique semantic comment action",
+                require_enabled=True,
+            )
+            raise AssertionError("unreachable")
+        bar = await require_target(
+            button.locator(
+                "xpath=ancestor::*[@role='toolbar' or contains(@class,'action') or contains(@class,'right')][1]"
+            ),
             component=self.name,
             version=self.version,
             capability="video.comments.open",
-            strategy="semantic comment data-e2e/aria/title",
-            exercised=exercised,
+            strategy="comment action -> local video action bar",
+            scope=page.locator("body"),
+        )
+        local = await require_target(
+            bar.locator(self.comment_button_selector),
+            component=self.name,
+            version=self.version,
+            capability="video.comments.open",
+            strategy="video action bar -> local comment action",
+            require_enabled=True,
+            scope=bar,
+        )
+        return bar, local
+
+    async def probe(self, page: Any, exercised: bool) -> dict[str, Any]:
+        if not exercised:
+            return not_exercised_probe(
+                component=self.name,
+                version=self.version,
+                capability="video.comments.open",
+                strategy="video action bar -> local comment action",
+                reason="video_route_not_open",
+            )
+        panel = await self._panel(page, required=False)
+
+        async def resolve() -> Any:
+            if panel is not None:
+                return await self._panel(page, required=True)
+            _bar, button = await self._action_bar_and_button(page)
+            return button
+
+        return await resolution_probe(
+            resolve,
+            component=self.name,
+            version=self.version,
+            capability="video.comments.open",
+            strategy="video route -> local action bar/comment panel -> geometry",
+            exercised=True,
+            not_exercised_reason="video_route_not_open",
         )
 
     async def open(self, session: BrowserSession, aweme_id: str) -> tuple[Any, int]:
@@ -69,32 +307,18 @@ class VideoCommentsPanelComponent:
             )
         await session.page.wait_for_timeout(3000)
         operations = 0
-        tutorial = await first_visible(session.page.get_by_text("我知道了", exact=True))
-        if tutorial:
-            await tutorial.click()
-            operations += 1
+        operations += await TutorialDialogComponent().dismiss(session.page)
         operations += await self.ensure_open(session.page)
         return session.page, operations
 
     async def ensure_open(self, page: Any) -> int:
-        panel_candidates = page.locator(
-            '[data-e2e="comment-list"], .comment-input-container'
-        )
-        if await first_visible(panel_candidates):
+        if await self._panel(page, required=False) is not None:
             return 0
-        button = await require_target(
-            page.locator(self.comment_button_selector),
-            component=self.name,
-            version=self.version,
-            capability="video.comments.open",
-            strategy="semantic comment data-e2e/aria/title",
-            require_enabled=True,
-            scope=page.locator("body"),
-        )
+        _bar, button = await self._action_bar_and_button(page)
         try:
             await button.click(timeout=15_000)
             for _ in range(200):
-                if await first_visible(panel_candidates):
+                if await self._panel(page, required=False) is not None:
                     break
                 await page.wait_for_timeout(100)
             else:
@@ -113,78 +337,70 @@ class VideoCommentsPanelComponent:
             ) from error
         return 1
 
-    async def expand_any_replies(self, page: Any) -> int:
-        try:
-            for attempt in range(30):
-                lists = await visible_candidates(
-                    page.locator('[data-e2e="comment-list"]')
-                )
-                if len(lists) != 1:
-                    raise DoudouError(
-                        "PAGE_ADAPTER_DRIFTED",
-                        "The video comment list is not uniquely visible.",
-                        {
-                            "component": self.name,
-                            "component_version": self.version,
-                            "capability": "video.comment.replies.read",
-                            "candidate_count": len(lists),
-                        },
-                    )
-                controls = await visible_candidates(
-                    lists[0].get_by_text(
-                        re.compile(r"(?:展开|查看|共).{0,12}条回复")
-                    )
-                )
-                if controls:
-                    control = await require_target(
-                        controls[0],
-                        component=self.name,
-                        version=self.version,
-                        capability="video.comment.replies.read",
-                        strategy="comment-list-local semantic expansion label",
-                        require_enabled=True,
-                        scope=lists[0],
-                    )
-                    await control.click(timeout=15_000)
-                    return attempt + 1
-                await lists[0].hover()
-                await page.mouse.wheel(0, 700)
-                await page.wait_for_timeout(300)
+    async def trigger_reply_template(self, page: Any) -> int:
+        panel = await self._panel(page, required=True)
+        visible = await visible_candidates(panel.locator(self.reply_expand_selector))
+        if not visible:
+            return 0
+        positioned = [(item, await item.bounding_box()) for item in visible]
+        positioned = [(item, box) for item, box in positioned if box]
+        top_y = min((box["y"] for _, box in positioned), default=None)
+        topmost = [
+            item
+            for item, box in positioned
+            if top_y is not None and abs(box["y"] - top_y) < 1
+        ]
+        if len(topmost) != 1:
             raise DoudouError(
                 "PAGE_ADAPTER_DRIFTED",
-                "No visible reply expansion control was found by bounded scrolling.",
+                "The reply expansion trigger is not geometrically unique.",
                 {
                     "component": self.name,
                     "component_version": self.version,
-                    "capability": "video.comment.replies.read",
-                    "attempts": 30,
+                    "capability": "video.comments.reply-template",
+                    "strategy": "comment panel -> local reply buttons -> unique topmost",
+                    "candidate_count": len(visible),
+                    "visible_count": len(visible),
+                    "enabled_count": 0,
+                    "geometry_reason": "topmost_not_unique",
                 },
             )
-        except DoudouError:
-            raise
-        except Exception as error:
+        trigger = await require_target(
+            topmost[0],
+            component=self.name,
+            version=self.version,
+            capability="video.comments.reply-template",
+            strategy="comment panel -> local reply buttons -> unique topmost",
+            require_enabled=True,
+            scope=panel,
+        )
+        label = (await trigger.inner_text()).strip()
+        if not re.search(r"(展开|查看).*回复", label):
             raise DoudouError(
                 "PAGE_ADAPTER_DRIFTED",
-                "The reply protocol discovery control became unavailable.",
+                "The reply expansion trigger lacks local semantic evidence.",
                 {
                     "component": self.name,
                     "component_version": self.version,
-                    "capability": "video.comment.replies.read",
-                    "cause_type": type(error).__name__,
+                    "capability": "video.comments.reply-template",
+                    "strategy": "reply button -> local expand/view reply label",
+                    "geometry_reason": "state_mismatch",
                 },
-            ) from error
+            )
+        await trigger.click(timeout=10_000)
+        return 1
 
 
 class VideoCommentComposerComponent:
     name = "video-comment-composer"
-    version = "2026-08-02.2"
-    container_selector = ".comment-input-container"
+    version = "2026-08-03.1"
+    container_selector = ".comment-input-inner-container"
     editor_selector = '[contenteditable="true"][role="combobox"], textarea, input'
     controls_selector = ".commentInput-right-ct span"
 
     focused_editor_selector = '[contenteditable="true"][role="combobox"]:focus'
     focused_container_xpath = (
-        "xpath=ancestor::div[contains(@class,'comment-input-container')][1]"
+        "xpath=ancestor::div[contains(@class,'comment-input-inner-container')][1]"
     )
 
     def __init__(self, page: Any, focused: bool = False) -> None:
@@ -210,10 +426,6 @@ class VideoCommentComposerComponent:
 
     async def editor(self) -> Any:
         if self.focused:
-            with contextlib.suppress(Exception):
-                await self.page.locator(self.focused_editor_selector).first.wait_for(
-                    state="visible", timeout=3000
-                )
             return await require_target(
                 self.page.locator(self.focused_editor_selector),
                 component=self.name,
@@ -244,6 +456,15 @@ class VideoCommentComposerComponent:
         await self.page.keyboard.insert_text(text)
         await self.page.wait_for_timeout(250)
         return editor
+
+    async def activate(self) -> int:
+        await (await self.container()).click()
+        return 1
+
+    async def composed_text(self, editor: Any) -> str:
+        return await editor.evaluate(
+            "element => 'value' in element ? element.value : (element.innerText || element.textContent || '')"
+        )
 
     async def send_control(self) -> Any:
         container = await self.container()
@@ -281,6 +502,10 @@ class VideoCommentComposerComponent:
             minimum_peer_count=2,
         )
 
+    async def publish(self) -> int:
+        await (await self.send_control()).click()
+        return 1
+
     async def probe(self, exercised: bool) -> dict[str, Any]:
         return await component_probe(
             self.candidates(),
@@ -294,7 +519,7 @@ class VideoCommentComposerComponent:
 
 class CommentItemComponent:
     name = "video-comment-item"
-    version = "2026-08-02.2"
+    version = "2026-08-03.1"
     list_selector = '[data-e2e="comment-list"]'
     item_xpath = "xpath=ancestor::div[.//div[contains(@class,'comment-item-stats-container')] and .//span[normalize-space()='回复']][1]"
     stats_selector = ".comment-item-stats-container"
@@ -336,10 +561,6 @@ class CommentItemComponent:
     ) -> Any:
         root = await self._list()
         visible_text = visible_comment_text(text)
-        with contextlib.suppress(Exception):
-            await root.get_by_text(visible_text, exact=True).first.wait_for(
-                state="visible", timeout=15_000
-            )
         for _ in range(attempts):
             matches = root.get_by_text(visible_text, exact=True)
             items: list[Any] = []
@@ -412,13 +633,49 @@ class CommentItemComponent:
             capability="video.comment.like",
             strategy="comment-item-local stats container",
             scope=item,
+            scope_tolerance=4,
         )
-        return await require_target(
+        count_label = await require_target(
             stats.get_by_text(str(count), exact=True),
             component=self.name,
             version=self.version,
             capability="video.comment.like",
-            strategy="stats-local exact count",
+            strategy="stats-local exact protocol count label",
+            scope=stats,
+        )
+        control = await require_target(
+            count_label.locator(
+                "xpath=ancestor-or-self::*[self::button or @role='button' or .//*[name()='svg']][1]"
+            ),
+            component=self.name,
+            version=self.version,
+            capability="video.comment.like",
+            strategy="protocol count label -> local icon/button action",
             require_enabled=True,
             scope=stats,
         )
+        await require_target(
+            control.locator("svg, [aria-label*='赞'], [data-e2e*='digg' i]"),
+            component=self.name,
+            version=self.version,
+            capability="video.comment.like",
+            strategy="local like action -> semantic/icon evidence",
+            scope=control,
+        )
+        pressed = await control.get_attribute("aria-pressed")
+        if pressed == "true":
+            raise DoudouError(
+                "PAGE_ADAPTER_DRIFTED",
+                "The page like state contradicts the unliked protocol plan.",
+                {
+                    "component": self.name,
+                    "component_version": self.version,
+                    "capability": "video.comment.like",
+                    "geometry_reason": "state_mismatch",
+                },
+            )
+        return control
+
+    async def like(self, item: Any, count: int) -> int:
+        await (await self.like_control(item, count)).click()
+        return 1

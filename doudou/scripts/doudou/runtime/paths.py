@@ -28,6 +28,7 @@ class ProfilePaths:
     sends: Path
     interactions: Path
     diagnostics: Path
+    identities: Path
 
 
 def _profile_paths(data_root: Path, profile_id: str) -> ProfilePaths:
@@ -55,6 +56,7 @@ def _profile_paths(data_root: Path, profile_id: str) -> ProfilePaths:
         sends=message / "sends",
         interactions=message / "interactions",
         diagnostics=message / "diagnostics",
+        identities=message / "identities",
     )
 
 

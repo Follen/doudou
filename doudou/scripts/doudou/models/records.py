@@ -22,12 +22,14 @@ class Conversation:
 
 @dataclass(frozen=True)
 class Identity:
-    unique_id: str
-    sec_uid: str
-    uid: str
-    nickname: str
+    unique_id: str | None
+    sec_uid: str | None
+    uid: str | None
+    nickname: str | None
+    remark_name: str | None = None
+    display_name: str | None = None
 
-    def to_dict(self) -> dict[str, str]:
+    def to_dict(self) -> dict[str, str | None]:
         return asdict(self)
 
 

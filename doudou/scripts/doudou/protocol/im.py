@@ -4,6 +4,7 @@ import json
 import time
 from typing import Any
 
+from ..models.identity import normalize_identity
 from ..models.records import conversation_kind
 from .protobuf import (
     Field,
@@ -162,17 +163,24 @@ def parse_participants_page(data: bytes) -> dict[str, Any]:
         uid = get_field(record, 1, 0)
         if not uid:
             continue
+        alias = text_value(get_field(record, 4, 2)) or ""
         participants.append(
             {
-                "uid": str(uid.value),
+                **normalize_identity(
+                    {
+                        "uid": str(uid.value),
+                        "sec_uid": text_value(get_field(record, 5, 2)) or "",
+                        "remark_name": alias,
+                    },
+                    source="im-participant",
+                ),
                 "sort_order": str(get_field(record, 2, 0).value)
                 if get_field(record, 2, 0)
                 else None,
                 "role": int(get_field(record, 3, 0).value)
                 if get_field(record, 3, 0)
                 else 0,
-                "alias": text_value(get_field(record, 4, 2)) or "",
-                "sec_uid": text_value(get_field(record, 5, 2)) or "",
+                "alias": alias,
                 "ext": parse_map_entries(record, 8),
             }
         )
@@ -220,11 +228,7 @@ def normalize_system_event(content: Any, message_type: int) -> dict[str, Any] | 
 
     def users(key: str) -> list[dict[str, Any]]:
         return [
-            {
-                "uid": str(item.get("uid") or ""),
-                "sec_uid": item.get("sec_uid"),
-                "nickname": item.get("nickname"),
-            }
+            normalize_identity(item, source=f"member-joined-{key}")
             for item in content.get(key) or []
         ]
 
@@ -291,12 +295,18 @@ def parse_property_list(fields: list[Field]) -> dict[str, Any]:
             items: list[dict[str, Any]] = []
             for child in get_fields(list_fields, 1, 2):
                 fields2 = decode_fields(bytes(child.value))
-                items.append(
+                identity = normalize_identity(
                     {
                         "uid": str(get_field(fields2, 1, 0).value)
                         if get_field(fields2, 1, 0)
                         else None,
                         "sec_uid": text_value(get_field(fields2, 2, 2)),
+                    },
+                    source=f"message-property-{key}",
+                )
+                items.append(
+                    {
+                        **identity,
                         "create_time": str(get_field(fields2, 3, 0).value)
                         if get_field(fields2, 3, 0)
                         else None,
@@ -368,12 +378,15 @@ def normalize_message(data: bytes, expected_conversation: str) -> dict[str, Any]
         else None,
         "message_type": message_type_value,
         "type": kind,
-        "sender": {
-            "uid": str(get_field(fields, 7, 0).value)
-            if get_field(fields, 7, 0)
-            else None,
-            "sec_uid": text_value(get_field(fields, 14, 2)),
-        },
+        "sender": normalize_identity(
+            {
+                "uid": str(get_field(fields, 7, 0).value)
+                if get_field(fields, 7, 0)
+                else None,
+                "sec_uid": text_value(get_field(fields, 14, 2)),
+            },
+            source="im-message",
+        ),
         "create_time_ms": int(create_time.value),
         "text": content.get("text")
         if isinstance(content, dict)

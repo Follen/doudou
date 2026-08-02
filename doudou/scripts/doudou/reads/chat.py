@@ -6,6 +6,12 @@ from typing import Any
 
 from ..common.core import random_id, utc_now
 from ..common.errors import DoudouError
+from ..models.identity import (
+    IdentityCache,
+    enrich_message_identities,
+    known_identity_sec_uids,
+    normalize_identity,
+)
 from ..models.resolver import infer_self_uid, resolve_conversation
 from ..protocol.contracts import WEB_PROTOCOL
 from ..protocol.im import (
@@ -25,6 +31,7 @@ from ..storage.media import download_message_images
 from ..storage.repository import (
     merge_messages,
     read_conversation_index,
+    read_messages,
     read_session_index_snapshot,
     write_conversation_index,
     write_session_index_snapshot,
@@ -36,10 +43,31 @@ GET_MESSAGES_ENDPOINT = "https://imapi.douyin.com/v1/message/get_by_conversation
 PARTICIPANTS_ENDPOINT = "https://imapi.douyin.com/v1/conversation/participants_list"
 
 
-async def _resolve_user_names(
-    session: BrowserSession, sec_uids: list[str]
-) -> dict[str, str]:
-    names: dict[str, str] = {}
+def _response_identities(value: Any) -> list[dict[str, Any]]:
+    found: list[dict[str, Any]] = []
+    pending = [(value, 0)]
+    while pending:
+        current, depth = pending.pop()
+        if depth > 6:
+            continue
+        if isinstance(current, dict):
+            identity = normalize_identity(current, source="user-info")
+            if identity.get("uid") or identity.get("sec_uid"):
+                found.append(identity)
+            pending.extend((child, depth + 1) for child in current.values())
+        elif isinstance(current, list):
+            pending.extend((child, depth + 1) for child in current)
+    return found
+
+
+async def _resolve_user_identities(
+    session: BrowserSession,
+    data_root: Path,
+    profile: str,
+    sec_uids: list[str],
+) -> dict[str, dict[str, Any]]:
+    identities: dict[str, dict[str, Any]] = {}
+    cache = IdentityCache(data_root, profile)
     unique = list(dict.fromkeys(value for value in sec_uids if value))
     for offset in range(0, len(unique), 20):
         result = await session.page.evaluate(
@@ -68,46 +96,48 @@ async def _resolve_user_names(
             if error.code in {"LOGIN_REQUIRED", "VERIFICATION_REQUIRED"}:
                 raise
             continue
-        pending = [value]
-        while pending:
-            value = pending.pop()
-            if isinstance(value, dict):
-                sec_uid = value.get("sec_uid") or value.get("secUid")
-                name = (
-                    value.get("remark_name")
-                    or value.get("remarkName")
-                    or value.get("nickname")
-                    or value.get("nick_name")
-                    or value.get("name")
-                )
-                if sec_uid and name:
-                    names[str(sec_uid)] = str(name)
-                pending.extend(value.values())
-            elif isinstance(value, list):
-                pending.extend(value)
-    return names
+        for identity in _response_identities(value):
+            sec_uid = identity.get("sec_uid")
+            if not sec_uid:
+                continue
+            merged = cache.merge(identity, source="user-info")
+            identities[sec_uid] = merged
+    for sec_uid in unique:
+        if sec_uid not in identities:
+            identities[sec_uid] = cache.enrich(
+                {"sec_uid": sec_uid}, source="user-info-cache"
+            )
+    cache.save()
+    return identities
 
 
-async def _enrich_direct_names(
-    session: BrowserSession, conversations: list[dict[str, Any]]
+async def _enrich_conversation_identities(
+    session: BrowserSession,
+    data_root: Path,
+    profile: str,
+    conversations: list[dict[str, Any]],
 ) -> None:
     self_uid = infer_self_uid(conversations)
     targets = [
         participant
         for conversation in conversations
-        if conversation["conversation_type"] == 1
         for participant in conversation.get("participants", {}).get("participants", [])
-        if participant.get("uid") != self_uid and participant.get("sec_uid")
+        if participant.get("sec_uid")
     ]
-    names = await _resolve_user_names(session, [item["sec_uid"] for item in targets])
+    identities = await _resolve_user_identities(
+        session, data_root, profile, [item["sec_uid"] for item in targets]
+    )
     for conversation in conversations:
+        participants = conversation.get("participants", {}).get("participants", [])
+        for index, participant in enumerate(participants):
+            resolved = identities.get(participant.get("sec_uid") or "")
+            if resolved:
+                participants[index] = {**participant, **resolved}
         if conversation["conversation_type"] != 1:
             continue
         candidates = [
-            participant.get("alias") or names.get(participant.get("sec_uid") or "")
-            for participant in conversation.get("participants", {}).get(
-                "participants", []
-            )
+            participant.get("display_name") or participant.get("alias")
+            for participant in participants
             if participant.get("uid") != self_uid
         ]
         candidates = [value for value in candidates if value]
@@ -155,7 +185,9 @@ async def refresh_session_index(
             "IM_INITIALIZATION_EMPTY",
             "IM initialization returned no structured conversations.",
         )
-    await _enrich_direct_names(session, conversations)
+    await _enrich_conversation_identities(
+        session, data_root, profile, conversations
+    )
     index = write_conversation_index(data_root, profile, conversations)
     snapshot = {
         "schema": "doudou.session-index-snapshot.v1",
@@ -266,18 +298,27 @@ async def collect_messages(
         messages.values(),
         key=lambda item: (item["create_time_ms"], int(item["message_id"])),
     )
-    names = await _resolve_user_names(
+    identities = await _resolve_user_identities(
         session,
-        [
-            message.get("sender", {}).get("sec_uid")
-            for message in ordered
-            if message.get("sender", {}).get("sec_uid")
-        ],
+        data_root,
+        profile,
+        known_identity_sec_uids(ordered),
     )
     for message in ordered:
         sender = message.get("sender") or {}
-        sender["name"] = names.get(sender.get("sec_uid") or "")
+        resolved = identities.get(sender.get("sec_uid") or "")
+        if resolved:
+            sender = {**sender, **resolved}
+        sender["name"] = sender.get("display_name")
         message["sender"] = sender
+    cache = IdentityCache(data_root, profile)
+    ordered = enrich_message_identities(
+        ordered,
+        cache,
+        source="message-collect",
+        reference_catalog=read_messages(data_root, profile, conversation),
+    )
+    cache.save()
     image_stats = {"attempted": 0, "downloaded": 0, "failed": 0}
     if download_images:
         paths = profile_paths(data_root, profile)
@@ -322,7 +363,11 @@ async def collect_messages(
 
 
 async def resolve_members(
-    session: BrowserSession, conversation: dict[str, Any], requested: list[str]
+    session: BrowserSession,
+    data_root: Path,
+    profile: str,
+    conversation: dict[str, Any],
+    requested: list[str],
 ) -> list[dict[str, Any]]:
     if not requested:
         return []
@@ -372,13 +417,17 @@ async def resolve_members(
         cursor, has_more = page["cursor"], page["has_more"]
     unique = {item["uid"]: item for item in members}
     members = list(unique.values())
-    names = await _resolve_user_names(
-        session, [item["sec_uid"] for item in members if item.get("sec_uid")]
+    identities = await _resolve_user_identities(
+        session,
+        data_root=data_root,
+        profile=profile,
+        sec_uids=[item["sec_uid"] for item in members if item.get("sec_uid")],
     )
     for member in members:
-        member["name"] = member.get("alias") or names.get(
-            member.get("sec_uid") or "", ""
-        )
+        resolved = identities.get(member.get("sec_uid") or "")
+        if resolved:
+            member.update(resolved)
+        member["name"] = member.get("display_name") or member.get("alias") or ""
     resolved: list[dict[str, Any]] = []
     for query in requested:
         matches = [

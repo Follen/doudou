@@ -1,0 +1,759 @@
+{
+  "schema": "comet.native.content-snapshot-projection.v1",
+  "origin": "explicit",
+  "capture": {
+    "provider": "git"
+  },
+  "complete": true,
+  "limits": {
+    "maxFiles": 10000,
+    "maxFileBytes": 268435456,
+    "maxTotalBytes": 268435456,
+    "maxManifestBytes": 1048576,
+    "maxDurationMs": 60000
+  },
+  "policy": {
+    "schema": "comet.native.snapshot-policy.v1",
+    "include": [
+      "**/*"
+    ],
+    "exclude": [],
+    "hash": "cc34dce5671bc1aefad09b658911a71d0434a26a1fbb4d8ba10de57b316f1f2f"
+  },
+  "entries": [
+    {
+      "path": ".github/workflows/publish-npm.yml",
+      "hash": "995da4ee35323dc094711632522f6305d7c29da1a05b096db146a72ae5327827",
+      "size": 2914,
+      "type": "file"
+    },
+    {
+      "path": ".gitignore",
+      "hash": "b2bf0af34d5e9ee8cafe7be267904854ce9418e12d9daf37f22df7ad701abd79",
+      "size": 248,
+      "type": "file"
+    },
+    {
+      "path": "AGENTS.md",
+      "hash": "d6cf9b12e9c95d756c3ef2f200b9421ab110180439863eadd3c919f6ff17ba8c",
+      "size": 5623,
+      "type": "file"
+    },
+    {
+      "path": "README.md",
+      "hash": "3d35fc1a7994eb5a5bc9cc5e8672866c87a8e9c73e01fd49a3d32b1183f4f7bc",
+      "size": 5924,
+      "type": "file"
+    },
+    {
+      "path": "docs/protobuf-message-fields.md",
+      "hash": "b41b6808406840c3837244c007bb8ea4033b09af1743519d28ac4ac6ae8207a0",
+      "size": 3287,
+      "type": "file"
+    },
+    {
+      "path": "docs/verification/camoufox-migration-20260802.md",
+      "hash": "11edcc99328e8f8ad05fe7313b0e2233d0e9f286795e80a1fd19c644c42e8e5a",
+      "size": 4124,
+      "type": "file"
+    },
+    {
+      "path": "docs/verification/requirements.in",
+      "hash": "187c5f79294e3129f8f7f90f561e55b37842fc8969cdd29f811a3c1eb5af3795",
+      "size": 37,
+      "type": "file"
+    },
+    {
+      "path": "docs/verification/tests/__init__.py",
+      "hash": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+      "size": 1,
+      "type": "file"
+    },
+    {
+      "path": "docs/verification/tests/test_architecture.py",
+      "hash": "89e8cad261f500d102900230fd1acb593b3cf610f542d6744bf696272dbe9b58",
+      "size": 4497,
+      "type": "file"
+    },
+    {
+      "path": "docs/verification/tests/test_batch.py",
+      "hash": "e218a56cdaed99e330717a1721f3feb96435b94de377af09daa7e2b921439721",
+      "size": 4656,
+      "type": "file"
+    },
+    {
+      "path": "docs/verification/tests/test_broker.py",
+      "hash": "14994f53dacfdf0b256876a27cd64b4873434397c80ae8f7369f9431780ceb80",
+      "size": 18485,
+      "type": "file"
+    },
+    {
+      "path": "docs/verification/tests/test_broker_registration.py",
+      "hash": "81dd08c09358243fcac3c7e87485835817bcffdd1bf56fb2bff33517ad1b622d",
+      "size": 2477,
+      "type": "file"
+    },
+    {
+      "path": "docs/verification/tests/test_cli_doctor.py",
+      "hash": "26644aaeccebedb9f4fd4a67f41f773fbc36d89d1ab58a3f4868d92850b7212d",
+      "size": 1075,
+      "type": "file"
+    },
+    {
+      "path": "docs/verification/tests/test_component_geometry.py",
+      "hash": "e164f8f011ec87882ffef09bf88eb37f0d4edd07ca588f855722de1d270d2e73",
+      "size": 5261,
+      "type": "file"
+    },
+    {
+      "path": "docs/verification/tests/test_core.py",
+      "hash": "5e04cf16aa328cbad0e80ac050150dca625d53989f6ac046374cd91d4e9da6a8",
+      "size": 1644,
+      "type": "file"
+    },
+    {
+      "path": "docs/verification/tests/test_identity.py",
+      "hash": "b9178671228d24023daa5294e381db23f0389fcc77024facc1a7c394d8c30214",
+      "size": 5196,
+      "type": "file"
+    },
+    {
+      "path": "docs/verification/tests/test_profile.py",
+      "hash": "481395494178c3b8afa75dbcc960a3ddbf3815cea9d7294ea32e0eacac96958c",
+      "size": 5091,
+      "type": "file"
+    },
+    {
+      "path": "docs/verification/tests/test_protocol_storage.py",
+      "hash": "8c353ece949d47efb0c980938b6ae7f351cae5f411532e905eefcbeeb562c4a7",
+      "size": 15260,
+      "type": "file"
+    },
+    {
+      "path": "docs/verification/tests/test_responses.py",
+      "hash": "b12e29216ab63b81b1e409219cf5f5778f00b4555989393db580dd352e13321a",
+      "size": 5886,
+      "type": "file"
+    },
+    {
+      "path": "docs/verification/tests/test_runtime_home.py",
+      "hash": "4a0092abfe7d6ddc6b69625ae37fe1fe096dd956e2f42b32887ac83c0ae60f15",
+      "size": 1837,
+      "type": "file"
+    },
+    {
+      "path": "docs/verification/tests/test_video_writes.py",
+      "hash": "05d984e649e1f2e9a4e2b9703160e7a1db2e4b72d70871b1cac6895c3872dad1",
+      "size": 3107,
+      "type": "file"
+    },
+    {
+      "path": "docs/verification/tests/test_web_plans_cli.py",
+      "hash": "e4890554f2ad302695ced57068ec6c27cb1f1aa5a4d16d6bf185aba55a2701a5",
+      "size": 4857,
+      "type": "file"
+    },
+    {
+      "path": "docs/verification/tests/test_windows_process.py",
+      "hash": "27e0a722713300f17c1b824846e121546590a4b7b3196a25b096757d7e89e402",
+      "size": 5228,
+      "type": "file"
+    },
+    {
+      "path": "doudou/.gitignore",
+      "hash": "ef4a9428e189fe5e5729f5cd818ac3f49cc573f0e88891841d82b0d7605b3351",
+      "size": 175,
+      "type": "file"
+    },
+    {
+      "path": "doudou/SKILL.md",
+      "hash": "ecb0aab41b8c0cd77f36db4773e65023152de4bdd4836e5deaeb828ee3ca515a",
+      "size": 4465,
+      "type": "file"
+    },
+    {
+      "path": "doudou/agents/openai.yaml",
+      "hash": "27bd0d16f6c30de3511e3e70ee396298e8c42edaba7791c6e3f275aea21d5caf",
+      "size": 288,
+      "type": "file"
+    },
+    {
+      "path": "doudou/references/cli.md",
+      "hash": "350c2ea53bd66970ef55fc40641105358c6575123309c68bea4ef9b16c676fc3",
+      "size": 3024,
+      "type": "file"
+    },
+    {
+      "path": "doudou/references/layout.md",
+      "hash": "e858ecf18bdfd1955d21ca257c1ea739214b0a4a0dcd243cdc7e21e3f7ac7eeb",
+      "size": 1879,
+      "type": "file"
+    },
+    {
+      "path": "doudou/references/protobuf-message-fields.md",
+      "hash": "733ecb63710e99c8d2b9cdf67257fe6e6a5f7a98d02ff48e7d925d171947e020",
+      "size": 5560,
+      "type": "file"
+    },
+    {
+      "path": "doudou/references/runtime.md",
+      "hash": "db5aa119d9556bca6d46cb2a86209ff43d15bc26b181dcc18187512b7faf9d77",
+      "size": 4316,
+      "type": "file"
+    },
+    {
+      "path": "doudou/scripts/doudou.py",
+      "hash": "1121176c47a5e3662b0f5263f75ea54fd95d2ffd4fad99ad1e552288869a98a9",
+      "size": 1002,
+      "type": "file"
+    },
+    {
+      "path": "doudou/scripts/doudou/__init__.py",
+      "hash": "bddc0ea02b58af231c34a33bd32f724fabcbfd8808ca5be4d92280095c604110",
+      "size": 56,
+      "type": "file"
+    },
+    {
+      "path": "doudou/scripts/doudou/cli.py",
+      "hash": "fe13df849970e72f0498af8c01bf08858c3e7a6bef3d04945574c01bcc7531f8",
+      "size": 17905,
+      "type": "file"
+    },
+    {
+      "path": "doudou/scripts/doudou/common/__init__.py",
+      "hash": "7ada3dd5ecdbb89701ed78aaec1cc423eed68cf5f46b625d4229d8dc13c5a858",
+      "size": 55,
+      "type": "file"
+    },
+    {
+      "path": "doudou/scripts/doudou/common/core.py",
+      "hash": "9afaeaee3b23d3547dbb5bbdb43c43e05d2a4f6905de1bb2e0296110cf3f0352",
+      "size": 4404,
+      "type": "file"
+    },
+    {
+      "path": "doudou/scripts/doudou/common/errors.py",
+      "hash": "0eceafcaab5e2f97de3aad74fc1578717a795b29f79f2c7dc04d49c910a060a3",
+      "size": 697,
+      "type": "file"
+    },
+    {
+      "path": "doudou/scripts/doudou/features/__init__.py",
+      "hash": "a648bbfd19594efc46fc936c82f05d4f35d187e0874b9dd3e1dd6efad83e620d",
+      "size": 61,
+      "type": "file"
+    },
+    {
+      "path": "doudou/scripts/doudou/features/broker.py",
+      "hash": "225f866a3ee4ad701196bf7fd354eec588262151f7d0433bcb13bd8d5279325d",
+      "size": 3479,
+      "type": "file"
+    },
+    {
+      "path": "doudou/scripts/doudou/features/chat/__init__.py",
+      "hash": "ef71db2bafe114b519d367856ea80f6561ec000c3a5b1e3ade4978f32ca1db6b",
+      "size": 59,
+      "type": "file"
+    },
+    {
+      "path": "doudou/scripts/doudou/features/chat/service.py",
+      "hash": "e7753cf96eabf4bb0910e0056c146e5315c2bc3cae71f64f232d12f9247280a0",
+      "size": 17145,
+      "type": "file"
+    },
+    {
+      "path": "doudou/scripts/doudou/features/diagnostics.py",
+      "hash": "9a942c9d742fb578658580bf8d38ff936f2a01367f40aa258498acef0724ec3e",
+      "size": 8232,
+      "type": "file"
+    },
+    {
+      "path": "doudou/scripts/doudou/features/video/__init__.py",
+      "hash": "4c22ac7342ca65074dc4619def5292b3a805245e2767793279c78ad676c6f7be",
+      "size": 68,
+      "type": "file"
+    },
+    {
+      "path": "doudou/scripts/doudou/features/video/service.py",
+      "hash": "85b533ac4fe1161bb5590e427985e59b664361eb3cbe9aa28452c0e3f0111077",
+      "size": 8012,
+      "type": "file"
+    },
+    {
+      "path": "doudou/scripts/doudou/models/__init__.py",
+      "hash": "18bcc25569d019b3fa96bba356d363f52359d36431399eb6d0008eae68acc5de",
+      "size": 54,
+      "type": "file"
+    },
+    {
+      "path": "doudou/scripts/doudou/models/identity.py",
+      "hash": "552b9949ad993954b7e93c9e6e4722e24776425078dba6bf28e07541183a938b",
+      "size": 9393,
+      "type": "file"
+    },
+    {
+      "path": "doudou/scripts/doudou/models/records.py",
+      "hash": "491f72ec13f19c47db768811a108e89162db609645bc37129d1f60bab4e5b0d0",
+      "size": 981,
+      "type": "file"
+    },
+    {
+      "path": "doudou/scripts/doudou/models/resolver.py",
+      "hash": "40f795a9d1f115666260fa3bda7971d643aeeae490a2ca121ea9822b78e122ba",
+      "size": 4118,
+      "type": "file"
+    },
+    {
+      "path": "doudou/scripts/doudou/protocol/__init__.py",
+      "hash": "a119b351dedd5dd5709278ac50eff131ffcf92bbaea994a1144adfe05a95919c",
+      "size": 59,
+      "type": "file"
+    },
+    {
+      "path": "doudou/scripts/doudou/protocol/contracts.py",
+      "hash": "5ab00e190ccb168caad587c5c27183ce26696a929bde1eb65f2b3efeac2c127d",
+      "size": 2254,
+      "type": "file"
+    },
+    {
+      "path": "doudou/scripts/doudou/protocol/im.py",
+      "hash": "a336af0d8070ab6b7e8f80eb36dbcbe667beef0c7aba8235cf1d816d0bd7c2c7",
+      "size": 17789,
+      "type": "file"
+    },
+    {
+      "path": "doudou/scripts/doudou/protocol/protobuf.py",
+      "hash": "066245b2e2a9f09603ab525c00f432fea7ba2a94c93da718501a6528561ff10e",
+      "size": 3576,
+      "type": "file"
+    },
+    {
+      "path": "doudou/scripts/doudou/protocol/responses.py",
+      "hash": "c2602adcb55831733f578a3ed87556d2282ecddea78a0d1141dee10f5da0b633",
+      "size": 3833,
+      "type": "file"
+    },
+    {
+      "path": "doudou/scripts/doudou/protocol/web.py",
+      "hash": "8da72ba7a3a101cafa7a51a7770bf29c9dbdfee280a283794d400f8c6640c238",
+      "size": 5355,
+      "type": "file"
+    },
+    {
+      "path": "doudou/scripts/doudou/protocol/write_responses.py",
+      "hash": "32244cf51974d36484c9f13b2d6c32a317610d2ada4884f26325f1083e990ede",
+      "size": 4226,
+      "type": "file"
+    },
+    {
+      "path": "doudou/scripts/doudou/reads/__init__.py",
+      "hash": "56a1f7a9a70fa08813a147303a1f8a401a84c9b1bce4ecf81d19824a888ba1f2",
+      "size": 36,
+      "type": "file"
+    },
+    {
+      "path": "doudou/scripts/doudou/reads/chat.py",
+      "hash": "98ca090e285a7ab0e9beea3bef0a7ad8ec52a6adaab9ebe92ba9e592004b1aea",
+      "size": 17083,
+      "type": "file"
+    },
+    {
+      "path": "doudou/scripts/doudou/reads/transport.py",
+      "hash": "8077d8f3b1c8f1e1b53f96688b8e484469e1dbc520d9c56d986b882ad9cadbb7",
+      "size": 2164,
+      "type": "file"
+    },
+    {
+      "path": "doudou/scripts/doudou/reads/video.py",
+      "hash": "7571b4608a3257f5e7afdcadcdd4a56500ec4e01a6255ba7fa6bf2303d546e3f",
+      "size": 28366,
+      "type": "file"
+    },
+    {
+      "path": "doudou/scripts/doudou/runtime/__init__.py",
+      "hash": "e3381a79138d4645276b6446d9e207bcfda147c973c6ad62cb1779eb8c5f1e0d",
+      "size": 59,
+      "type": "file"
+    },
+    {
+      "path": "doudou/scripts/doudou/runtime/broker/__init__.py",
+      "hash": "8f5982c4d18e57d900a7641427cfde85f62b4f8c71d3c19525b53c724d46282e",
+      "size": 64,
+      "type": "file"
+    },
+    {
+      "path": "doudou/scripts/doudou/runtime/broker/client.py",
+      "hash": "add4c540b22183e7e9f240d06f135206e1434ec11abd343681178970f71d04e8",
+      "size": 9118,
+      "type": "file"
+    },
+    {
+      "path": "doudou/scripts/doudou/runtime/broker/registration.py",
+      "hash": "8eaa9acd9c2f0576102ddf576075806d98be4daecfdcd76cb5f2da35ce49cf1d",
+      "size": 1516,
+      "type": "file"
+    },
+    {
+      "path": "doudou/scripts/doudou/runtime/broker/server.py",
+      "hash": "282431bb59dc540e4648df76896a6eaa78c9d0514d0428ee39ec234642ec07bf",
+      "size": 17257,
+      "type": "file"
+    },
+    {
+      "path": "doudou/scripts/doudou/runtime/browser/__init__.py",
+      "hash": "29a0da985768c585fc32a0262be34eb1e2e4eac11f1b5a23b83bcff1de22c4c5",
+      "size": 56,
+      "type": "file"
+    },
+    {
+      "path": "doudou/scripts/doudou/runtime/browser/session.py",
+      "hash": "137365a2358770672dc6d5463de18de6c9afa9db8a54923a3f3f686467adf3ed",
+      "size": 29073,
+      "type": "file"
+    },
+    {
+      "path": "doudou/scripts/doudou/runtime/camoufox_asset.py",
+      "hash": "a091ab378225af6e24bc1fd32542684d3a26586c62c461a7501b2e5260617c11",
+      "size": 5241,
+      "type": "file"
+    },
+    {
+      "path": "doudou/scripts/doudou/runtime/environment.py",
+      "hash": "504b83fb1becbc311d22066f3386dacd775470a3dd66e0b6a39f12a49e7ae6c0",
+      "size": 12115,
+      "type": "file"
+    },
+    {
+      "path": "doudou/scripts/doudou/runtime/home.py",
+      "hash": "c1d7335769ee8b24adfd67450a8d5c0354860afa89debeb46dbfa9952d0dc642",
+      "size": 434,
+      "type": "file"
+    },
+    {
+      "path": "doudou/scripts/doudou/runtime/lock.py",
+      "hash": "3019b94d52dcf60d8bdf8d3b9339e42dd78998eea8c05eb89948b08dfb0feade",
+      "size": 3330,
+      "type": "file"
+    },
+    {
+      "path": "doudou/scripts/doudou/runtime/paths.py",
+      "hash": "a1f270abcc1c66026319acbede04d21102a42d66c79d2abfd795260767d69e2f",
+      "size": 2624,
+      "type": "file"
+    },
+    {
+      "path": "doudou/scripts/doudou/runtime/platform/__init__.py",
+      "hash": "47168cde9252b5c238ed8583f6058a5c40e773e60f79a0de6426d263889008b6",
+      "size": 55,
+      "type": "file"
+    },
+    {
+      "path": "doudou/scripts/doudou/runtime/platform/windows.py",
+      "hash": "d97edb0e45d6ae7c04bec8a4eb9c121444e649a8f8b85bcfafff38896c724b1d",
+      "size": 23890,
+      "type": "file"
+    },
+    {
+      "path": "doudou/scripts/doudou/runtime/platform/windows_guard_worker.py",
+      "hash": "afdab31f848c1fc7f4cf40428e14e50e2595fc588e065627af7115881d7ba965",
+      "size": 7000,
+      "type": "file"
+    },
+    {
+      "path": "doudou/scripts/doudou/runtime/process.py",
+      "hash": "b902d9e05a99c0040f08434ade8581ce688b46243bdeb23b5350d6f16b7333ca",
+      "size": 2406,
+      "type": "file"
+    },
+    {
+      "path": "doudou/scripts/doudou/runtime/profile.py",
+      "hash": "8eae76a1acc3bb6486d816b371605fac1bf81c5ab55a61dadf87465d11b5e633",
+      "size": 9499,
+      "type": "file"
+    },
+    {
+      "path": "doudou/scripts/doudou/storage/__init__.py",
+      "hash": "52ea032c37e10d36d03eaacc5b18aed5c8e3a865bb56c061ce7bff81df890080",
+      "size": 59,
+      "type": "file"
+    },
+    {
+      "path": "doudou/scripts/doudou/storage/content.py",
+      "hash": "7e0bf59f004f19eb87a19822da959f1e37f987aa358d308885b206f79bdc350b",
+      "size": 5712,
+      "type": "file"
+    },
+    {
+      "path": "doudou/scripts/doudou/storage/identity_migration.py",
+      "hash": "76305765c58103132d95189ce3362aae5b3cc2dcbda7c89ecddbc97ef6bf0b93",
+      "size": 2143,
+      "type": "file"
+    },
+    {
+      "path": "doudou/scripts/doudou/storage/media.py",
+      "hash": "382ed00f1ffdb906cd73a681ca43a8550d21a22514fdfaf053b7e25ae6936b75",
+      "size": 4883,
+      "type": "file"
+    },
+    {
+      "path": "doudou/scripts/doudou/storage/repository.py",
+      "hash": "ce25b281ec2bb4c0d83efc0024f5eaf0595f5f3cd64d7ac293beaddf0572a380",
+      "size": 5784,
+      "type": "file"
+    },
+    {
+      "path": "doudou/scripts/doudou/ui/__init__.py",
+      "hash": "55da96c6fc11202f59d01b4abfa2b730698b26d38cf9ee2b9636915ab87a05ea",
+      "size": 45,
+      "type": "file"
+    },
+    {
+      "path": "doudou/scripts/doudou/ui/adapters.py",
+      "hash": "b5f191832715782546373d697424e560a1c44c58c3c0a7f258c970813192e87f",
+      "size": 4258,
+      "type": "file"
+    },
+    {
+      "path": "doudou/scripts/doudou/ui/chat.py",
+      "hash": "7a77990e9d1d2e084c66155b2dd1d683ca238c639e5c369f5408b9ac429eb7cc",
+      "size": 13181,
+      "type": "file"
+    },
+    {
+      "path": "doudou/scripts/doudou/ui/common.py",
+      "hash": "c04fb5e5efa936f89a17330d876f8a51e45fa312495270d36064758be544d57d",
+      "size": 3273,
+      "type": "file"
+    },
+    {
+      "path": "doudou/scripts/doudou/ui/components/__init__.py",
+      "hash": "c62d457e1e59c82e0090f8ec686315ac019e03620287a3151c36ece4ee07fba0",
+      "size": 484,
+      "type": "file"
+    },
+    {
+      "path": "doudou/scripts/doudou/ui/components/base.py",
+      "hash": "be315036496c4ba3216a852ebb6487fb16cede1e7e9b1fb997ea166683c69e2c",
+      "size": 10595,
+      "type": "file"
+    },
+    {
+      "path": "doudou/scripts/doudou/ui/components/chat.py",
+      "hash": "c727796e464372020440aa2b70a28f11ba48308d67f527115fb87bfc4a15b077",
+      "size": 9774,
+      "type": "file"
+    },
+    {
+      "path": "doudou/scripts/doudou/ui/components/video.py",
+      "hash": "16812ace0e6771123d2b85bce8baf514358e632a893aba48395c2d47e9cf12b0",
+      "size": 16729,
+      "type": "file"
+    },
+    {
+      "path": "doudou/scripts/doudou/ui/video.py",
+      "hash": "1302f3c17d9de2a6ac80fdb0c2e1115a2d55f9028714082504e8a4e8d4778346",
+      "size": 7131,
+      "type": "file"
+    },
+    {
+      "path": "doudou/scripts/doudou/writes/__init__.py",
+      "hash": "50e7ab6749b7a02e12295f7dc813dfef1352f3e8223e1e5a1b1f72a363110391",
+      "size": 56,
+      "type": "file"
+    },
+    {
+      "path": "doudou/scripts/doudou/writes/plans.py",
+      "hash": "0b9ccaf8738ff5694d12adbd17f41b0094706efa435fa11d4190710e25689886",
+      "size": 3921,
+      "type": "file"
+    },
+    {
+      "path": "doudou/scripts/doudou/writes/receipts.py",
+      "hash": "4cb436355380ec3ec6ae3c0ef0a8326998242ab6b69fe196a128b17a22704c94",
+      "size": 1352,
+      "type": "file"
+    },
+    {
+      "path": "doudou/scripts/requirements.lock",
+      "hash": "b0126b047855c84519deb053000e8ba49497386c0a3dfa4f2bc4c455f5b7cdd2",
+      "size": 68035,
+      "type": "file"
+    },
+    {
+      "path": "doudou/scripts/runtime-manifest.json",
+      "hash": "ac32b2f25c91c37dbfb4f36ae833d0411606e8a9389521b18fa8343fb3959c48",
+      "size": 1754,
+      "type": "file"
+    },
+    {
+      "path": "npm/bin/doudou.mjs",
+      "hash": "952f4e8884f46444c758e5d63b108126cf50f186c7bfd0ea336fdd8bbda5fcc4",
+      "size": 4209,
+      "type": "file"
+    },
+    {
+      "path": "npm/lib/controlled-download.mjs",
+      "hash": "cfb3375867ba5335234966427a3e054e1eef2545e519294e8e2799c71c6a1c04",
+      "size": 11755,
+      "type": "file"
+    },
+    {
+      "path": "npm/lib/managed-install.mjs",
+      "hash": "9e9a6555255ab2061f41fdbf5c9483d69d8b63ae6bba6426ef1bf1241d97e976",
+      "size": 2694,
+      "type": "file"
+    },
+    {
+      "path": "npm/lib/options.mjs",
+      "hash": "3cd024a7e6f41705767b13d16d7e73d3b4351e484346738feb92dc7bdd1e97f6",
+      "size": 1750,
+      "type": "file"
+    },
+    {
+      "path": "npm/lib/python.mjs",
+      "hash": "d56c717e623f858dd36396bf934e5781edcccfe56f8f69cc71367f9758244ec1",
+      "size": 1800,
+      "type": "file"
+    },
+    {
+      "path": "npm/lib/runtime-setup.mjs",
+      "hash": "4d7617de37b22de23739768fe70aa7059b7ed591ed43b9bd51b549eb8dba8c75",
+      "size": 21278,
+      "type": "file"
+    },
+    {
+      "path": "npm/lib/self-remove.mjs",
+      "hash": "3c2f929697456380191b88189066148b32e3497d215dc5f9d0d7d76d9fcd77a3",
+      "size": 2588,
+      "type": "file"
+    },
+    {
+      "path": "npm/lib/skill-installer.mjs",
+      "hash": "9a707d94d1f5838272e07b749d88fff8b75f06f880ef14883cbfa43e14521511",
+      "size": 7780,
+      "type": "file"
+    },
+    {
+      "path": "npm/lib/uninstall.mjs",
+      "hash": "2ae89d495ea9fb8868e65bdc0cf91c78737f760308cf62fa8a9ffad42d27cd27",
+      "size": 11796,
+      "type": "file"
+    },
+    {
+      "path": "npm/lib/update.mjs",
+      "hash": "6e4b4040befb08aeb685e519ff01fb862b364f68567498351daaff27ea74c8ed",
+      "size": 3704,
+      "type": "file"
+    },
+    {
+      "path": "npm/postinstall.mjs",
+      "hash": "424a96fc9910f7194ff2b4e046f4550eeff6a774eb1c6dff4d123692b755b96e",
+      "size": 685,
+      "type": "file"
+    },
+    {
+      "path": "npm/scripts/build-skill-manifest.mjs",
+      "hash": "46f11b70cb031febb2f1095dcc76b518aacd6e129b0099e9915e57b4a35dcdc4",
+      "size": 3460,
+      "type": "file"
+    },
+    {
+      "path": "npm/scripts/check-release-version.mjs",
+      "hash": "372bfceeee566c814c9362267488c25b3976abf380b336d26ac5ae32636c51c5",
+      "size": 955,
+      "type": "file"
+    },
+    {
+      "path": "npm/scripts/run-node-tests.mjs",
+      "hash": "74d6766005bc3c147a63fbdc83461516f8596998f773693769b748b8dc51ec9f",
+      "size": 738,
+      "type": "file"
+    },
+    {
+      "path": "npm/scripts/test-install.mjs",
+      "hash": "a581f19eb6d8a0989ba8d449e226d84948b967a28c7ab0b25bc30975f31f8e18",
+      "size": 7296,
+      "type": "file"
+    },
+    {
+      "path": "npm/scripts/verify-package.mjs",
+      "hash": "5637b820abfceedc488708c0dfc7b1d4f0e71f9a1c70215ab00d4723c02458b5",
+      "size": 2405,
+      "type": "file"
+    },
+    {
+      "path": "npm/skill-manifest.json",
+      "hash": "7a0d15b69a4e46a29310591ed784a8c7b3c4da7b49bbfbdb56204951a739071a",
+      "size": 11983,
+      "type": "file"
+    },
+    {
+      "path": "npm/test/controlled-download.test.mjs",
+      "hash": "2e64412f6496fbf9c07e611e108c920ddced3b8a754bba39371939b9f32726fc",
+      "size": 5737,
+      "type": "file"
+    },
+    {
+      "path": "npm/test/managed-install.test.mjs",
+      "hash": "7e85981889ff3899809ffff6012d3c37f5039acda78102071143a061995df110",
+      "size": 1507,
+      "type": "file"
+    },
+    {
+      "path": "npm/test/options.test.mjs",
+      "hash": "45dd9b9792b824d6e78ccc915a2fddf22be32e8805e3449a4dbab5f4802ccad4",
+      "size": 1608,
+      "type": "file"
+    },
+    {
+      "path": "npm/test/python.test.mjs",
+      "hash": "6b52d7ff8bf05de2f7eb0e523aa91800ed16aecc85e12a549e4ea8bca8736a68",
+      "size": 4217,
+      "type": "file"
+    },
+    {
+      "path": "npm/test/runtime-setup.test.mjs",
+      "hash": "ff1aec9e490fa39d207e67c421b78977d46ca033d46a77a72dc0a17dfadff475",
+      "size": 7084,
+      "type": "file"
+    },
+    {
+      "path": "npm/test/self-remove.test.mjs",
+      "hash": "2f63350672d25e59a698d9cae8517d8cf46785ea65c08019dfc42d60fcc308ee",
+      "size": 2101,
+      "type": "file"
+    },
+    {
+      "path": "npm/test/skill-installer.test.mjs",
+      "hash": "ede677fda131eacc57cc2d1fbf72a2154fe73647fc2746ef99c34fa0b56d82ab",
+      "size": 3214,
+      "type": "file"
+    },
+    {
+      "path": "npm/test/uninstall.test.mjs",
+      "hash": "e5308822e5acf0b5321af77122f272d2168c4b9c2f433eb1338d759d142103c8",
+      "size": 6227,
+      "type": "file"
+    },
+    {
+      "path": "npm/test/update.test.mjs",
+      "hash": "892c8a22508327070d33914f78f2f72c5eca0199ef136a994092fdca3b7b8be4",
+      "size": 4435,
+      "type": "file"
+    },
+    {
+      "path": "package-lock.json",
+      "hash": "f964202d069789ddafab731f900dd963796243dc074c4386eff971f9963e3900",
+      "size": 773,
+      "type": "file"
+    },
+    {
+      "path": "package.json",
+      "hash": "3f1715b4b478bb5028c0b54645cc949df61de39330227119eff55572974fb27f",
+      "size": 1178,
+      "type": "file"
+    }
+  ],
+  "omitted": [],
+  "omittedCount": 0
+}

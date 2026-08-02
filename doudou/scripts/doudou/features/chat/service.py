@@ -14,7 +14,7 @@ from ...models.resolver import (
     resolve_message,
 )
 from ...protocol.im import property_has_user
-from ...reads.chat import collect_messages, refresh_session_index, resolve_members
+from ...reads.chat import collect_messages, refresh_session_index
 from ...runtime.browser.session import BrowserSession
 from ...storage.repository import read_messages
 from ...ui.chat import like_message, send_message
@@ -38,15 +38,6 @@ def verify_send_readback(
         or str(message.get("reply_to_message_id") or "")
         == str(payload["reply"]["message_id"])
     )
-    mention_uid = str((payload.get("mention") or {}).get("uid") or "")
-    mention_match = bool(message) and (
-        not mention_uid
-        or any(
-            str((item.get("info") or {}).get("uid") or "") == mention_uid
-            for item in (message.get("content") or {}).get("richTextInfos") or []
-            if isinstance(item, dict)
-        )
-    )
     passed = (
         bool(server_id)
         and len(matches) == 1
@@ -55,7 +46,6 @@ def verify_send_readback(
         and int(message.get("message_type") or 0) == expected_type
         and text_match
         and reference_match
-        and mention_match
     )
     return {
         "passed": passed,
@@ -65,7 +55,6 @@ def verify_send_readback(
         and int(message.get("message_type") or 0) == expected_type,
         "text_match": text_match,
         "reference_match": reference_match,
-        "mention_match": mention_match,
     }
 
 
@@ -155,6 +144,11 @@ async def collect(
 async def preview_send(
     session: BrowserSession, data_root: Path, profile: str, params: dict[str, Any]
 ) -> dict[str, Any]:
+    if params.get("at"):
+        raise DoudouError(
+            "MENTION_UNSUPPORTED",
+            "Group mentions are not supported.",
+        )
     refreshed = await refresh_session_index(session, data_root, profile)
     conversation = resolve_conversation(
         refreshed["index"]["conversations"], params["target"]
@@ -189,21 +183,6 @@ async def preview_send(
         )
     else:
         payload["text"] = str(text)
-        requested = list(params.get("at") or [])
-        if requested:
-            members = await resolve_members(session, conversation, requested)
-            if len(members) != 1:
-                raise DoudouError(
-                    "MENTION_COUNT_UNSUPPORTED",
-                    "The current page writer accepts one resolved mention per message.",
-                    {"count": len(members)},
-                )
-            payload["mention"] = {
-                "uid": members[0]["uid"],
-                "sec_uid": members[0]["sec_uid"],
-                "display_name": members[0]["name"],
-            }
-            payload["mode"] = "mention"
         if params.get("reply"):
             messages = read_messages(data_root, profile, conversation)
             target = resolve_message(messages, params["reply"])
@@ -226,6 +205,11 @@ async def execute_send(
     session: BrowserSession, data_root: Path, profile: str, params: dict[str, Any]
 ) -> dict[str, Any]:
     stored = load_plan(data_root, profile, params["plan_id"], "chat.send")
+    if stored["payload"].get("mention"):
+        raise DoudouError(
+            "MENTION_UNSUPPORTED",
+            "This stored plan uses a group mention and can no longer be executed.",
+        )
     plan = confirm_plan(
         data_root, profile, params["plan_id"], "chat.send", stored["payload"]
     )
@@ -257,6 +241,9 @@ async def execute_send(
         )
         complete_plan(data_root, profile, plan["plan_id"], "sent", files["receipt"])
         return {**result, "files": files}
+    except asyncio.CancelledError:
+        complete_plan(data_root, profile, plan["plan_id"], "unknown")
+        raise
     except Exception as error:
         details = (
             error.details
@@ -348,6 +335,9 @@ async def execute_batch(
                 send=True,
             )
             results.append({"index": index, **result, "files": files})
+        except asyncio.CancelledError:
+            complete_plan(data_root, profile, plan["plan_id"], "unknown")
+            raise
         # A batch records one stable failed item and skips the remaining writes.
         except Exception as error:  # noqa: BLE001
             results.append(
@@ -360,7 +350,11 @@ async def execute_batch(
             failed = True
             continue
         if index < len(tasks) - 1:
-            await asyncio.sleep(interval_seconds)
+            try:
+                await asyncio.sleep(interval_seconds)
+            except asyncio.CancelledError:
+                complete_plan(data_root, profile, plan["plan_id"], "unknown")
+                raise
     status = "failed" if failed else "sent"
     files = write_receipt(
         data_root,
@@ -440,7 +434,10 @@ async def execute_like(
         )
         readback = verify_like_readback(plan["payload"], messages)
         readback["collect_run_id"] = read_run["run_id"]
-        result.setdefault("verification", {})["protocol_recheck"] = readback
+        verification = result.setdefault("verification", {})
+        verification["protocol_recheck"] = readback
+        verification["passed"] = readback["passed"]
+        verification["pending_protocol_recheck"] = False
         if not readback["passed"]:
             raise DoudouError(
                 "WRITE_RESULT_UNKNOWN",

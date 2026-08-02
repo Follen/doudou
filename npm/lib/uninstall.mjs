@@ -6,7 +6,7 @@ import path from "node:path";
 
 import { clearManagedInstall, readManagedInstall } from "./managed-install.mjs";
 import { resolveSkillDirectory } from "./options.mjs";
-import { doudouCacheRoot } from "./python.mjs";
+import { doudouCacheRoot, legacyDoudouRoot } from "./python.mjs";
 import { INSTALL_STAMP } from "./skill-installer.mjs";
 
 const PACKAGE_NAME = "@follenfang/doudou";
@@ -281,6 +281,7 @@ export async function cleanupManagedInstall({
   removePath = (target) => fs.rmSync(target, { recursive: true, force: true }),
 } = {}) {
   const cacheRoot = doudouCacheRoot({ platform, env, home });
+  const legacyRoot = legacyDoudouRoot({ platform, env, home });
   const runtimes = path.join(cacheRoot, "runtimes");
   const registry = readManagedInstall({ platform, env, home });
   const defaultTarget = resolveSkillDirectory({ env, home });
@@ -295,29 +296,13 @@ export async function cleanupManagedInstall({
     schema: "doudou.npm-uninstall-result.v1",
     brokers: [],
     skills: [],
-    runtime: { path: runtimes, status: "missing" },
-    browser_cache: "preserved",
+    runtime: { path: cacheRoot, status: "missing" },
+    browser_cache: "missing",
+    legacy_runtime: { path: legacyRoot, status: "missing" },
     project_data: "preserved",
   };
 
   result.brokers = await stopBrokers(runtimes, { cacheRoot, platform });
-  if (fs.existsSync(runtimes)) {
-    try {
-      removePath(runtimes);
-      if (fs.existsSync(runtimes)) {
-        throw new Error("path still exists after deletion");
-      }
-      result.runtime.status = "removed";
-    } catch (error) {
-      result.runtime.status = "failed";
-      throw new ManagedUninstallError("The managed runtime could not be removed.", {
-        result,
-        object: runtimes,
-        reason: error.message,
-      });
-    }
-  }
-
   for (const target of targets) {
     const inspection = inspectManagedSkill(target);
     if (inspection.status !== "managed") {
@@ -339,6 +324,34 @@ export async function cleanupManagedInstall({
       });
     }
   }
-  clearManagedInstall({ platform, env, home });
+  if (fs.existsSync(cacheRoot)) {
+    try {
+      removePath(cacheRoot);
+      if (fs.existsSync(cacheRoot)) {
+        throw new Error("path still exists after deletion");
+      }
+      result.runtime.status = "removed";
+      result.browser_cache = "removed";
+    } catch (error) {
+      result.runtime.status = "failed";
+      throw new ManagedUninstallError("DOUDOU_HOME could not be removed.", {
+        result,
+        object: cacheRoot,
+        reason: error.message,
+      });
+    }
+  } else {
+    clearManagedInstall({ platform, env, home });
+  }
+  if (path.resolve(legacyRoot) !== path.resolve(cacheRoot) && fs.existsSync(legacyRoot)) {
+    const owned = fs.existsSync(path.join(legacyRoot, "runtimes", "current.json"))
+      || fs.existsSync(path.join(legacyRoot, "setup-state.json"));
+    if (owned && !fs.lstatSync(legacyRoot).isSymbolicLink()) {
+      removePath(legacyRoot);
+      result.legacy_runtime.status = fs.existsSync(legacyRoot) ? "failed" : "removed";
+    } else {
+      result.legacy_runtime.status = "preserved_unrecognized";
+    }
+  }
   return result;
 }

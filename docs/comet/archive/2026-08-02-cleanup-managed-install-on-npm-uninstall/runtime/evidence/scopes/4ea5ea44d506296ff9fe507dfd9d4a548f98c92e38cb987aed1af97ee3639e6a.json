@@ -1,0 +1,455 @@
+{
+  "schema": "comet.native.implementation-scope.v2",
+  "contractHash": "2e18cc1499db079ea1df4baa77399f2469e3d73e20e43bc57c8cd02abfa3b605",
+  "baselineProjectionRef": "runtime/evidence/snapshots/bcef3a9cbcaa876a5457b270ded394dc4136ea8790363f97aa6e21b87cf7dc65.json",
+  "baselineProjectionHash": "bcef3a9cbcaa876a5457b270ded394dc4136ea8790363f97aa6e21b87cf7dc65",
+  "currentProjectionRef": "runtime/evidence/snapshots/4df14082e084fa2ebeac4540452c1fefc81b6de6df513a23b0356c5715db64ce.json",
+  "currentProjectionHash": "4df14082e084fa2ebeac4540452c1fefc81b6de6df513a23b0356c5715db64ce",
+  "complete": true,
+  "declaredArtifacts": [
+    {
+      "path": "README.md",
+      "kind": "file"
+    },
+    {
+      "path": "docs/verification/tests/test_broker_registration.py",
+      "kind": "file"
+    },
+    {
+      "path": "doudou/SKILL.md",
+      "kind": "file"
+    },
+    {
+      "path": "doudou/scripts/doudou/__init__.py",
+      "kind": "file"
+    },
+    {
+      "path": "doudou/scripts/doudou/runtime/broker/registration.py",
+      "kind": "file"
+    },
+    {
+      "path": "doudou/scripts/doudou/runtime/broker/server.py",
+      "kind": "file"
+    },
+    {
+      "path": "npm/bin/doudou.mjs",
+      "kind": "file"
+    },
+    {
+      "path": "npm/lib/managed-install.mjs",
+      "kind": "file"
+    },
+    {
+      "path": "npm/lib/options.mjs",
+      "kind": "file"
+    },
+    {
+      "path": "npm/lib/python.mjs",
+      "kind": "file"
+    },
+    {
+      "path": "npm/lib/self-remove.mjs",
+      "kind": "file"
+    },
+    {
+      "path": "npm/lib/skill-installer.mjs",
+      "kind": "file"
+    },
+    {
+      "path": "npm/lib/uninstall.mjs",
+      "kind": "file"
+    },
+    {
+      "path": "npm/postinstall.mjs",
+      "kind": "file"
+    },
+    {
+      "path": "npm/scripts/test-install.mjs",
+      "kind": "file"
+    },
+    {
+      "path": "npm/skill-manifest.json",
+      "kind": "file"
+    },
+    {
+      "path": "npm/test/managed-install.test.mjs",
+      "kind": "file"
+    },
+    {
+      "path": "npm/test/self-remove.test.mjs",
+      "kind": "file"
+    },
+    {
+      "path": "npm/test/uninstall.test.mjs",
+      "kind": "file"
+    },
+    {
+      "path": "package-lock.json",
+      "kind": "file"
+    },
+    {
+      "path": "package.json",
+      "kind": "file"
+    }
+  ],
+  "changes": [
+    {
+      "path": "README.md",
+      "kind": "modified",
+      "before": {
+        "hash": "0c2eb433ce9ffb9f525a3d3bd2fdd9fe5423906b00f1d2889ef1d1b43e7469c0",
+        "size": 5178
+      },
+      "after": {
+        "hash": "0c97713306050dd268a1c35acfea8a38a2f08c0f1370afe94dc65cc0b62a2adb",
+        "size": 5202
+      },
+      "attributedTo": [
+        {
+          "path": "README.md",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "docs/verification/tests/test_broker_registration.py",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "81dd08c09358243fcac3c7e87485835817bcffdd1bf56fb2bff33517ad1b622d",
+        "size": 2477
+      },
+      "attributedTo": [
+        {
+          "path": "docs/verification/tests/test_broker_registration.py",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "doudou/SKILL.md",
+      "kind": "modified",
+      "before": {
+        "hash": "1f0c6cfec00a6d93d42353b6725f4d830c34ae5a2be7e4d35fe925c573c2778e",
+        "size": 3692
+      },
+      "after": {
+        "hash": "2c86b0df1d26c8240d78411cb7ed8d28138fba8556265ee468e8b33060388022",
+        "size": 3963
+      },
+      "attributedTo": [
+        {
+          "path": "doudou/SKILL.md",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "doudou/scripts/doudou/__init__.py",
+      "kind": "modified",
+      "before": {
+        "hash": "b56e03e461f58eb4f4ce2dee1fa0ee9a47511c31e21168b367f3d57c3a0c6a53",
+        "size": 56
+      },
+      "after": {
+        "hash": "bddc0ea02b58af231c34a33bd32f724fabcbfd8808ca5be4d92280095c604110",
+        "size": 56
+      },
+      "attributedTo": [
+        {
+          "path": "doudou/scripts/doudou/__init__.py",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "doudou/scripts/doudou/runtime/broker/registration.py",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "8eaa9acd9c2f0576102ddf576075806d98be4daecfdcd76cb5f2da35ce49cf1d",
+        "size": 1516
+      },
+      "attributedTo": [
+        {
+          "path": "doudou/scripts/doudou/runtime/broker/registration.py",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "doudou/scripts/doudou/runtime/broker/server.py",
+      "kind": "modified",
+      "before": {
+        "hash": "a37357a6f1376e88a8e8f0d1745005252358f3ad3f098639fb8f3c532517de3a",
+        "size": 16951
+      },
+      "after": {
+        "hash": "282431bb59dc540e4648df76896a6eaa78c9d0514d0428ee39ec234642ec07bf",
+        "size": 17257
+      },
+      "attributedTo": [
+        {
+          "path": "doudou/scripts/doudou/runtime/broker/server.py",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "npm/bin/doudou.mjs",
+      "kind": "modified",
+      "before": {
+        "hash": "a823252e0f4db53049bd2e1f52b018958e9db3d84e218624941edceae1f9abce",
+        "size": 2221
+      },
+      "after": {
+        "hash": "cf5b82bbd3597f486e5c5972fcbebdd8637ffe0d82daaab00406957254a43d14",
+        "size": 2897
+      },
+      "attributedTo": [
+        {
+          "path": "npm/bin/doudou.mjs",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "npm/lib/managed-install.mjs",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "9e9a6555255ab2061f41fdbf5c9483d69d8b63ae6bba6426ef1bf1241d97e976",
+        "size": 2694
+      },
+      "attributedTo": [
+        {
+          "path": "npm/lib/managed-install.mjs",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "npm/lib/options.mjs",
+      "kind": "modified",
+      "before": {
+        "hash": "3381c235ae1c69da6500bf01fc67374f5febcf7b0d601744c0a2ba0549b72ace",
+        "size": 1723
+      },
+      "after": {
+        "hash": "bd6b069178828bb2ae3d6129d8e64f05f4ae4bab596ab939c31679ecdc705844",
+        "size": 1738
+      },
+      "attributedTo": [
+        {
+          "path": "npm/lib/options.mjs",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "npm/lib/python.mjs",
+      "kind": "modified",
+      "before": {
+        "hash": "f8363bf323b0d96a6dfcf672fa967cab26f77bfb9693cdc227b731b2070d670c",
+        "size": 3090
+      },
+      "after": {
+        "hash": "98a7712659608c2d52727e0c22c7451d5987a24c4b98bd38d2996d01f5b63d91",
+        "size": 3170
+      },
+      "attributedTo": [
+        {
+          "path": "npm/lib/python.mjs",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "npm/lib/self-remove.mjs",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "3c2f929697456380191b88189066148b32e3497d215dc5f9d0d7d76d9fcd77a3",
+        "size": 2588
+      },
+      "attributedTo": [
+        {
+          "path": "npm/lib/self-remove.mjs",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "npm/lib/skill-installer.mjs",
+      "kind": "modified",
+      "before": {
+        "hash": "b18c0d21c170202b3cc37dc8f38f5f4ec6bd2680211770f9b9ebca41d1a93929",
+        "size": 7574
+      },
+      "after": {
+        "hash": "9a707d94d1f5838272e07b749d88fff8b75f06f880ef14883cbfa43e14521511",
+        "size": 7780
+      },
+      "attributedTo": [
+        {
+          "path": "npm/lib/skill-installer.mjs",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "npm/lib/uninstall.mjs",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "e2c1df4a1e08135979dd04a6dc6a8d58b2c7ff8b420431cb0e398e905fcc7b0e",
+        "size": 11099
+      },
+      "attributedTo": [
+        {
+          "path": "npm/lib/uninstall.mjs",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "npm/postinstall.mjs",
+      "kind": "modified",
+      "before": {
+        "hash": "d86e5f177730e6637702986fe12997f87d281f4d890fbcf66faf3bfdaee8cf2f",
+        "size": 591
+      },
+      "after": {
+        "hash": "424a96fc9910f7194ff2b4e046f4550eeff6a774eb1c6dff4d123692b755b96e",
+        "size": 685
+      },
+      "attributedTo": [
+        {
+          "path": "npm/postinstall.mjs",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "npm/scripts/test-install.mjs",
+      "kind": "modified",
+      "before": {
+        "hash": "ed2ab8dfec07d1931f55056c00cc93eb08ac896c3cc265809607d715064b5226",
+        "size": 3765
+      },
+      "after": {
+        "hash": "6a12c42c5e05e62ee45187058b03b48955fed82cafe2dd52b52c280cb0b24b7e",
+        "size": 6949
+      },
+      "attributedTo": [
+        {
+          "path": "npm/scripts/test-install.mjs",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "npm/skill-manifest.json",
+      "kind": "modified",
+      "before": {
+        "hash": "9ecf35d299458e4beb1d014838cc2aa3f44e5df50326e74e3dbc1441a44d1614",
+        "size": 11116
+      },
+      "after": {
+        "hash": "af52c8e697f02a8da053ff7dff2cfee6281ea696b11bb6a583aea5ad7df68a95",
+        "size": 11296
+      },
+      "attributedTo": [
+        {
+          "path": "npm/skill-manifest.json",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "npm/test/managed-install.test.mjs",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "01b847b4ee0c6cf17deb1ad6e9dfdc7bf8f101c53de38facfc5d5bd89b7169e6",
+        "size": 1509
+      },
+      "attributedTo": [
+        {
+          "path": "npm/test/managed-install.test.mjs",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "npm/test/self-remove.test.mjs",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "2f63350672d25e59a698d9cae8517d8cf46785ea65c08019dfc42d60fcc308ee",
+        "size": 2101
+      },
+      "attributedTo": [
+        {
+          "path": "npm/test/self-remove.test.mjs",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "npm/test/uninstall.test.mjs",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "6178564b0c5ab74c491f17bd56cb4382d1bff75aaee373d2ca7c051b3c195dbb",
+        "size": 5921
+      },
+      "attributedTo": [
+        {
+          "path": "npm/test/uninstall.test.mjs",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "package-lock.json",
+      "kind": "modified",
+      "before": {
+        "hash": "a2c3e0f6786f4fc9e54307b46c65157b6f32f3cab76d2d71a4c70bc937324312",
+        "size": 379
+      },
+      "after": {
+        "hash": "c7fdd7c78476fca5030507738a26ba421144f66b2f9b0808c509c116261f4226",
+        "size": 379
+      },
+      "attributedTo": [
+        {
+          "path": "package-lock.json",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "package.json",
+      "kind": "modified",
+      "before": {
+        "hash": "4d814a9a0d129e97f2d293588221bb97f6e0f9de931315c8ea0a0d7b5bf26cba",
+        "size": 1129
+      },
+      "after": {
+        "hash": "265335a521c8bfeaa05d27b98b6e7c91c372f3e987a0207588868e965e2ad0e5",
+        "size": 1129
+      },
+      "attributedTo": [
+        {
+          "path": "package.json",
+          "kind": "file"
+        }
+      ]
+    }
+  ],
+  "unattributed": [],
+  "unresolvedScopes": [],
+  "noCodeReason": null,
+  "scopeHash": "4ea5ea44d506296ff9fe507dfd9d4a548f98c92e38cb987aed1af97ee3639e6a"
+}

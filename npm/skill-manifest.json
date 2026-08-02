@@ -1,9 +1,9 @@
 {
   "schema": "doudou.npm-skill-manifest.v1",
   "package_name": "@follenfang/doudou",
-  "package_version": "0.0.1",
-  "skill_version": "0.0.1",
-  "tree_sha256": "74d6fa14321e98dc0b4291c5d10fa87dd3ec71ade1f871c1e061eb74cb709729",
+  "package_version": "0.0.2",
+  "skill_version": "0.0.2",
+  "tree_sha256": "8eabfaae108da1bed802e5c636b259f36bfb80e841e040b406356a4a812bac5a",
   "files": [
     {
       "path": "agents/openai.yaml",
@@ -38,7 +38,7 @@
     {
       "path": "scripts/doudou/__init__.py",
       "bytes": 56,
-      "sha256": "b56e03e461f58eb4f4ce2dee1fa0ee9a47511c31e21168b367f3d57c3a0c6a53"
+      "sha256": "bddc0ea02b58af231c34a33bd32f724fabcbfd8808ca5be4d92280095c604110"
     },
     {
       "path": "scripts/doudou/cli.py",
@@ -181,9 +181,14 @@
       "sha256": "add4c540b22183e7e9f240d06f135206e1434ec11abd343681178970f71d04e8"
     },
     {
+      "path": "scripts/doudou/runtime/broker/registration.py",
+      "bytes": 1516,
+      "sha256": "8eaa9acd9c2f0576102ddf576075806d98be4daecfdcd76cb5f2da35ce49cf1d"
+    },
+    {
       "path": "scripts/doudou/runtime/broker/server.py",
-      "bytes": 16951,
-      "sha256": "a37357a6f1376e88a8e8f0d1745005252358f3ad3f098639fb8f3c532517de3a"
+      "bytes": 17257,
+      "sha256": "282431bb59dc540e4648df76896a6eaa78c9d0514d0428ee39ec234642ec07bf"
     },
     {
       "path": "scripts/doudou/runtime/browser/__init__.py",
@@ -327,8 +332,8 @@
     },
     {
       "path": "SKILL.md",
-      "bytes": 3692,
-      "sha256": "1f0c6cfec00a6d93d42353b6725f4d830c34ae5a2be7e4d35fe925c573c2778e"
+      "bytes": 3963,
+      "sha256": "2c86b0df1d26c8240d78411cb7ed8d28138fba8556265ee468e8b33060388022"
     }
   ]
 }

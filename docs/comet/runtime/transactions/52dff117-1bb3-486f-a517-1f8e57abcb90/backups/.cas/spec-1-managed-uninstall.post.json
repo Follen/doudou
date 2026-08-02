@@ -1,0 +1,11 @@
+{
+  "schema": "comet.native.archive-cas.v1",
+  "operationId": "spec-1-managed-uninstall",
+  "role": "post",
+  "hash": "c008ef52df665feeb83eaa6c7d684efe02e8c59022996e0cb0e178ee8e322687",
+  "identity": {
+    "dev": 2421791372,
+    "ino": 562949957078373,
+    "birthtimeMs": 1785656851536.843
+  }
+}

@@ -9,7 +9,10 @@ import {
   resolveSkillDirectory,
 } from "../lib/options.mjs";
 import { ensureSkill } from "../lib/skill-installer.mjs";
+import { recordManagedSkill } from "../lib/managed-install.mjs";
 import { discoverPython, runPython, runtimeReady } from "../lib/python.mjs";
+import { removeCurrentNpmPackage } from "../lib/self-remove.mjs";
+import { cleanupManagedInstall } from "../lib/uninstall.mjs";
 
 const packageRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
 
@@ -30,9 +33,21 @@ async function main() {
     return 2;
   }
   const target = resolveSkillDirectory({ explicit: options.skillDirectory });
+  if (options.forwarded.length === 1 && options.forwarded[0] === "uninstall") {
+    try {
+      const result = await cleanupManagedInstall({ extraTargets: [target] });
+      const npm = removeCurrentNpmPackage({ packageRoot });
+      process.stdout.write(`${JSON.stringify({ ...result, npm })}\n`);
+      return 0;
+    } catch (error) {
+      emitError(error.code || "DOUDOU_UNINSTALL_FAILED", error.message, error.details);
+      return 1;
+    }
+  }
   let ensured;
   try {
     ensured = await ensureSkill({ packageRoot, target });
+    recordManagedSkill(target);
   } catch (error) {
     emitError("SKILL_INSTALL_FAILED", error.message, { target });
     return 1;

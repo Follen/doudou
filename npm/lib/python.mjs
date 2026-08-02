@@ -51,7 +51,7 @@ export function discoverPython({ platform = process.platform, env = process.env 
   return null;
 }
 
-function cacheRoot(platform, env, home) {
+export function doudouCacheRoot({ platform = process.platform, env = process.env, home = os.homedir() } = {}) {
   if (platform === "win32") {
     return path.join(env.LOCALAPPDATA || path.join(home, "AppData", "Local"), "doudou");
   }
@@ -64,7 +64,7 @@ export function expectedRuntime({ skillDirectory, python, platform = process.pla
   );
   const browser = manifest.camoufox_browser.split("/").at(-1);
   const runtimeId = `py${python.version.major}${python.version.minor}-camoufox-${manifest.camoufox_package}-browser-${browser}`;
-  const runtimes = path.join(cacheRoot(platform, env, home), "runtimes");
+  const runtimes = path.join(doudouCacheRoot({ platform, env, home }), "runtimes");
   return {
     runtimeId,
     pointer: path.join(runtimes, "current.json"),

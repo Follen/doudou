@@ -1,0 +1,183 @@
+{
+  "schema": "comet.native.verification-evidence.v1",
+  "change": "cleanup-managed-install-on-npm-uninstall",
+  "sourceRevision": 3,
+  "result": "pass",
+  "freshness": "complete",
+  "contractHash": "2e18cc1499db079ea1df4baa77399f2469e3d73e20e43bc57c8cd02abfa3b605",
+  "acceptanceCriteriaHash": "3bfc589184c586fb0c52457dfd0e37dabeda91325bf23b030897c134eec96d8a",
+  "implementationScopeRef": "runtime/evidence/scopes/4ea5ea44d506296ff9fe507dfd9d4a548f98c92e38cb987aed1af97ee3639e6a.json",
+  "implementationScopeHash": "4ea5ea44d506296ff9fe507dfd9d4a548f98c92e38cb987aed1af97ee3639e6a",
+  "reportRef": "verification.md",
+  "reportHash": "f7aa83a2c3497eb2f2f67718ee2e6e5fe13b920c338ae5bfe75b8e60262ec801",
+  "acceptanceTrace": {
+    "schema": "comet.native.acceptance-trace.v1",
+    "nativeRootRef": "docs/comet",
+    "criteriaHash": "3bfc589184c586fb0c52457dfd0e37dabeda91325bf23b030897c134eec96d8a",
+    "total": 16,
+    "evidenced": 16,
+    "skipped": 0,
+    "entries": [
+      {
+        "acceptanceId": "acceptance-073661c71cd3040877ea6099f410cda49a6b724ae596f0467d4d2020bae8f704",
+        "kind": "spec-scenario",
+        "source": "specs/managed-uninstall/spec.md",
+        "evidenceRefs": [
+          "docs/verification/tests/test_broker_registration.py",
+          "npm/test/uninstall.test.mjs"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-10fdd637c44660c2650d4fcecda5aa6084ebd4f4f97ce57577b123af0ea7b467",
+        "kind": "spec-scenario",
+        "source": "specs/managed-uninstall/spec.md",
+        "evidenceRefs": [
+          "npm/test/managed-install.test.mjs",
+          "npm/test/uninstall.test.mjs"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-24b063ad6c75bbc4673cf18a242a5fac916ed08413da4c5e059fb181bc48c477",
+        "kind": "spec-scenario",
+        "source": "specs/managed-uninstall/spec.md",
+        "evidenceRefs": [
+          "npm/test/self-remove.test.mjs",
+          "npm/test/uninstall.test.mjs"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-33a17aaf94061fd84e401fd342178969811c1610cef73fb6edc5c6ae3fff517e",
+        "kind": "spec-scenario",
+        "source": "specs/managed-uninstall/spec.md",
+        "evidenceRefs": [
+          "npm/scripts/test-install.mjs",
+          "npm/test/uninstall.test.mjs"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-374771d57c372059bfc8c0c7c34104b5db40e1d0a95f2214234851e20fd3d730",
+        "kind": "spec-scenario",
+        "source": "specs/managed-uninstall/spec.md",
+        "evidenceRefs": [
+          "npm/test/uninstall.test.mjs"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-7213c7eedc927239c2d3dc5778f5b00a07cf6ef41deaa0732b754aa40bd20961",
+        "kind": "brief-example",
+        "source": "brief.md",
+        "evidenceRefs": [
+          "npm/test/uninstall.test.mjs"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-7480038ce474b2a9781a4010d6eeed6c0c1090e6c751ec6ee2c3c896de218a86",
+        "kind": "spec-scenario",
+        "source": "specs/managed-uninstall/spec.md",
+        "evidenceRefs": [
+          "npm/scripts/test-install.mjs",
+          "npm/test/uninstall.test.mjs"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-80191a5df88c288f8ef2e92ab6b577951a72cd57c9fa084e499d00d051578c34",
+        "kind": "spec-scenario",
+        "source": "specs/managed-uninstall/spec.md",
+        "evidenceRefs": [
+          "npm/test/uninstall.test.mjs"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-960cf3a99bc850b600c9874aae34ece674894305af963bfe568034167ff18459",
+        "kind": "spec-scenario",
+        "source": "specs/managed-uninstall/spec.md",
+        "evidenceRefs": [
+          "npm/scripts/test-install.mjs",
+          "npm/test/uninstall.test.mjs"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-a3a82b50f334cb9146288a1512b422106735c4602cfd40f6834478af37d1997b",
+        "kind": "spec-scenario",
+        "source": "specs/managed-uninstall/spec.md",
+        "evidenceRefs": [
+          "npm/test/uninstall.test.mjs"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-bbb672ca489023e157950dc3ff43329d383196567c0a853f821fe847bbac381a",
+        "kind": "spec-scenario",
+        "source": "specs/managed-uninstall/spec.md",
+        "evidenceRefs": [
+          "npm/scripts/test-install.mjs",
+          "npm/test/self-remove.test.mjs"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-d320216f82f4faa990ae887c28e68024dade151f75431b12d7a64bf6bb8a3551",
+        "kind": "spec-scenario",
+        "source": "specs/managed-uninstall/spec.md",
+        "evidenceRefs": [
+          "docs/verification/tests/test_broker_registration.py",
+          "npm/test/uninstall.test.mjs"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-d610973de18d1592fb5af0b42940ed85725a0e3c76fafa812a9ab7244c31cc06",
+        "kind": "spec-scenario",
+        "source": "specs/managed-uninstall/spec.md",
+        "evidenceRefs": [
+          "npm/test/uninstall.test.mjs"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-eae48b297a00e9ddfa6a0372c01cccf8cac2d82660c536728f4bfd5dd4cfa453",
+        "kind": "brief-example",
+        "source": "brief.md",
+        "evidenceRefs": [
+          "npm/scripts/test-install.mjs",
+          "npm/test/uninstall.test.mjs"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-eecacb0ba20117979196adf3f7ca1e3099b515aeb478e9f6ef525e47fb104739",
+        "kind": "spec-scenario",
+        "source": "specs/managed-uninstall/spec.md",
+        "evidenceRefs": [
+          "npm/test/uninstall.test.mjs"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-fc3f12405aa07de4880873f7ca13c4ad42addbff75130849b4442efa007f6ada",
+        "kind": "brief-example",
+        "source": "brief.md",
+        "evidenceRefs": [
+          "npm/scripts/test-install.mjs",
+          "npm/test/uninstall.test.mjs"
+        ],
+        "skippedReason": null
+      }
+    ],
+    "traceHash": "a57bb67ba96039a1d0ecd2569aed6df54b9630aec4197cedbb40aaf9e5e44e12"
+  },
+  "partialAllowanceRef": null,
+  "partialAllowanceHash": null,
+  "receiptRef": "runtime/evidence/check-receipts/7dacf7f19d25539f18dc0bc34a46038fcf9d436bd44d94152d21baa3bcd98ea8.json",
+  "createdAt": "2026-08-02T07:47:14.730Z",
+  "envelopeHash": "41fdc26c3ec81c5d714a5f16c213ca5213a5dae242fa509dd289c4d80b94d860"
+}

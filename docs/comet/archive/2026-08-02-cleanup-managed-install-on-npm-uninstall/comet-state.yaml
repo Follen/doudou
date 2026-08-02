@@ -1,0 +1,22 @@
+schema: comet.native.v3
+minimum_runtime_version: 3
+revision: 5
+name: cleanup-managed-install-on-npm-uninstall
+language: zh-CN
+phase: archive
+brief: brief.md
+approval: confirmed
+approved_contract_hash: 2e18cc1499db079ea1df4baa77399f2469e3d73e20e43bc57c8cd02abfa3b605
+spec_changes:
+  - capability: managed-uninstall
+    operation: create
+    source: specs/managed-uninstall/spec.md
+    base_hash: null
+verification_result: pass
+verification_report: verification.md
+implementation_scope: runtime/evidence/scopes/4ea5ea44d506296ff9fe507dfd9d4a548f98c92e38cb987aed1af97ee3639e6a.json
+verification_evidence: runtime/evidence/verifications/41fdc26c3ec81c5d714a5f16c213ca5213a5dae242fa509dd289c4d80b94d860.json
+partial_allowance: null
+archived: true
+created_at: 2026-08-02
+run_id: 974c1795-dade-4a29-ba38-7840d586f545

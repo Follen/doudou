@@ -148,13 +148,14 @@ function managedStamp(target) {
   }
 }
 
-function installStamp(distribution) {
+function installStamp(distribution, target) {
   return {
     schema: "doudou.npm-skill-install.v1",
     package_name: distribution.packageRecord.name,
     package_version: distribution.packageRecord.version,
     skill_version: distribution.manifest.skill_version,
     tree_sha256: distribution.manifest.tree_sha256,
+    target: path.resolve(target),
     installed_at: new Date().toISOString(),
   };
 }
@@ -174,11 +175,14 @@ export async function ensureSkill({ packageRoot, target }) {
     const stamp = exists ? managedStamp(target) : null;
     if (targetCheck.valid) {
       if (!stamp) {
-        writeJson(path.join(target, INSTALL_STAMP), installStamp(distribution));
+        writeJson(path.join(target, INSTALL_STAMP), installStamp(distribution, target));
         return { status: "adopted", target, distribution };
       }
       if (stamp.package_name !== distribution.packageRecord.name) {
         throw new Error(`The Skill target is managed by ${stamp.package_name}.`);
+      }
+      if (stamp.target !== path.resolve(target)) {
+        writeJson(path.join(target, INSTALL_STAMP), installStamp(distribution, target));
       }
       return { status: "current", target, distribution };
     }
@@ -195,7 +199,7 @@ export async function ensureSkill({ packageRoot, target }) {
     let movedOld = false;
     try {
       copyManifestFiles(distribution.sourceSkill, staging, distribution.manifest);
-      writeJson(path.join(staging, INSTALL_STAMP), installStamp(distribution));
+      writeJson(path.join(staging, INSTALL_STAMP), installStamp(distribution, target));
       const stagingCheck = verifySkill(staging, distribution.manifest);
       if (!stagingCheck.valid) {
         throw new Error(`The staged Skill failed validation: ${stagingCheck.reason}.`);

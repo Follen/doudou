@@ -4,6 +4,7 @@ import path from "node:path";
 const CLI_COMMANDS = new Set([
   "doctor",
   "setup",
+  "uninstall",
   "profile",
   "broker",
   "session",

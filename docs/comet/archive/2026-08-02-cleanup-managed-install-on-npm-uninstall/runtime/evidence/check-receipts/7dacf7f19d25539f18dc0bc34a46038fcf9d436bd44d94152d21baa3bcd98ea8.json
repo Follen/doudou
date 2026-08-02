@@ -1,0 +1,44 @@
+{
+  "schema": "comet.native.check-receipt.v1",
+  "change": "cleanup-managed-install-on-npm-uninstall",
+  "sourceRevision": 3,
+  "checker": {
+    "policy": "scoped-text-safety",
+    "version": 1,
+    "hash": "0b8e0e9570269a64123ba2794f1f5125cf454695e1d7fda8f0acddf87ec4912f",
+    "limits": {
+      "maxFiles": 256,
+      "maxFileBytes": 1048576,
+      "maxTotalBytes": 8388608,
+      "maxIssues": 128
+    }
+  },
+  "inputHash": "2101f646081c0593ed3c34a5f0efdc1f89be3c92c9ebff0f1a1896c12d49bba2",
+  "status": "passed",
+  "startedAt": "2026-08-02T07:46:34.355Z",
+  "endedAt": "2026-08-02T07:46:34.774Z",
+  "contract": {
+    "expectedHash": "2e18cc1499db079ea1df4baa77399f2469e3d73e20e43bc57c8cd02abfa3b605",
+    "beforeHash": "2e18cc1499db079ea1df4baa77399f2469e3d73e20e43bc57c8cd02abfa3b605",
+    "afterHash": "2e18cc1499db079ea1df4baa77399f2469e3d73e20e43bc57c8cd02abfa3b605"
+  },
+  "implementation": {
+    "scopeHash": "4ea5ea44d506296ff9fe507dfd9d4a548f98c92e38cb987aed1af97ee3639e6a",
+    "expectedSnapshotHash": "4df14082e084fa2ebeac4540452c1fefc81b6de6df513a23b0356c5715db64ce",
+    "beforeSnapshotHash": "4df14082e084fa2ebeac4540452c1fefc81b6de6df513a23b0356c5715db64ce",
+    "afterSnapshotHash": "4df14082e084fa2ebeac4540452c1fefc81b6de6df513a23b0356c5715db64ce"
+  },
+  "counts": {
+    "filesSelected": 21,
+    "filesScanned": 21,
+    "binaryFilesSkipped": 0,
+    "bytesScanned": 92406,
+    "issueCount": 0,
+    "recordedIssueCount": 0
+  },
+  "issues": [],
+  "issuesTruncated": false,
+  "stale": false,
+  "staleReasons": [],
+  "receiptHash": "7dacf7f19d25539f18dc0bc34a46038fcf9d436bd44d94152d21baa3bcd98ea8"
+}

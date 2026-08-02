@@ -17,6 +17,7 @@ from ..browser.session import BrowserSession
 from ..lock import ProfileLock
 from ..process import process_identity
 from ..profile import load_profile
+from .registration import register_broker, unregister_broker
 
 MAX_REQUEST_BYTES = 4 * 1024 * 1024
 DETERMINISTIC_WRITE_ERRORS = {
@@ -66,6 +67,7 @@ class BrokerServer:
         self.started_at = utc_now()
         self.request_results: dict[str, dict[str, Any]] = {}
         self.handler = handler
+        self.registration: Path | None = None
 
     async def start(self) -> None:
         self.lock.acquire()
@@ -95,7 +97,9 @@ class BrokerServer:
                 "last_activity_at": self.last_completed_at,
             }
             atomic_write_json(self.paths.broker_descriptor, descriptor, mode=0o600)
+            self.registration = register_broker(self.paths, descriptor)
         except BaseException:
+            unregister_broker(self.registration)
             await self.browser.close()
             self.lock.release()
             raise
@@ -370,6 +374,8 @@ class BrokerServer:
         await self.browser.close()
         self.paths.broker_descriptor.unlink(missing_ok=True)
         self.paths.broker_token.unlink(missing_ok=True)
+        unregister_broker(self.registration)
+        self.registration = None
         self.lock.release()
 
 

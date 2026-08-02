@@ -26,6 +26,10 @@ doudou
 
 setup 使用系统 Python 创建用户级共享 venv，按 `scripts/requirements.lock` 下载锁定依赖，并下载 `scripts/runtime-manifest.json` 指定的 Camoufox 浏览器。Skill 包不包含 venv、Python 包或浏览器二进制。不要把这些文件安装到 Skill 目录或用户项目。
 
+## 卸载
+
+npm 安装版使用 `doudou uninstall`：它删除全部受管 Skill 和共享 venv/runtime，再删除 npm 包自身；保留项目 `profile/`、`message/` 与共享 Camoufox 浏览器缓存。不要用 Python Skill 入口或直接 `npm uninstall` 代替。
+
 ## 登录与接管
 
 创建或登录 Profile：

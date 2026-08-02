@@ -1,0 +1,8 @@
+{"sequence":1,"timestamp":"2026-08-02T07:47:31.055Z","type":"prepared"}
+{"sequence":2,"timestamp":"2026-08-02T07:47:31.505Z","type":"operation-started","operationId":"spec-1-managed-uninstall"}
+{"sequence":3,"timestamp":"2026-08-02T07:47:31.603Z","type":"operation-completed","operationId":"spec-1-managed-uninstall"}
+{"sequence":4,"timestamp":"2026-08-02T07:47:31.619Z","type":"operation-started","operationId":"archive-change"}
+{"sequence":5,"timestamp":"2026-08-02T07:47:31.842Z","type":"operation-completed","operationId":"archive-change"}
+{"sequence":6,"timestamp":"2026-08-02T07:47:31.965Z","type":"archive-finalization-started"}
+{"sequence":7,"timestamp":"2026-08-02T07:47:32.023Z","type":"archive-finalized"}
+{"sequence":8,"timestamp":"2026-08-02T07:47:32.056Z","type":"commit"}

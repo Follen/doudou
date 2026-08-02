@@ -1,0 +1,27 @@
+{
+  "schema": "comet.native.transaction.v2",
+  "id": "52dff117-1bb3-486f-a517-1f8e57abcb90",
+  "kind": "archive",
+  "status": "committed",
+  "change": "cleanup-managed-install-on-npm-uninstall",
+  "createdAt": "2026-08-02T07:47:30.470Z",
+  "preflightHash": "ad71dd6f58e2628998896165b765740f8e675ca2574b8fba1b4cb893d32b9c62",
+  "operations": [
+    {
+      "id": "spec-1-managed-uninstall",
+      "type": "write",
+      "target": "specs/managed-uninstall/spec.md",
+      "staged": "runtime/transactions/52dff117-1bb3-486f-a517-1f8e57abcb90/staged/specs/managed-uninstall/spec.md",
+      "expectedTargetHash": null,
+      "stagedHash": "c008ef52df665feeb83eaa6c7d684efe02e8c59022996e0cb0e178ee8e322687"
+    },
+    {
+      "id": "archive-change",
+      "type": "move",
+      "source": "changes/cleanup-managed-install-on-npm-uninstall",
+      "target": "archive/2026-08-02-cleanup-managed-install-on-npm-uninstall",
+      "expectedSourceHash": "df2ed5a64fbb7aff263ad0d09fc4439352439334cecc9bad2862be09af8ef06c",
+      "expectedTargetHash": null
+    }
+  ]
+}

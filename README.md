@@ -65,10 +65,10 @@ doudou video collect --profile work --sec-uid <sec_uid> --aweme-id <视频ID>
 
 ```powershell
 npm install -g @follenfang/doudou@latest
-npm uninstall -g @follenfang/doudou
+doudou uninstall
 ```
 
-npm 卸载不会删除持久化 Skill、共享运行时或项目数据。需要彻底清理时，在确认目录后分别删除 `~/.agents/skills/doudou`、用户缓存中的 `doudou/runtimes`，以及各业务项目自己的 `profile/` 和 `message/`。
+`doudou uninstall` 会停止受管 broker，删除全部 npm 管理的 Skill 和共享 venv/runtime，再删除 npm 包自身。项目中的 `profile/`、`message/` 和共享 Camoufox 浏览器缓存会保留。npm 7+ 不执行卸载 lifecycle，直接使用 `npm uninstall` 不会清理这些运行文件。
 
 ## 故障诊断
 
@@ -79,11 +79,11 @@ npm 卸载不会删除持久化 Skill、共享运行时或项目数据。需要�
 
 ## 发布
 
-GitHub Actions 只在 `v*` tag 推送时发布。tag 去掉 `v` 后必须与 `package.json.version` 和 Python Skill 版本完全一致；首个正式 tag 为 `v0.0.1`。npm Trusted Publisher 需要绑定仓库 `Follen/doudou` 和 workflow `publish-npm.yml`，发布使用 GitHub OIDC，不使用长期 `NPM_TOKEN`。npm 目前不为私有 GitHub 仓库生成 provenance；仓库保持私有时仍使用 OIDC 发布，但发布记录不带 provenance。
+GitHub Actions 只在 `v*` tag 推送时发布。tag 去掉 `v` 后必须与 `package.json.version` 和 Python Skill 版本完全一致。npm Trusted Publisher 需要绑定仓库 `Follen/doudou` 和 workflow `publish-npm.yml`，发布使用 GitHub OIDC，不使用长期 `NPM_TOKEN`。npm 目前不为私有 GitHub 仓库生成 provenance；仓库保持私有时仍使用 OIDC 发布，但发布记录不带 provenance。
 
 ```powershell
-git tag v0.0.1
-git push origin v0.0.1
+git tag -a vX.Y.Z -m "Doudou X.Y.Z"
+git push origin vX.Y.Z
 ```
 
 ## 开发验证

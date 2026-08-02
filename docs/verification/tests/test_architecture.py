@@ -4,7 +4,8 @@ import ast
 import unittest
 from pathlib import Path
 
-SOURCE = Path(__file__).resolve().parents[1] / "src" / "doudou"
+SOURCE = Path(__file__).resolve().parents[3] / "doudou" / "scripts" / "doudou"
+SKILL = SOURCE.parents[1]
 
 
 def imported_modules(filename: Path) -> set[str]:
@@ -19,6 +20,32 @@ def imported_modules(filename: Path) -> set[str]:
 
 
 class ArchitectureTests(unittest.TestCase):
+    def test_delivery_tree_contains_only_skill_resources(self) -> None:
+        self.assertEqual(
+            {path.name for path in SKILL.iterdir()},
+            {".gitignore", "SKILL.md", "agents", "references", "scripts"},
+        )
+        forbidden_directories = {
+            ".venv",
+            "browser-data",
+            "node_modules",
+            "site-packages",
+            "tests",
+        }
+        self.assertFalse(
+            any(
+                path.is_dir() and path.name in forbidden_directories
+                for path in SKILL.rglob("*")
+            )
+        )
+        self.assertFalse(
+            any(
+                path.suffix.lower()
+                in {".dll", ".dylib", ".exe", ".so", ".whl", ".zip"}
+                for path in SKILL.rglob("*")
+            )
+        )
+
     def test_package_root_contains_only_entrypoints(self) -> None:
         root_modules = sorted(path.name for path in SOURCE.glob("*.py"))
         self.assertEqual(root_modules, ["__init__.py", "cli.py"])

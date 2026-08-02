@@ -9,10 +9,10 @@
 在实际业务项目中运行：
 
 ```powershell
-python "$HOME\.agents\skills\doudou\bin\doudou.py" doctor
-python "$HOME\.agents\skills\doudou\bin\doudou.py" setup
-python "$HOME\.agents\skills\doudou\bin\doudou.py" profile create --profile work
-python "$HOME\.agents\skills\doudou\bin\doudou.py" profile login --profile work
+python "$HOME\.agents\skills\doudou\scripts\doudou.py" doctor
+python "$HOME\.agents\skills\doudou\scripts\doudou.py" setup
+python "$HOME\.agents\skills\doudou\scripts\doudou.py" profile create --profile work
+python "$HOME\.agents\skills\doudou\scripts\doudou.py" profile login --profile work
 ```
 
 `setup` 在用户缓存建立共享 venv，锁定 `camoufox==0.5.4` 和官方浏览器 `152.0.4-beta.28`。Profile 与业务记录始终留在当前项目：
@@ -39,13 +39,13 @@ message/profiles/<profile>/
 ## 常用命令
 
 ```powershell
-python <skill>\bin\doudou.py conversations refresh --profile work --kind all
-python <skill>\bin\doudou.py messages collect --profile work --conversation "会话名称"
-python <skill>\bin\doudou.py protocol send --profile work --recipient "会话名称" --text "你好"
-python <skill>\bin\doudou.py protocol send --profile work --confirm --plan-id <id>
-python <skill>\bin\doudou.py protocol send-batch --profile work --conversation-ids <ID1,ID2> --text "你好"
-python <skill>\bin\doudou.py videos collect --profile work --douyin-id Rurutia.wow
-python <skill>\bin\doudou.py video collect --profile work --sec-uid <sec_uid> --aweme-id <视频ID>
+python <skill>\scripts\doudou.py conversations refresh --profile work --kind all
+python <skill>\scripts\doudou.py messages collect --profile work --conversation "会话名称"
+python <skill>\scripts\doudou.py protocol send --profile work --recipient "会话名称" --text "你好"
+python <skill>\scripts\doudou.py protocol send --profile work --confirm --plan-id <id>
+python <skill>\scripts\doudou.py protocol send-batch --profile work --conversation-ids <ID1,ID2> --text "你好"
+python <skill>\scripts\doudou.py videos collect --profile work --douyin-id Rurutia.wow
+python <skill>\scripts\doudou.py video collect --profile work --sec-uid <sec_uid> --aweme-id <视频ID>
 ```
 
 完整 Agent 编排见 [`doudou/SKILL.md`](doudou/SKILL.md)，文件结构见 [`doudou/references/layout.md`](doudou/references/layout.md)。
@@ -53,8 +53,8 @@ python <skill>\bin\doudou.py video collect --profile work --sec-uid <sec_uid> --
 ## 开发验证
 
 ```powershell
-$env:PYTHONPATH = "doudou\src"
-python -m pytest doudou\tests -q
+$env:PYTHONPATH = "doudou\scripts"
+python -m pytest docs\verification\tests -q
 ```
 
 正式交付树不包含 Node.js、npm、Playwright、浏览器二进制、Profile 或消息数据。

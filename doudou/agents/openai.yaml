@@ -1,4 +1,4 @@
 interface:
   display_name: "Doudou"
-  short_description: "用本地 Camoufox Profile 读取抖音内容并执行受控页面写操作"
-  default_prompt: "Use $doudou from my current project to inspect a local Profile, collect chats or video data through structured protocols, and confirm bounded page writes."
+  short_description: "管理抖音聊天、视频、评论、登录环境与受控页面写操作"
+  default_prompt: "使用 $doudou 在当前项目检查环境和 Profile，然后按需采集消息或视频数据并执行经确认的写操作。"

@@ -255,7 +255,7 @@ def doctor(data_root: Path, launch_probe: bool = False) -> dict[str, Any]:
             "message": str(data_root / "message"),
         },
         "issues": issues,
-        "repair_command": "python <skill>/bin/doudou.py setup" if issues else None,
+        "repair_command": "python <skill>/scripts/doudou.py setup" if issues else None,
     }
 
 
@@ -276,7 +276,7 @@ def setup(skill_root: Path) -> dict[str, Any]:
         venv.EnvBuilder(with_pip=True, clear=True).create(temporary)
         stages["venv"] = "passed"
         python = venv_python(temporary)
-        lock = skill_root / "requirements.lock"
+        lock = skill_root / "scripts" / "requirements.lock"
         install = subprocess.run(
             [str(python), "-m", "pip", "install", "--require-hashes", "-r", str(lock)],
             capture_output=True,

@@ -53,10 +53,16 @@ async def page_doctor(
     stage_path = report_root / "active-stage.json"
     atomic_write_json(stage_path, {"stage": "ensure_ready", "updated_at": utc_now()})
     ready = await _doctor_stage("ensure_ready", browser.ensure_ready(), 60)
-    page = browser.page
-    del params
-    exercise = None
+    exercise = str(params.get("conversation") or "").strip() or None
     exercise_result: dict[str, Any] | None = None
+    if exercise and not str(browser.page.url).startswith("https://www.douyin.com/chat"):
+        atomic_write_json(
+            stage_path, {"stage": "open_chat", "updated_at": utc_now()}
+        )
+        await _doctor_stage(
+            "open_chat", browser.open("https://www.douyin.com/chat"), 60
+        )
+    page = browser.page
     atomic_write_json(stage_path, {"stage": "page_shape", "updated_at": utc_now()})
     shape = await _doctor_stage(
         "page_shape",
@@ -93,6 +99,21 @@ async def page_doctor(
                 "conversation_list_probe", conversation_list.probe(True), 20
             )
         )
+        if exercise:
+            atomic_write_json(
+                stage_path,
+                {"stage": "conversation_select", "updated_at": utc_now()},
+            )
+            operations = await _doctor_stage(
+                "conversation_select", conversation_list.open(exercise), 40
+            )
+            await page.wait_for_timeout(500)
+            exercise_result = {
+                "capability": "chat.conversation.open",
+                "conversation": exercise,
+                "dom_operations": operations,
+                "selected": True,
+            }
         composer = ChatComposerComponent(page)
         selected = bool(await visible_candidates(composer.candidates()))
         atomic_write_json(
@@ -172,7 +193,7 @@ async def page_doctor(
         "profile_id": profile_paths(data_root, profile).profile_id,
         "ready": ready,
         "page": shape,
-        "exercise": exercise or None,
+        "exercise": exercise,
         "exercise_result": exercise_result,
         "adapters": adapter_reports,
         "components": component_reports,

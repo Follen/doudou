@@ -2,7 +2,7 @@
 
 ## Setup
 
-`doctor` 检查专用 Python、版本化 venv、Camoufox 包、指定浏览器版本、setup owner/下载 partial、后台窗口模式和项目目录写权限。默认不启动浏览器；只有排查浏览器启动时才使用 `doctor --launch-probe`。`setup` 会执行真实启动验证。首次环境不存在时返回 `setup_required`。
+`doctor` 检查专用 Python、版本化 venv、Camoufox 包、指定浏览器版本、setup owner/下载 partial、平台浏览器模式和项目目录写权限。默认不启动浏览器；只有排查浏览器启动时才使用 `doctor --launch-probe`。Windows probe 使用真无头，Linux probe 使用 Xvfb。`setup` 会执行真实启动验证。首次环境不存在时返回 `setup_required`。
 
 `setup` 执行以下步骤：
 
@@ -22,11 +22,11 @@ Windows 与 Linux 默认都使用 `~/.doudou/`，可由 `DOUDOU_HOME` 覆盖。`
 
 每个项目和 Profile 仅启动一个 broker。首条业务命令执行一次 `ensure_ready`，后续命令只做健康检查。不要设计独立 warmup 命令。
 
-登录或验证需要人工操作时显示当前 broker 的同一窗口；完成后自动恢复后台状态。不要关闭当前窗口后再创建新 broker。
+Windows 日常 broker 使用真无头；Linux 日常 broker 使用 Xvfb 虚拟有头。登录或验证需要人工操作时，当前 broker 先安全关闭后台 context，再用同一 `browser-data` 启动可见有头 context；完成后关闭可见 context 并恢复平台后台模式。不要创建新 broker、临时 Profile 或并行占用同一 Profile。
 
-登录状态、验证状态和 IM 初始化状态是三个独立信号：有效 IM 会话或 `/chat` 已加载的会话列表可以证明账号已登录；二维码、短信、滑块等可见组件决定是否需要人工接管；init request/response 只决定协议读取是否就绪。Cookie 名称和数量仅用于诊断，不能作为固定登录白名单。
+登录状态、验证状态和 IM 初始化状态是三个独立信号：有效 IM 会话或 `/chat` 已加载的会话列表可以证明账号已登录；二维码、短信、滑块、Passkey 等可见组件决定是否需要人工接管；init request/response 只决定协议读取是否就绪。Cookie 名称和数量仅用于诊断，不能作为固定登录白名单。
 
-broker 在相关网络响应到达时异步触发状态重算。登录或验证完成后，一旦账号证据有效且验证组件消失，就记录 Profile 为 `valid` 并自动隐藏同一窗口，不等待业务命令轮询。即使后续 IM 捕获或业务读取失败，也要结束已经完成的人工接管，并保留原始错误分类。
+broker 在相关网络响应到达时异步触发状态重算。登录或验证完成后，一旦账号证据有效且验证组件消失，就记录 Profile 为 `valid`、关闭可见 context 并恢复后台 context，不等待业务命令轮询。即使后续 IM 捕获或业务读取失败，也要结束已经完成的人工接管，并保留原始错误分类。
 
 ## Reads
 
@@ -47,7 +47,7 @@ broker 在相关网络响应到达时异步触发状态重算。登录或验证�
 3. 写控件唯一、可见、启用且满足局部几何契约。
 4. 只执行一次页面动作。
 5. 捕获唯一写请求和服务端响应。
-6. 使用只读协议复查消息 ID、引用、CID、父 CID、正文或点赞状态。
+6. 使用只读协议补充复查消息 ID、引用、CID、父 CID、正文或点赞状态。评论创建/回复的页面成功回执先落盘，复查不得同步全量分页或覆盖已确认成功。
 
 ## Stable errors
 

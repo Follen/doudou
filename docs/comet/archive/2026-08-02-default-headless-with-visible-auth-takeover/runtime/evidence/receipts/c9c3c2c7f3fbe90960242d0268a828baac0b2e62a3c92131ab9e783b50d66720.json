@@ -1,0 +1,28 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "manual-evidence",
+  "role": "acceptance-evidence",
+  "status": "passed",
+  "bindings": {
+    "change": "default-headless-with-visible-auth-takeover",
+    "sourceRevision": 3,
+    "contractHash": "e0fa55810ef247f2932f0d19e73ee61576f5c161e706102cf402ba7c33d91412",
+    "scopeHash": "87c5a2ec8f172b1e79e278ea8832164912b6f665a22df4cd1e57131ec1a0afef",
+    "snapshotHash": "ccaff258661c71e96a4d360c7b506c971a97725ad4c3dd1018353ab30cd48bba",
+    "artifactHash": "71036d6fce4cb93665406796f830f68e2ece9ac522494754d331014508a2dc23"
+  },
+  "acceptanceIds": [
+    "acceptance-5e71238bd9486a182af29b15aadba02581dae9b7d697a8bf9ae331c47cdf4808"
+  ],
+  "actor": "native-runtime:manual-evidence",
+  "issuedAt": "2026-08-02T22:44:02.038Z",
+  "evidence": {
+    "steps": [
+      "执行本 change 的完整自动门禁与对应真实/集成回归并核对该验收项"
+    ],
+    "observations": [
+      "异步认证测试确认 generation 收敛后关闭可见 context，读任务最多恢复一次，写任务不重放。"
+    ]
+  },
+  "receiptHash": "c9c3c2c7f3fbe90960242d0268a828baac0b2e62a3c92131ab9e783b50d66720"
+}

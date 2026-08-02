@@ -1,0 +1,11 @@
+{
+  "schema": "comet.native.archive-cas.v1",
+  "operationId": "spec-1-broker-auth-state",
+  "role": "original",
+  "hash": "e935c5334a34f1f3b9cae5bb7aa42f903bbd522034165b63689c340c559c3245",
+  "identity": {
+    "dev": 2421791372,
+    "ino": 4785074607855654,
+    "birthtimeMs": 1785695940008.2012
+  }
+}

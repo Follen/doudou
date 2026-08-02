@@ -108,13 +108,14 @@ PROFILE_ADAPTER = PageAdapter(
 
 AUTH_ADAPTER = PageAdapter(
     name="douyin-auth",
-    version="2026-08-02.1",
+    version="2026-08-03.1",
     route_prefix="/",
     route_aliases=(),
     selectors={
         "slider": 'iframe[src*="captcha" i], [class*="captcha" i] [class*="slide" i], [class*="captcha" i] [class*="drag" i]',
         "sms_code": '.second-verify-mask input, input[placeholder*="验证码"], input[maxlength="6"]',
         "qr_login": '[class*="login" i] img[src*="qr" i], [class*="login" i] canvas[class*="qr" i], [class*="qrcode" i] img, [class*="qr-code" i] img',
+        "passkey": '[role="dialog"] button:has-text("Passkey"), [role="dialog"] button:has-text("通行密钥"), [class*="login" i] button:has-text("Passkey"), [class*="login" i] button:has-text("通行密钥")',
         "generic_verification": 'iframe[src*="verify" i], .second-verify-mask:has(input), [role="dialog"][class*="verify" i]:has(button)',
     },
     labels={

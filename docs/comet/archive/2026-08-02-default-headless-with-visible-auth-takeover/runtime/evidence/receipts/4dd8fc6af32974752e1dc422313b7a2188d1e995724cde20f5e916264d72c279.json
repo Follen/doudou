@@ -1,0 +1,28 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "manual-evidence",
+  "role": "acceptance-evidence",
+  "status": "passed",
+  "bindings": {
+    "change": "default-headless-with-visible-auth-takeover",
+    "sourceRevision": 3,
+    "contractHash": "e0fa55810ef247f2932f0d19e73ee61576f5c161e706102cf402ba7c33d91412",
+    "scopeHash": "87c5a2ec8f172b1e79e278ea8832164912b6f665a22df4cd1e57131ec1a0afef",
+    "snapshotHash": "ccaff258661c71e96a4d360c7b506c971a97725ad4c3dd1018353ab30cd48bba",
+    "artifactHash": "71036d6fce4cb93665406796f830f68e2ece9ac522494754d331014508a2dc23"
+  },
+  "acceptanceIds": [
+    "acceptance-08490fc645b5c4cfd3bf0a7c0f4c913b67d697f18602178dd8ca0e9559367a4b"
+  ],
+  "actor": "native-runtime:manual-evidence",
+  "issuedAt": "2026-08-02T22:43:59.042Z",
+  "evidence": {
+    "steps": [
+      "执行本 change 的完整自动门禁与对应真实/集成回归并核对该验收项"
+    ],
+    "observations": [
+      "短信验证接管测试确认先关闭无头 context，再以同一 Profile 启动可见有头实例。"
+    ]
+  },
+  "receiptHash": "4dd8fc6af32974752e1dc422313b7a2188d1e995724cde20f5e916264d72c279"
+}

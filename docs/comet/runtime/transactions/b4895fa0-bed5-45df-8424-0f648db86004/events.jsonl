@@ -1,0 +1,10 @@
+{"sequence":1,"timestamp":"2026-08-02T22:47:56.641Z","type":"prepared"}
+{"sequence":2,"timestamp":"2026-08-02T22:47:57.324Z","type":"operation-started","operationId":"spec-1-broker-auth-state"}
+{"sequence":3,"timestamp":"2026-08-02T22:47:57.534Z","type":"operation-completed","operationId":"spec-1-broker-auth-state"}
+{"sequence":4,"timestamp":"2026-08-02T22:47:57.556Z","type":"operation-started","operationId":"spec-2-browser-runtime-lifecycle"}
+{"sequence":5,"timestamp":"2026-08-02T22:47:57.686Z","type":"operation-completed","operationId":"spec-2-browser-runtime-lifecycle"}
+{"sequence":6,"timestamp":"2026-08-02T22:47:58.346Z","type":"operation-started","operationId":"archive-change"}
+{"sequence":7,"timestamp":"2026-08-02T22:47:59.146Z","type":"operation-completed","operationId":"archive-change"}
+{"sequence":8,"timestamp":"2026-08-02T22:47:59.535Z","type":"archive-finalization-started"}
+{"sequence":9,"timestamp":"2026-08-02T22:47:59.599Z","type":"archive-finalized"}
+{"sequence":10,"timestamp":"2026-08-02T22:47:59.681Z","type":"commit"}

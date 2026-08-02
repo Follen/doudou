@@ -404,6 +404,11 @@ class BrokerServer:
         descriptor = read_json(self.paths.broker_descriptor, optional=True)
         if isinstance(descriptor, dict) and descriptor.get("pid") == os.getpid():
             descriptor["last_activity_at"] = self.last_completed_at
+            descriptor["mode"] = self.browser.mode
+            descriptor["takeover"] = {
+                "active": self.browser.takeover_active,
+                "verification_kind": self.browser.takeover_kind,
+            }
             atomic_write_json(self.paths.broker_descriptor, descriptor, mode=0o600)
 
     async def close(self) -> None:

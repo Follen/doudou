@@ -1,0 +1,28 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "manual-evidence",
+  "role": "acceptance-evidence",
+  "status": "passed",
+  "bindings": {
+    "change": "default-headless-with-visible-auth-takeover",
+    "sourceRevision": 3,
+    "contractHash": "e0fa55810ef247f2932f0d19e73ee61576f5c161e706102cf402ba7c33d91412",
+    "scopeHash": "87c5a2ec8f172b1e79e278ea8832164912b6f665a22df4cd1e57131ec1a0afef",
+    "snapshotHash": "ccaff258661c71e96a4d360c7b506c971a97725ad4c3dd1018353ab30cd48bba",
+    "artifactHash": "71036d6fce4cb93665406796f830f68e2ece9ac522494754d331014508a2dc23"
+  },
+  "acceptanceIds": [
+    "acceptance-d58ffdeeb2b4ed06209e789e308c44c4daa1230c7cddab5c339a1d3287d0fc47"
+  ],
+  "actor": "native-runtime:manual-evidence",
+  "issuedAt": "2026-08-02T22:44:57.142Z",
+  "evidence": {
+    "steps": [
+      "执行本 change 的完整自动门禁与对应真实/集成回归并核对该验收项"
+    ],
+    "observations": [
+      "AuthChallengeComponent 测试覆盖二维码、短信、快捷短信、滑块、Passkey、通用验证及漂移 fail closed。"
+    ]
+  },
+  "receiptHash": "6e883b9a811f07728a4441373d78a8c1d7287fd50f0285e1774cce664bb97239"
+}

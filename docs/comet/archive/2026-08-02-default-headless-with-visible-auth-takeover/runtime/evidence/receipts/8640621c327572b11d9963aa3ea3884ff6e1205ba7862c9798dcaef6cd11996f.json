@@ -1,0 +1,53 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "static-inspection",
+  "role": "required-check",
+  "status": "passed",
+  "bindings": {
+    "change": "default-headless-with-visible-auth-takeover",
+    "sourceRevision": 3,
+    "contractHash": "e0fa55810ef247f2932f0d19e73ee61576f5c161e706102cf402ba7c33d91412",
+    "scopeHash": "87c5a2ec8f172b1e79e278ea8832164912b6f665a22df4cd1e57131ec1a0afef",
+    "snapshotHash": "ccaff258661c71e96a4d360c7b506c971a97725ad4c3dd1018353ab30cd48bba",
+    "artifactHash": "71036d6fce4cb93665406796f830f68e2ece9ac522494754d331014508a2dc23"
+  },
+  "acceptanceIds": [],
+  "actor": "native-runtime:scoped-text-safety",
+  "issuedAt": "2026-08-02T22:47:41.494Z",
+  "evidence": {
+    "subjects": [
+      "README.md",
+      "docs/verification/tests/test_broker.py",
+      "docs/verification/tests/test_component_geometry.py",
+      "docs/verification/tests/test_identity.py",
+      "docs/verification/tests/test_video_writes.py",
+      "docs/verification/tests/test_windows_process.py",
+      "doudou/SKILL.md",
+      "doudou/references/cli.md",
+      "doudou/references/runtime.md",
+      "doudou/scripts/doudou/features/diagnostics.py",
+      "doudou/scripts/doudou/features/video/service.py",
+      "doudou/scripts/doudou/models/identity.py",
+      "doudou/scripts/doudou/protocol/write_responses.py",
+      "doudou/scripts/doudou/reads/chat.py",
+      "doudou/scripts/doudou/runtime/broker/server.py",
+      "doudou/scripts/doudou/runtime/browser/session.py",
+      "doudou/scripts/doudou/runtime/environment.py",
+      "doudou/scripts/doudou/runtime/platform/windows.py",
+      "doudou/scripts/doudou/runtime/platform/windows_guard_worker.py",
+      "doudou/scripts/doudou/runtime/profile.py",
+      "doudou/scripts/doudou/storage/identity_migration.py",
+      "doudou/scripts/doudou/ui/adapters.py",
+      "doudou/scripts/doudou/ui/components/auth.py",
+      "doudou/scripts/doudou/ui/components/chat.py",
+      "doudou/scripts/doudou/ui/components/video.py",
+      "doudou/scripts/doudou/ui/video.py",
+      "npm/skill-manifest.json"
+    ],
+    "rule": "scoped-text-safety",
+    "resultSummary": "The built-in scoped inspection passed without skipped or blocking input.",
+    "checkReceiptRef": "runtime/evidence/check-receipts/80536ec50f82e7dc31768b2f8021eb7d3ff732711c5829b92c26f516523b96ac.json",
+    "checkReceiptHash": "80536ec50f82e7dc31768b2f8021eb7d3ff732711c5829b92c26f516523b96ac"
+  },
+  "receiptHash": "8640621c327572b11d9963aa3ea3884ff6e1205ba7862c9798dcaef6cd11996f"
+}

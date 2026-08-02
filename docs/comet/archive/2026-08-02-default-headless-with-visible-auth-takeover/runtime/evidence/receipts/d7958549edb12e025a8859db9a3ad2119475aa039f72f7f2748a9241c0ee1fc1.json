@@ -1,0 +1,28 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "manual-evidence",
+  "role": "acceptance-evidence",
+  "status": "passed",
+  "bindings": {
+    "change": "default-headless-with-visible-auth-takeover",
+    "sourceRevision": 3,
+    "contractHash": "e0fa55810ef247f2932f0d19e73ee61576f5c161e706102cf402ba7c33d91412",
+    "scopeHash": "87c5a2ec8f172b1e79e278ea8832164912b6f665a22df4cd1e57131ec1a0afef",
+    "snapshotHash": "ccaff258661c71e96a4d360c7b506c971a97725ad4c3dd1018353ab30cd48bba",
+    "artifactHash": "71036d6fce4cb93665406796f830f68e2ece9ac522494754d331014508a2dc23"
+  },
+  "acceptanceIds": [
+    "acceptance-3eebe5aa8edb3fbcdeb87da52a34cecc021f8cd3f838c407a25cdd478f5d61f5"
+  ],
+  "actor": "native-runtime:manual-evidence",
+  "issuedAt": "2026-08-02T22:44:01.510Z",
+  "evidence": {
+    "steps": [
+      "执行本 change 的完整自动门禁与对应真实/集成回归并核对该验收项"
+    ],
+    "observations": [
+      "业务恢复失败测试确认可见 context 已关闭、Profile 保持 valid 且返回真实业务错误。"
+    ]
+  },
+  "receiptHash": "d7958549edb12e025a8859db9a3ad2119475aa039f72f7f2748a9241c0ee1fc1"
+}

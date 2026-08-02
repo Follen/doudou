@@ -1,0 +1,28 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "manual-evidence",
+  "role": "acceptance-evidence",
+  "status": "passed",
+  "bindings": {
+    "change": "default-headless-with-visible-auth-takeover",
+    "sourceRevision": 3,
+    "contractHash": "e0fa55810ef247f2932f0d19e73ee61576f5c161e706102cf402ba7c33d91412",
+    "scopeHash": "87c5a2ec8f172b1e79e278ea8832164912b6f665a22df4cd1e57131ec1a0afef",
+    "snapshotHash": "ccaff258661c71e96a4d360c7b506c971a97725ad4c3dd1018353ab30cd48bba",
+    "artifactHash": "71036d6fce4cb93665406796f830f68e2ece9ac522494754d331014508a2dc23"
+  },
+  "acceptanceIds": [
+    "acceptance-79ccc293d38a7acf7c79244dbe91a29d88a5685f50ef79fad257022abee2b261"
+  ],
+  "actor": "native-runtime:manual-evidence",
+  "issuedAt": "2026-08-02T22:44:03.954Z",
+  "evidence": {
+    "steps": [
+      "执行本 change 的完整自动门禁与对应真实/集成回归并核对该验收项"
+    ],
+    "observations": [
+      "KICK 分类测试确认无认证组件时返回 WRITE_VERIFICATION_REQUIRED，不显示窗口或制造验证。"
+    ]
+  },
+  "receiptHash": "6a852ddbab6e635a61694f7a866bb92f6d8dbce41653946d5510c3c25640977d"
+}

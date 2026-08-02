@@ -251,7 +251,7 @@ def list_profiles(data_root: Path) -> list[dict[str, Any]]:
 
 def platform_background_mode() -> str:
     if os.name == "nt":
-        return "windows_hidden_headed"
+        return "windows_headless"
     if platform.system() == "Linux":
         return "linux_virtual_headed"
     return "headed"

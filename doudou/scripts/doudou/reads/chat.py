@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -69,7 +70,25 @@ async def _resolve_user_identities(
     identities: dict[str, dict[str, Any]] = {}
     cache = IdentityCache(data_root, profile)
     unique = list(dict.fromkeys(value for value in sec_uids if value))
-    for offset in range(0, len(unique), 20):
+    captured_responses = await session.captured_user_info_responses(
+        timeout_seconds=1.5, quiet_seconds=0.25
+    )
+    for captured in captured_responses:
+        try:
+            value = json.loads(captured)
+        except (UnicodeDecodeError, json.JSONDecodeError):
+            value = None
+        if not isinstance(value, dict) or int(value.get("status_code") or 0) != 0:
+            continue
+        for identity in _response_identities(value):
+            sec_uid = identity.get("sec_uid")
+            if not sec_uid or sec_uid not in unique:
+                continue
+            merged = cache.merge(identity, source="page-user-info")
+            identities[sec_uid] = merged
+    missing = [sec_uid for sec_uid in unique if sec_uid not in identities]
+    endpoint = await session.captured_user_info_endpoint()
+    for offset in range(0, len(missing), 20):
         result = await session.page.evaluate(
             """async ({values, endpoint}) => {
               const body = new URLSearchParams({sec_user_ids: JSON.stringify(values)});
@@ -77,8 +96,8 @@ async def _resolve_user_identities(
               return {http_status: response.status, content_type: response.headers.get('content-type'), retry_after: response.headers.get('retry-after'), text: await response.text()};
             }""",
             {
-                "values": unique[offset : offset + 20],
-                "endpoint": WEB_PROTOCOL.path("user_info"),
+                "values": missing[offset : offset + 20],
+                "endpoint": endpoint or WEB_PROTOCOL.path("user_info"),
             },
         )
         try:

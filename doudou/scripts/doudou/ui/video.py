@@ -78,7 +78,9 @@ async def comment_write(
         )
         operations += await item_component.reply(item)
         await page.wait_for_timeout(500)
-    composer = VideoCommentComposerComponent(page, focused=operation == "video.comment.reply")
+    composer = VideoCommentComposerComponent(
+        page, scope=item if operation == "video.comment.reply" else None
+    )
     if operation == "video.comment.create":
         operations += await composer.activate()
     editor = await composer.insert_text(payload["text"])
@@ -181,7 +183,10 @@ async def like_comment(session: BrowserSession, plan: dict[str, Any]) -> dict[st
         await capture.stop()
     fields, _value = _captured_write(capture, digg_path, "video.comment.like")
     verified_fields = validate_comment_request(
-        fields, aweme_id=payload["aweme_id"], comment_id=payload["comment"]["cid"]
+        fields,
+        aweme_id=payload["aweme_id"],
+        comment_id=payload["comment"]["cid"],
+        digg_type="1",
     )
     return {
         "status": "liked",
@@ -189,5 +194,10 @@ async def like_comment(session: BrowserSession, plan: dict[str, Any]) -> dict[st
         "dom_operations": operations,
         "target": verified_fields,
         "network": {"requests": capture.requests, "responses": capture.responses},
-        "verification": {"passed": True, "network_business_status": 0},
+        "verification": {
+            "passed": True,
+            "authoritative": True,
+            "source": "page_write_response",
+            "network_business_status": 0,
+        },
     }

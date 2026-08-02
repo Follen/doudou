@@ -64,6 +64,25 @@ class VideoWriteProtocolTests(unittest.TestCase):
         )
         self.assertEqual(response_comment(value)["cid"], "20")
 
+    def test_comment_like_request_requires_explicit_like_direction(self) -> None:
+        fields = request_fields(
+            "https://www.douyin.com/aweme/v1/web/comment/digg/"
+            "?aweme_id=10&cid=20&digg_type=1",
+            b"",
+        )
+        value = validate_comment_request(
+            fields, aweme_id="10", comment_id="20", digg_type="1"
+        )
+        self.assertEqual(value["digg_type"], "1")
+        with self.assertRaises(DoudouError) as context:
+            validate_comment_request(
+                {**fields, "digg_type": "0"},
+                aweme_id="10",
+                comment_id="20",
+                digg_type="1",
+            )
+        self.assertEqual(context.exception.code, "PAGE_WRITE_REQUEST_DRIFTED")
+
     def test_request_drift_is_unknown_after_click(self) -> None:
         with self.assertRaises(DoudouError) as context:
             validate_comment_request(
@@ -91,6 +110,84 @@ class VideoWriteProtocolTests(unittest.TestCase):
 
 
 class VideoWriteReceiptTests(unittest.IsolatedAsyncioTestCase):
+    async def test_like_receipt_remains_success_when_ranked_readback_misses(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            data_root = Path(directory)
+            comments = (
+                data_root
+                / "message"
+                / "profiles"
+                / "profile-a"
+                / "content"
+                / "videos"
+                / "video-1"
+                / "comments.jsonl"
+            )
+            comments.parent.mkdir(parents=True)
+            comments.write_text(
+                json.dumps(
+                    {
+                        "cid": "comment-1",
+                        "text": "target",
+                        "user_digged": False,
+                    }
+                )
+                + "\n",
+                encoding="utf-8",
+            )
+            preview = await preview_interaction(
+                data_root,
+                "profile-a",
+                "video.comment.like",
+                {
+                    "sec_uid": "author-sec-uid",
+                    "aweme_id": "video-1",
+                    "comment": {"cid": "comment-1", "text": "target"},
+                },
+            )
+            plan_id = preview["plan"]["plan_id"]
+            write_result = {
+                "status": "liked",
+                "plan_id": plan_id,
+                "verification": {
+                    "passed": True,
+                    "authoritative": True,
+                    "source": "page_write_response",
+                },
+            }
+            with (
+                patch(
+                    "doudou.features.video.service.like_comment",
+                    new=AsyncMock(return_value=write_result),
+                ),
+                patch(
+                    "doudou.features.video.service._protocol_recheck",
+                    new=AsyncMock(
+                        return_value={
+                            "passed": False,
+                            "operation": "video.comment.like",
+                            "comment_id": "comment-1",
+                            "matches": 0,
+                        }
+                    ),
+                ),
+            ):
+                result = await execute_interaction(
+                    object(),
+                    data_root,
+                    "profile-a",
+                    "video.comment.like",
+                    {"plan_id": plan_id},
+                )
+
+            self.assertEqual(result["status"], "liked")
+            self.assertTrue(result["verification"]["passed"])
+            readback = result["verification"]["protocol_recheck"]
+            self.assertFalse(readback["authoritative"])
+            self.assertTrue((data_root / result["files"]["receipt"]).exists())
+
     async def test_publish_receipt_remains_success_when_ranked_readback_misses(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             data_root = Path(directory)
@@ -149,8 +246,68 @@ class VideoWriteReceiptTests(unittest.IsolatedAsyncioTestCase):
             self.assertFalse(readback["authoritative"])
             self.assertEqual(
                 readback["reason"],
-                "ranked_comment_list_did_not_include_the_new_comment",
+                "stored_protocol_snapshot_did_not_include_the_new_comment",
             )
+            self.assertEqual(readback["source"], "stored_protocol_snapshot")
+
+    async def test_publish_receipt_does_not_wait_for_full_protocol_collection(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            data_root = Path(directory)
+            preview = await preview_interaction(
+                data_root,
+                "profile-a",
+                "video.comment.create",
+                {
+                    "sec_uid": "author-sec-uid",
+                    "aweme_id": "video-1",
+                    "text": "发布响应已经成功",
+                },
+            )
+            plan_id = preview["plan"]["plan_id"]
+            write_result = {
+                "status": "created",
+                "plan_id": plan_id,
+                "created_comment": {
+                    "cid": "comment-2",
+                    "text": "发布响应已经成功",
+                },
+                "verification": {
+                    "passed": True,
+                    "network_business_status": 0,
+                },
+            }
+
+            with (
+                patch(
+                    "doudou.features.video.service.comment_write",
+                    new=AsyncMock(return_value=write_result),
+                ),
+                patch(
+                    "doudou.features.video.service._protocol_recheck",
+                    new=AsyncMock(
+                        side_effect=AssertionError(
+                            "comment writes must not start the full protocol collector"
+                        )
+                    ),
+                ) as full_recheck,
+            ):
+                result = await execute_interaction(
+                    object(),
+                    data_root,
+                    "profile-a",
+                    "video.comment.create",
+                    {"plan_id": plan_id},
+            )
+
+            self.assertEqual(result["status"], "created")
+            self.assertTrue((data_root / result["files"]["receipt"]).exists())
+            readback = result["verification"]["protocol_recheck"]
+            self.assertFalse(readback["passed"])
+            self.assertFalse(readback["authoritative"])
+            self.assertEqual(readback["source"], "stored_protocol_snapshot")
+            full_recheck.assert_not_awaited()
 
 
 if __name__ == "__main__":

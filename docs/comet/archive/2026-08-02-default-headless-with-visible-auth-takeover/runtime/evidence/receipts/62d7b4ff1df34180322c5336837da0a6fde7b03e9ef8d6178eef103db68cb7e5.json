@@ -1,0 +1,28 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "manual-evidence",
+  "role": "acceptance-evidence",
+  "status": "passed",
+  "bindings": {
+    "change": "default-headless-with-visible-auth-takeover",
+    "sourceRevision": 3,
+    "contractHash": "e0fa55810ef247f2932f0d19e73ee61576f5c161e706102cf402ba7c33d91412",
+    "scopeHash": "87c5a2ec8f172b1e79e278ea8832164912b6f665a22df4cd1e57131ec1a0afef",
+    "snapshotHash": "ccaff258661c71e96a4d360c7b506c971a97725ad4c3dd1018353ab30cd48bba",
+    "artifactHash": "71036d6fce4cb93665406796f830f68e2ece9ac522494754d331014508a2dc23"
+  },
+  "acceptanceIds": [
+    "acceptance-074291a073d4ebed72f98a7415f3105eacc8252fe706442a9432d61249897ddd"
+  ],
+  "actor": "native-runtime:manual-evidence",
+  "issuedAt": "2026-08-02T22:43:03.332Z",
+  "evidence": {
+    "steps": [
+      "执行 broker 登录分类单测与现有 Profile 真无头会话发现回归"
+    ],
+    "observations": [
+      "Python 全套 128 项通过；现有 Profile 发现 22 个会话且未出现认证组件，Profile 保持 valid，未误报 LOGIN_REQUIRED。"
+    ]
+  },
+  "receiptHash": "62d7b4ff1df34180322c5336837da0a6fde7b03e9ef8d6178eef103db68cb7e5"
+}

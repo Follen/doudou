@@ -1,0 +1,11 @@
+{
+  "schema": "comet.native.archive-cas.v1",
+  "operationId": "spec-2-browser-runtime-lifecycle",
+  "role": "post",
+  "hash": "0c1d96e56f90b1f4a67f328bbcdbc310352df031e4fb7057130492b3c7dca5da",
+  "identity": {
+    "dev": 2421791372,
+    "ino": 1688849860268805,
+    "birthtimeMs": 1785710877594.8096
+  }
+}

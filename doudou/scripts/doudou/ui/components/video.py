@@ -8,6 +8,7 @@ from ...common.errors import DoudouError
 from ...runtime.browser.session import BrowserSession
 from ..adapters import PROFILE_ADAPTER, VIDEO_ADAPTER
 from .base import (
+    click_verified_target,
     component_probe,
     not_exercised_probe,
     require_target,
@@ -393,54 +394,51 @@ class VideoCommentsPanelComponent:
 
 class VideoCommentComposerComponent:
     name = "video-comment-composer"
-    version = "2026-08-03.1"
+    version = "2026-08-03.2"
     container_selector = ".comment-input-inner-container"
     editor_selector = '[contenteditable="true"][role="combobox"], textarea, input'
     controls_selector = ".commentInput-right-ct span"
 
-    focused_editor_selector = '[contenteditable="true"][role="combobox"]:focus'
-    focused_container_xpath = (
-        "xpath=ancestor::div[contains(@class,'comment-input-inner-container')][1]"
-    )
-
-    def __init__(self, page: Any, focused: bool = False) -> None:
+    def __init__(self, page: Any, scope: Any | None = None) -> None:
         self.page = page
-        self.focused = focused
+        self.scope = scope
 
     def candidates(self) -> Any:
-        if self.focused:
-            return self.page.locator(self.focused_editor_selector).locator(
-                self.focused_container_xpath
-            )
-        return self.page.locator(self.container_selector)
+        root = self.scope if self.scope is not None else self.page
+        return root.locator(self.container_selector)
+
+    def _scope(self) -> Any:
+        return self.scope if self.scope is not None else self.page.locator("body")
+
+    def _capability(self) -> str:
+        return "video.comment.reply" if self.scope is not None else "video.comment.compose"
 
     async def container(self) -> Any:
         return await require_target(
             self.candidates(),
             component=self.name,
             version=self.version,
-            capability="video.comment.compose",
-            strategy="visible comment input container",
-            scope=self.page.locator("body"),
+            capability=self._capability(),
+            strategy=(
+                "confirmed comment item -> local reply input container"
+                if self.scope is not None
+                else "visible comment input container"
+            ),
+            scope=self._scope(),
         )
 
     async def editor(self) -> Any:
-        if self.focused:
-            return await require_target(
-                self.page.locator(self.focused_editor_selector),
-                component=self.name,
-                version=self.version,
-                capability="video.comment.reply",
-                strategy="focused Draft combobox",
-                scope=self.page.locator("body"),
-            )
         container = await self.container()
         return await require_target(
             container.locator(self.editor_selector),
             component=self.name,
             version=self.version,
-            capability="video.comment.compose",
-            strategy="composer-local Draft combobox",
+            capability=self._capability(),
+            strategy=(
+                "confirmed comment item -> local reply container -> Draft combobox"
+                if self.scope is not None
+                else "composer-local Draft combobox"
+            ),
             scope=container,
         )
 
@@ -452,14 +450,80 @@ class VideoCommentComposerComponent:
                 "COMMENT_EDITOR_NOT_EMPTY",
                 "The comment editor contains unplanned content.",
             )
-        await editor.click()
+        await self._focus_editor(editor)
         await self.page.keyboard.insert_text(text)
         await self.page.wait_for_timeout(250)
         return editor
 
     async def activate(self) -> int:
-        await (await self.container()).click()
+        container = await self.container()
+        editors = container.locator(self.editor_selector)
+        visible = await visible_candidates(editors)
+        if not visible:
+            await click_verified_target(
+                self.page,
+                container,
+                component=self.name,
+                version=self.version,
+                capability="video.comment.compose",
+                strategy=(
+                    "visible comment container -> stable hit target -> "
+                    "local editor render"
+                ),
+                scroll_into_view=False,
+            )
+            for _ in range(40):
+                visible = await visible_candidates(editors)
+                if visible:
+                    break
+                await self.page.wait_for_timeout(50)
+        editor = await require_target(
+            editors,
+            component=self.name,
+            version=self.version,
+            capability="video.comment.compose",
+            strategy="activated comment container -> local Draft combobox",
+            scope=container,
+        )
+        await self._focus_editor(editor)
         return 1
+
+    async def _focus_editor(self, editor: Any) -> None:
+        focused = await editor.evaluate(
+            "element => element === document.activeElement || "
+            "element.contains(document.activeElement)"
+        )
+        if not focused:
+            await click_verified_target(
+                self.page,
+                editor,
+                component=self.name,
+                version=self.version,
+                capability="video.comment.compose",
+                strategy=(
+                    "local comment editor -> stable hit target -> dynamic mouse focus"
+                ),
+                scroll_into_view=False,
+            )
+            focused = await editor.evaluate(
+                "element => element === document.activeElement || "
+                "element.contains(document.activeElement)"
+            )
+        if not focused:
+            raise DoudouError(
+                "PAGE_ADAPTER_DRIFTED",
+                "The verified comment editor focus action did not focus the editor.",
+                {
+                    "component": self.name,
+                    "component_version": self.version,
+                    "capability": "video.comment.compose",
+                    "strategy": (
+                        "local comment editor -> dynamic mouse focus -> "
+                        "activeElement confirmation"
+                    ),
+                    "geometry_reason": "comment_editor_not_focused_after_action",
+                },
+            )
 
     async def composed_text(self, editor: Any) -> str:
         return await editor.evaluate(
@@ -503,7 +567,9 @@ class VideoCommentComposerComponent:
         )
 
     async def publish(self) -> int:
-        await (await self.send_control()).click()
+        await self.send_control()
+        editor = await self.editor()
+        await editor.press("Enter", timeout=5_000)
         return 1
 
     async def probe(self, exercised: bool) -> dict[str, Any]:
@@ -519,7 +585,7 @@ class VideoCommentComposerComponent:
 
 class CommentItemComponent:
     name = "video-comment-item"
-    version = "2026-08-03.1"
+    version = "2026-08-03.2"
     list_selector = '[data-e2e="comment-list"]'
     item_xpath = "xpath=ancestor::div[.//div[contains(@class,'comment-item-stats-container')] and .//span[normalize-space()='回复']][1]"
     stats_selector = ".comment-item-stats-container"
@@ -555,6 +621,47 @@ class CommentItemComponent:
                 },
             )
         return lists[0]
+
+    async def _scroll_toward_end(self, root: Any) -> dict[str, Any]:
+        return await root.evaluate(
+            """element => {
+              const scrollable = node => {
+                const style = getComputedStyle(node);
+                return node.scrollHeight > node.clientHeight + 20
+                  && ['auto', 'scroll'].includes(style.overflowY);
+              };
+              const local = [element, ...element.querySelectorAll('div')]
+                .filter(scrollable);
+              const ancestors = [];
+              for (let node = element.parentElement; node; node = node.parentElement) {
+                if (scrollable(node)) ancestors.push(node);
+              }
+              const candidates = local.length ? local : ancestors;
+              if (candidates.length !== 1) {
+                return {
+                  resolved: false,
+                  reason: 'comment_scroll_root_not_unique',
+                  local_count: local.length,
+                  ancestor_count: ancestors.length,
+                };
+              }
+              const scroller = candidates[0];
+              const before = scroller.scrollTop;
+              scroller.scrollTop = Math.min(
+                scroller.scrollHeight,
+                before + Math.max(500, scroller.clientHeight * 0.8)
+              );
+              return {
+                resolved: true,
+                source: local.length ? 'local' : 'ancestor',
+                before,
+                after: scroller.scrollTop,
+                moved: scroller.scrollTop !== before,
+                client_height: scroller.clientHeight,
+                scroll_height: scroller.scrollHeight,
+              };
+            }"""
+        )
 
     async def target(
         self, text: str, author_name: str | None = None, attempts: int = 30
@@ -594,10 +701,24 @@ class CommentItemComponent:
                         "candidate_count": len(items),
                     },
                 )
-            moved = await root.evaluate(
-                "element => { const scroller = [element, ...element.querySelectorAll('div')].find(node => node.scrollHeight > node.clientHeight + 20); if (!scroller) return false; const before=scroller.scrollTop; scroller.scrollBy(0, Math.max(500, scroller.clientHeight * 0.8)); return scroller.scrollTop !== before; }"
-            )
-            if not moved:
+            scroll = await self._scroll_toward_end(root)
+            if not scroll.get("resolved"):
+                raise DoudouError(
+                    "PAGE_ADAPTER_DRIFTED",
+                    "The video comment scroll root is not uniquely resolved.",
+                    {
+                        "component": self.name,
+                        "component_version": self.version,
+                        "capability": "video.comment.target",
+                        "strategy": (
+                            "comment-list -> unique local or containing scroll root"
+                        ),
+                        "geometry_reason": scroll.get("reason"),
+                        "local_count": scroll.get("local_count"),
+                        "ancestor_count": scroll.get("ancestor_count"),
+                    },
+                )
+            if not scroll.get("moved"):
                 break
             await self.page.wait_for_timeout(350)
         raise DoudouError(
@@ -623,7 +744,41 @@ class CommentItemComponent:
             scope=item,
         )
         await action.click()
-        return 1
+        containers = item.locator(VideoCommentComposerComponent.container_selector)
+        for _ in range(50):
+            visible = await visible_candidates(containers)
+            if len(visible) == 1:
+                await require_target(
+                    containers,
+                    component=self.name,
+                    version=self.version,
+                    capability="video.comment.reply",
+                    strategy=(
+                        "confirmed comment item -> local reply action -> "
+                        "local reply composer"
+                    ),
+                    scope=item,
+                )
+                return 1
+            if len(visible) > 1:
+                break
+            await self.page.wait_for_timeout(100)
+        raise DoudouError(
+            "PAGE_ADAPTER_DRIFTED",
+            "The confirmed comment did not expose one local reply composer.",
+            {
+                "component": self.name,
+                "component_version": self.version,
+                "capability": "video.comment.reply",
+                "strategy": (
+                    "confirmed comment item -> local reply action -> "
+                    "local reply composer"
+                ),
+                "candidate_count": min(await containers.count(), 40),
+                "visible_count": len(await visible_candidates(containers)),
+                "geometry_reason": "reply_composer_not_unique",
+            },
+        )
 
     async def like_control(self, item: Any, count: int) -> Any:
         stats = await require_target(

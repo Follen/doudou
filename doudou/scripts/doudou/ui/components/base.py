@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 from collections.abc import Awaitable, Callable
 from typing import Any, Literal
 
@@ -42,6 +43,103 @@ def _valid_box(box: Any) -> bool:
         and box.get("width", 0) > 0
         and box.get("height", 0) > 0
     )
+
+
+def _box_delta(first: dict[str, float], second: dict[str, float]) -> float:
+    return max(abs(float(first[key]) - float(second[key])) for key in first)
+
+
+async def click_verified_target(
+    page: Any,
+    target: Any,
+    *,
+    component: str,
+    version: str,
+    capability: str,
+    strategy: str,
+    stability_tolerance: float = 1.0,
+    scroll_into_view: bool = True,
+) -> dict[str, Any]:
+    """Click a verified DOM target using its measured center, never fixed coordinates."""
+    try:
+        if scroll_into_view:
+            await target.scroll_into_view_if_needed(timeout=5_000)
+        first_box = await target.bounding_box()
+        await page.wait_for_timeout(100)
+        second_box = await target.bounding_box()
+    except Exception as error:
+        raise _drift(
+            "The page target could not be prepared for a normal mouse click.",
+            component=component,
+            version=version,
+            capability=capability,
+            strategy=strategy,
+            geometry_reason="target_actionability_failed",
+            cause_type=type(error).__name__,
+        ) from error
+    if not _valid_box(first_box) or not _valid_box(second_box):
+        raise _drift(
+            "The page target lost its usable geometry before the click.",
+            component=component,
+            version=version,
+            capability=capability,
+            strategy=strategy,
+            geometry_reason="target_box_missing_before_click",
+        )
+    delta = _box_delta(first_box, second_box)
+    if delta > stability_tolerance:
+        raise _drift(
+            "The page target was still moving before the click.",
+            component=component,
+            version=version,
+            capability=capability,
+            strategy=strategy,
+            geometry_reason="target_unstable",
+            box_delta=round(delta, 3),
+        )
+    hit = await target.evaluate(
+        """element => {
+          const rect = element.getBoundingClientRect();
+          const x = rect.left + rect.width / 2;
+          const y = rect.top + rect.height / 2;
+          const top = document.elementFromPoint(x, y);
+          const blocker = top && !element.contains(top) ? top : null;
+          return {
+            receives_events: Boolean(top && (top === element || element.contains(top))),
+            blocker: blocker ? {
+              tag: blocker.tagName,
+              class_name: String(blocker.className || '').slice(0, 160),
+            } : null,
+          };
+        }"""
+    )
+    if not hit.get("receives_events"):
+        raise _drift(
+            "The page target is covered and cannot receive the normal mouse click.",
+            component=component,
+            version=version,
+            capability=capability,
+            strategy=strategy,
+            geometry_reason="target_occluded",
+            blocker=hit.get("blocker"),
+        )
+    center_x = second_box["x"] + second_box["width"] / 2
+    center_y = second_box["y"] + second_box["height"] / 2
+    dispatch_completed = True
+    try:
+        async with asyncio.timeout(5):
+            await page.mouse.click(center_x, center_y)
+    except TimeoutError:
+        # Hidden headed Firefox can apply the input event without acknowledging the
+        # protocol command. Callers must decide success from their state postcondition.
+        dispatch_completed = False
+    return {
+        "stable": True,
+        "box_delta": round(delta, 3),
+        "receives_events": True,
+        "dispatch_completed": dispatch_completed,
+        "click_point": {"x": round(center_x, 3), "y": round(center_y, 3)},
+    }
 
 
 def _contains(scope: dict[str, float], target: dict[str, float], tolerance: int = 2) -> bool:

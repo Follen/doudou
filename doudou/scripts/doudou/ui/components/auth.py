@@ -9,7 +9,7 @@ from .base import require_target, resolution_probe, visible_candidates
 
 class AuthChallengeComponent:
     name = "auth-challenge"
-    version = "2026-08-02.1"
+    version = "2026-08-03.1"
     container_xpath = (
         "xpath=ancestor-or-self::*[@role='dialog' or contains(@class,'verify') "
         "or contains(@class,'captcha') or contains(@class,'login') "
@@ -59,7 +59,13 @@ class AuthChallengeComponent:
         return challenge, container
 
     async def detect(self) -> str | None:
-        for kind in ("sms_code", "slider", "qr_login", "generic_verification"):
+        for kind in (
+            "sms_code",
+            "slider",
+            "qr_login",
+            "passkey",
+            "generic_verification",
+        ):
             candidates = await visible_candidates(self.adapter.locator(self.page, kind))
             if not candidates:
                 continue
@@ -126,7 +132,13 @@ class AuthChallengeComponent:
 
     async def probe(self, exercised: bool = True) -> list[dict[str, Any]]:
         reports = []
-        for kind in ("sms_code", "slider", "qr_login", "generic_verification"):
+        for kind in (
+            "sms_code",
+            "slider",
+            "qr_login",
+            "passkey",
+            "generic_verification",
+        ):
             visible = bool(
                 exercised
                 and await visible_candidates(self.adapter.locator(self.page, kind))

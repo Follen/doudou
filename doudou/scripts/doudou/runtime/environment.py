@@ -12,7 +12,6 @@ from typing import Any
 
 from .camoufox_asset import browser_status
 from .home import browser_root, doudou_home
-from .platform.windows import WindowVisibilityGuard
 from .process import process_identity
 from .profile import (
     CAMOUFOX_BROWSER_VERSION,
@@ -79,7 +78,7 @@ def environment_package_version(python: Path, name: str) -> str | None:
 
 
 def launch_browser_probe(python: Path) -> dict[str, Any]:
-    headless = "'virtual'" if platform.system() == "Linux" else "False"
+    headless = "'virtual'" if platform.system() == "Linux" else "True"
     script = (
         "import asyncio,subprocess,sys\nfrom pathlib import Path\n"
         "from camoufox import multiversion,pkgman\nfrom camoufox.async_api import AsyncCamoufox\n"
@@ -100,8 +99,6 @@ def launch_browser_probe(python: Path) -> dict[str, Any]:
         "  page=await browser.new_page(); await page.goto('about:blank'); print(await page.title())\n"
         "asyncio.run(probe())"
     )
-    guard = WindowVisibilityGuard(os.getpid(), visible=False)
-    guard.start()
     try:
         process = subprocess.Popen(
             [str(python), "-c", script],
@@ -115,31 +112,11 @@ def launch_browser_probe(python: Path) -> dict[str, Any]:
         if "process" in locals() and process.poll() is None:
             process.kill()
         return {"passed": False, "error": type(error).__name__}
-    finally:
-        guard.stop()
     return {
         "passed": process.returncode == 0,
         "exit_code": process.returncode,
         "stderr_tail": stderr[-1000:] if process.returncode else "",
-        "window_guard": {
-            "events_seen": guard.events_seen,
-            "hidden_before_show": guard.windows_hidden_before_show,
-            "create_events_seen": guard.create_events_seen,
-            "show_events_seen": guard.show_events_seen,
-            "show_events_prepared": guard.show_events_prepared,
-            "show_events_unprepared": guard.show_events_unprepared,
-            "max_callback_latency_ms": guard.max_callback_latency_ms,
-            "job_filter_active": guard.job_filter_active,
-            "window_events": list(guard.window_events),
-            "startup_worker_ready": guard.startup_worker_ready,
-            "startup_worker_max_callback_latency_ms": (
-                guard.startup_worker_max_callback_latency_ms
-            ),
-            "startup_worker_events": list(guard.startup_worker_events),
-            "startup_worker_poll_events": list(
-                guard.startup_worker_poll_events
-            ),
-        },
+        "mode": platform_background_mode(),
     }
 
 
@@ -277,7 +254,7 @@ def doctor(data_root: Path, launch_probe: bool = False) -> dict[str, Any]:
         },
         "browser": browser,
         "setup": setup_download_status(),
-        "background_headed": launch,
+        "browser_runtime": launch,
         "filesystem": {
             "data_root": str(data_root),
             "writable": writable,

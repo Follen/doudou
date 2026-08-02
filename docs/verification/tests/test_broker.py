@@ -33,6 +33,122 @@ class BrokerTests(unittest.TestCase):
         self.assertEqual(command_timeout_seconds("video.collect", {}), 900.0)
         self.assertEqual(command_timeout_seconds("messages.collect", {}), 90.0)
 
+    def test_windows_background_mode_is_true_headless(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            _, paths = create_profile(Path(directory), "work")
+            with patch(
+                "doudou.runtime.browser.session.platform_background_mode",
+                return_value="windows_headless",
+            ):
+                browser = BrowserSession(paths)
+        self.assertEqual(browser.mode, "windows_headless")
+        self.assertIs(browser._headless_setting(False), True)
+        self.assertIs(browser._headless_setting(True), False)
+
+    def test_linux_background_mode_keeps_virtual_headed(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            _, paths = create_profile(Path(directory), "work")
+            with patch(
+                "doudou.runtime.browser.session.platform_background_mode",
+                return_value="linux_virtual_headed",
+            ):
+                browser = BrowserSession(paths)
+        self.assertEqual(browser.mode, "linux_virtual_headed")
+        self.assertEqual(browser._headless_setting(False), "virtual")
+
+    def test_page_user_info_response_batches_are_captured_for_identity_enrichment(
+        self,
+    ) -> None:
+        class Page:
+            def __init__(self) -> None:
+                self.callbacks = {}
+
+            def on(self, event: str, callback) -> None:
+                self.callbacks[event] = callback
+
+        class Response:
+            url = "https://www.douyin.com/aweme/v1/web/im/user/info/?signed=1"
+            status = 200
+
+            async def body(self) -> bytes:
+                return b'{"status_code":0,"data":[{"remark_name":"remark"}]}'
+
+        class Request:
+            url = "https://www.douyin.com/aweme/v1/web/im/user/info/?signed=1"
+            post_data_buffer = b""
+
+        with tempfile.TemporaryDirectory() as directory:
+            _, paths = create_profile(Path(directory), "work")
+
+            async def exercise() -> list[bytes]:
+                browser = BrowserSession(paths)
+                page = Page()
+                browser.page = page
+                browser._attach_im_capture()
+                page.callbacks["request"](Request())
+                page.callbacks["response"](Response())
+                await asyncio.sleep(0)
+                responses = await browser.captured_user_info_responses(0.1, 0)
+                endpoint = await browser.captured_user_info_endpoint(0.1)
+                self.assertEqual(endpoint, Request.url)
+                return responses
+
+            captured = asyncio.run(exercise())
+        self.assertEqual(
+            captured,
+            [b'{"status_code":0,"data":[{"remark_name":"remark"}]}'],
+        )
+
+    def test_takeover_restarts_context_instead_of_toggling_window_style(self) -> None:
+        class Page:
+            url = "https://www.douyin.com/chat"
+
+            def is_closed(self) -> bool:
+                return False
+
+        with tempfile.TemporaryDirectory() as directory:
+            _, paths = create_profile(Path(directory), "work")
+
+            async def exercise() -> tuple[list[str], dict, dict]:
+                browser = BrowserSession(paths)
+                browser.background_mode = "windows_headless"
+                browser.mode = "windows_headless"
+                browser.page = Page()
+                browser.context = object()
+                events: list[str] = []
+
+                async def close_context(*, cancel_background_tasks: bool) -> None:
+                    self.assertTrue(cancel_background_tasks)
+                    events.append("close")
+                    browser.page = None
+                    browser.context = None
+
+                async def launch_context(visible: bool) -> None:
+                    events.append("launch-headed" if visible else "launch-headless")
+                    browser.visible = visible
+                    browser.mode = (
+                        "headed_takeover" if visible else "windows_headless"
+                    )
+                    browser.page = Page()
+                    browser.context = object()
+                    browser.context_generation += 1
+
+                browser._close_context = close_context
+                browser._launch_context = launch_context
+                browser.open = AsyncMock(return_value={"url": Page.url})
+                headed = await browser.set_visible(True)
+                background = await browser.set_visible(False)
+                return events, headed, background
+
+            events, headed, background = asyncio.run(exercise())
+        self.assertEqual(
+            events,
+            ["close", "launch-headed", "close", "launch-headless"],
+        )
+        self.assertEqual(headed["mode"], "headed_takeover")
+        self.assertEqual(background["mode"], "windows_headless")
+        self.assertEqual(background["mode_transition_count"], 2)
+
     def test_commands_reuse_one_broker_and_idle_exit_cleans_runtime(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
@@ -157,7 +273,7 @@ class BrokerTests(unittest.TestCase):
             self.assertTrue(left_client.wait_stopped())
             self.assertTrue(right_client.wait_stopped())
 
-    def test_takeover_reuses_existing_fake_session_and_restores_hidden_mode(
+    def test_takeover_reuses_profile_and_restores_background_mode(
         self,
     ) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -258,6 +374,7 @@ class BrokerTests(unittest.TestCase):
             ("sms_code", True): "quick_login_sms",
             ("slider", False): "slider",
             ("qr_login", False): "qr_login",
+            ("passkey", False): "passkey",
             ("generic_verification", False): "generic_verification",
         }
         for (target, quick), expected in fixtures.items():
@@ -478,6 +595,32 @@ class BrokerTests(unittest.TestCase):
             self.assertFalse(finished)
             self.assertTrue(status["visible"])
             self.assertTrue(status["takeover"]["active"])
+
+    def test_takeover_does_not_close_when_challenge_disappears_before_login(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            _, paths = create_profile(Path(directory), "work")
+
+            async def exercise() -> tuple[bool, AsyncMock]:
+                browser = BrowserSession(paths, fake=False)
+                browser.takeover_active = True
+                browser._verification_kind = AsyncMock(return_value=None)
+                browser.classify_login = AsyncMock(
+                    return_value={
+                        "status": "login_required",
+                        "valid": False,
+                        "reason_code": "LOGIN_REQUIRED",
+                    }
+                )
+                browser._record_login_state = MagicMock()
+                browser.finish_takeover = AsyncMock()
+                finished = await browser.finalize_takeover_for_current_page()
+                return finished, browser.finish_takeover
+
+            finished, finish = asyncio.run(exercise())
+            self.assertFalse(finished)
+            finish.assert_not_awaited()
 
     def test_business_failure_after_login_still_finishes_takeover(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

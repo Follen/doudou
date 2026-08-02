@@ -173,6 +173,7 @@ def parser() -> argparse.ArgumentParser:
     page_doctor = commands.add_parser("page-doctor")
     _profile_argument(page_doctor)
     page_doctor.add_argument("--baseline", type=Path)
+    page_doctor.add_argument("--conversation")
     return root
 
 
@@ -438,7 +439,9 @@ def dispatch(args: argparse.Namespace, skill_root: Path) -> dict[str, Any]:
             "video.interaction.preview", {"operation": operation, "payload": payload}
         )["result"]
     if args.command == "page-doctor":
-        return client.request("page.doctor", {})["result"]
+        return client.request(
+            "page.doctor", {"conversation": args.conversation}
+        )["result"]
     raise DoudouError("UNKNOWN_COMMAND", "Unknown command.")
 
 

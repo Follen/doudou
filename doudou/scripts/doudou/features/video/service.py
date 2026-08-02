@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Any
 
 from ...common.errors import DoudouError
+from ...models.identity import IdentityCache
 from ...reads.video import collect_user_videos, collect_video, resolve_identity
 from ...runtime.browser.session import BrowserSession
 from ...storage.content import read_video_comments
@@ -85,6 +86,31 @@ async def _protocol_recheck(
     return verification
 
 
+def _stored_protocol_recheck(
+    data_root: Path,
+    profile: str,
+    operation: str,
+    plan: dict[str, Any],
+    result: dict[str, Any],
+) -> dict[str, Any]:
+    payload = plan["payload"]
+    comments = read_video_comments(data_root, profile, str(payload["aweme_id"]))
+    verification = verify_interaction_readback(
+        operation, payload, result, comments
+    )
+    verification.update(
+        {
+            "authoritative": False,
+            "source": "stored_protocol_snapshot",
+            "collected_comments": len(comments),
+            "reason": None
+            if verification["passed"]
+            else "stored_protocol_snapshot_did_not_include_the_new_comment",
+        }
+    )
+    return verification
+
+
 async def identity(
     session: BrowserSession, data_root: Path, profile: str, douyin_id: str
 ) -> dict[str, Any]:
@@ -94,7 +120,13 @@ async def identity(
 async def videos(
     session: BrowserSession, data_root: Path, profile: str, params: dict[str, Any]
 ) -> dict[str, Any]:
-    resolved = await resolve_identity(session, data_root, profile, params["douyin_id"])
+    cache = IdentityCache(data_root, profile)
+    cached_identity = cache.exact_unique_id(params["douyin_id"])
+    resolved = (
+        {"status": "cached", "identity": cached_identity}
+        if cached_identity is not None
+        else await resolve_identity(session, data_root, profile, params["douyin_id"])
+    )
     return await collect_user_videos(
         session,
         data_root,
@@ -177,39 +209,36 @@ async def execute_interaction(
             if operation == "video.comment.like"
             else comment_write(session, plan)
         )
-        readback = await _protocol_recheck(
-            session, data_root, profile, operation, plan, result
-        )
         if operation in {"video.comment.create", "video.comment.reply"}:
-            readback["authoritative"] = False
-            readback["reason"] = (
-                None
-                if readback["passed"]
-                else "ranked_comment_list_did_not_include_the_new_comment"
+            readback = _stored_protocol_recheck(
+                data_root, profile, operation, plan, result
             )
-        result.setdefault("verification", {})["protocol_recheck"] = readback
-        if operation == "video.comment.like" and not readback["passed"]:
+            result.setdefault("verification", {})["protocol_recheck"] = readback
             files = write_receipt(
                 data_root,
                 profile,
                 "video",
                 operation,
-                {"plan_id": plan["plan_id"], **result, "status": "unknown"},
+                {"plan_id": plan["plan_id"], **result},
             )
             receipt_written = True
             complete_plan(
-                data_root, profile, plan["plan_id"], "unknown", files["receipt"]
+                data_root, profile, plan["plan_id"], result["status"], files["receipt"]
             )
-            raise DoudouError(
-                "WRITE_RESULT_UNKNOWN",
-                "The page write succeeded but protocol read-back did not confirm it.",
-                {
-                    "write_started": True,
-                    "plan_id": plan["plan_id"],
-                    "receipt": files["receipt"],
-                    "protocol_recheck": readback,
-                },
-            )
+            return {**result, "files": files}
+        readback = await _protocol_recheck(
+            session, data_root, profile, operation, plan, result
+        )
+        readback.update(
+            {
+                "authoritative": False,
+                "source": "ranked_comment_protocol",
+                "reason": None
+                if readback["passed"]
+                else "ranked_comment_protocol_did_not_confirm_account_like_state",
+            }
+        )
+        result.setdefault("verification", {})["protocol_recheck"] = readback
         files = write_receipt(
             data_root,
             profile,

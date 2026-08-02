@@ -1,0 +1,36 @@
+{
+  "schema": "comet.native.transaction.v2",
+  "id": "b4895fa0-bed5-45df-8424-0f648db86004",
+  "kind": "archive",
+  "status": "committed",
+  "change": "default-headless-with-visible-auth-takeover",
+  "createdAt": "2026-08-02T22:47:55.458Z",
+  "preflightHash": "7b3ebd9fc388cecd085e1d369507a261ebf406ab873a1a5b04f89db58e33eba7",
+  "operations": [
+    {
+      "id": "spec-1-broker-auth-state",
+      "type": "write",
+      "target": "specs/broker-auth-state/spec.md",
+      "staged": "runtime/transactions/b4895fa0-bed5-45df-8424-0f648db86004/staged/specs/broker-auth-state/spec.md",
+      "backup": "runtime/transactions/b4895fa0-bed5-45df-8424-0f648db86004/backups/specs/broker-auth-state/spec.md",
+      "expectedTargetHash": "e935c5334a34f1f3b9cae5bb7aa42f903bbd522034165b63689c340c559c3245",
+      "stagedHash": "a97893ca73ad0dd8586811aaf94c9c07d257b0cc72599efd08a03434c2874bae"
+    },
+    {
+      "id": "spec-2-browser-runtime-lifecycle",
+      "type": "write",
+      "target": "specs/browser-runtime-lifecycle/spec.md",
+      "staged": "runtime/transactions/b4895fa0-bed5-45df-8424-0f648db86004/staged/specs/browser-runtime-lifecycle/spec.md",
+      "expectedTargetHash": null,
+      "stagedHash": "0c1d96e56f90b1f4a67f328bbcdbc310352df031e4fb7057130492b3c7dca5da"
+    },
+    {
+      "id": "archive-change",
+      "type": "move",
+      "source": "changes/default-headless-with-visible-auth-takeover",
+      "target": "archive/2026-08-02-default-headless-with-visible-auth-takeover",
+      "expectedSourceHash": "92dbc76cd33e82627ba3eb2533433795d4fa86d4a81503c3080c75b8203679b7",
+      "expectedTargetHash": null
+    }
+  ]
+}

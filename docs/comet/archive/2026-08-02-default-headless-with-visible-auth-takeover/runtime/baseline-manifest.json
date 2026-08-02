@@ -1,0 +1,877 @@
+{
+  "schema": "comet.native.content-snapshot.v1",
+  "origin": "change-created",
+  "capture": {
+    "provider": "git"
+  },
+  "createdAt": "2026-08-02T20:55:54.782Z",
+  "complete": true,
+  "limits": {
+    "maxFiles": 10000,
+    "maxFileBytes": 268435456,
+    "maxTotalBytes": 268435456,
+    "maxManifestBytes": 1048576,
+    "maxDurationMs": 60000
+  },
+  "policy": {
+    "schema": "comet.native.snapshot-policy.v1",
+    "include": [
+      "**/*"
+    ],
+    "exclude": [],
+    "hash": "cc34dce5671bc1aefad09b658911a71d0434a26a1fbb4d8ba10de57b316f1f2f"
+  },
+  "entries": [
+    {
+      "path": ".github/workflows/publish-npm.yml",
+      "hash": "995da4ee35323dc094711632522f6305d7c29da1a05b096db146a72ae5327827",
+      "size": 2914,
+      "type": "file",
+      "gitObjectId": "b91a2548b32b74985fc9cae7b089729e9ff556f1"
+    },
+    {
+      "path": ".gitignore",
+      "hash": "b2bf0af34d5e9ee8cafe7be267904854ce9418e12d9daf37f22df7ad701abd79",
+      "size": 248,
+      "type": "file",
+      "gitObjectId": "144544c9dcda55071a7955f2e372331851f628db"
+    },
+    {
+      "path": "AGENTS.md",
+      "hash": "d6cf9b12e9c95d756c3ef2f200b9421ab110180439863eadd3c919f6ff17ba8c",
+      "size": 5623,
+      "type": "file",
+      "gitObjectId": "42928717965a9e86836009ea4465961b324c7a4b"
+    },
+    {
+      "path": "docs/protobuf-message-fields.md",
+      "hash": "b41b6808406840c3837244c007bb8ea4033b09af1743519d28ac4ac6ae8207a0",
+      "size": 3287,
+      "type": "file",
+      "gitObjectId": "fb23a0be9b568749152cbad747aca0dc2ea5afcf"
+    },
+    {
+      "path": "docs/verification/camoufox-migration-20260802.md",
+      "hash": "11edcc99328e8f8ad05fe7313b0e2233d0e9f286795e80a1fd19c644c42e8e5a",
+      "size": 4124,
+      "type": "file",
+      "gitObjectId": "7065233532e39a4e808ba6031cf480944071a3c0"
+    },
+    {
+      "path": "docs/verification/requirements.in",
+      "hash": "187c5f79294e3129f8f7f90f561e55b37842fc8969cdd29f811a3c1eb5af3795",
+      "size": 37,
+      "type": "file",
+      "gitObjectId": "3b40c76a3b17a155ff58deab3c75228c4c784f4b"
+    },
+    {
+      "path": "docs/verification/tests/__init__.py",
+      "hash": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+      "size": 1,
+      "type": "file",
+      "gitObjectId": "8b137891791fe96927ad78e64b0aad7bded08bdc"
+    },
+    {
+      "path": "docs/verification/tests/test_architecture.py",
+      "hash": "89e8cad261f500d102900230fd1acb593b3cf610f542d6744bf696272dbe9b58",
+      "size": 4497,
+      "type": "file",
+      "gitObjectId": "d79e496926c08254e870811216b0a51902980d0a"
+    },
+    {
+      "path": "docs/verification/tests/test_batch.py",
+      "hash": "e218a56cdaed99e330717a1721f3feb96435b94de377af09daa7e2b921439721",
+      "size": 4656,
+      "type": "file",
+      "gitObjectId": "4cb9896afd13cc6e51d1d3fcb690f29f2d4060f4"
+    },
+    {
+      "path": "docs/verification/tests/test_broker_registration.py",
+      "hash": "81dd08c09358243fcac3c7e87485835817bcffdd1bf56fb2bff33517ad1b622d",
+      "size": 2477,
+      "type": "file",
+      "gitObjectId": "cf4d26c9002475d20a7fe333bf2584ddf3ee5c17"
+    },
+    {
+      "path": "docs/verification/tests/test_broker.py",
+      "hash": "37a7a5d128e1fb6f146abf2c612495fdfde29d7ff40aeb6add1e3d0a4d97af12",
+      "size": 34122,
+      "type": "file"
+    },
+    {
+      "path": "docs/verification/tests/test_cli_doctor.py",
+      "hash": "628c08f6f3610ba670400693e5be99db201a0642bb99713b3edffea73abf22c6",
+      "size": 1920,
+      "type": "file",
+      "gitObjectId": "4b689ebb50dc1d8c5eb713b9af1f4890ad2741ef"
+    },
+    {
+      "path": "docs/verification/tests/test_component_geometry.py",
+      "hash": "baa3838345fbec9376862c8974da4b3336cb1732191c0de6410c978ad831bae6",
+      "size": 15019,
+      "type": "file"
+    },
+    {
+      "path": "docs/verification/tests/test_core.py",
+      "hash": "5e04cf16aa328cbad0e80ac050150dca625d53989f6ac046374cd91d4e9da6a8",
+      "size": 1644,
+      "type": "file",
+      "gitObjectId": "14283449ec425e7a427ec80bd8958ca42a72e470"
+    },
+    {
+      "path": "docs/verification/tests/test_identity.py",
+      "hash": "b9178671228d24023daa5294e381db23f0389fcc77024facc1a7c394d8c30214",
+      "size": 5196,
+      "type": "file",
+      "gitObjectId": "077bfdc360a592db760076e2af07e19ea0ac50aa"
+    },
+    {
+      "path": "docs/verification/tests/test_profile.py",
+      "hash": "481395494178c3b8afa75dbcc960a3ddbf3815cea9d7294ea32e0eacac96958c",
+      "size": 5091,
+      "type": "file",
+      "gitObjectId": "f73b0a0bad0c60aa7be2ce19063d3b97fb34fe74"
+    },
+    {
+      "path": "docs/verification/tests/test_protocol_storage.py",
+      "hash": "b7006b0f762cf4603b341bd752da3dabb4ebed3b8e794bba9022bb1d7066cb2e",
+      "size": 21132,
+      "type": "file",
+      "gitObjectId": "096d8b80e6963de11e917fa544a006bf260f0e48"
+    },
+    {
+      "path": "docs/verification/tests/test_responses.py",
+      "hash": "8aa6ce5c8803dc21428e75de88f56937b9e3a9e5d9a41794c2da49e68a830a98",
+      "size": 5913,
+      "type": "file",
+      "gitObjectId": "7adb20930b1355e2dfb37d9b2c0f095afaea9d1a"
+    },
+    {
+      "path": "docs/verification/tests/test_runtime_home.py",
+      "hash": "af670fab82b6b8fa562664935c30ba205319146c7181d6c4e7c25c8ad2f562d3",
+      "size": 2884,
+      "type": "file",
+      "gitObjectId": "a17335e2dbb756a2280ccc5e7d882eebff91ab43"
+    },
+    {
+      "path": "docs/verification/tests/test_video_writes.py",
+      "hash": "99c1781fcec8aeb86b507c8b12f8bdd6679c0075a4ee8d55f00f601d1dd017fa",
+      "size": 7912,
+      "type": "file"
+    },
+    {
+      "path": "docs/verification/tests/test_web_plans_cli.py",
+      "hash": "e4890554f2ad302695ced57068ec6c27cb1f1aa5a4d16d6bf185aba55a2701a5",
+      "size": 4857,
+      "type": "file",
+      "gitObjectId": "87cf4768dddfc5c7dfbf4c6faf0b7c65f97e59bd"
+    },
+    {
+      "path": "docs/verification/tests/test_windows_process.py",
+      "hash": "27e0a722713300f17c1b824846e121546590a4b7b3196a25b096757d7e89e402",
+      "size": 5228,
+      "type": "file",
+      "gitObjectId": "58ba6991fdfc1986758f1fb6502c29a24acffa7a"
+    },
+    {
+      "path": "doudou/.gitignore",
+      "hash": "ef4a9428e189fe5e5729f5cd818ac3f49cc573f0e88891841d82b0d7605b3351",
+      "size": 175,
+      "type": "file",
+      "gitObjectId": "ee18d3372c4f79fcd74fdd0c3dc8c761b65bd09a"
+    },
+    {
+      "path": "doudou/agents/openai.yaml",
+      "hash": "27bd0d16f6c30de3511e3e70ee396298e8c42edaba7791c6e3f275aea21d5caf",
+      "size": 288,
+      "type": "file",
+      "gitObjectId": "a985e42a9f2510bb36d1c0541d73405fc79b154c"
+    },
+    {
+      "path": "doudou/references/cli.md",
+      "hash": "8fda12c285553a459d6f90feb228646a7e63e51170bbcfce4fd5757801fbc9fa",
+      "size": 3393,
+      "type": "file"
+    },
+    {
+      "path": "doudou/references/layout.md",
+      "hash": "e858ecf18bdfd1955d21ca257c1ea739214b0a4a0dcd243cdc7e21e3f7ac7eeb",
+      "size": 1879,
+      "type": "file",
+      "gitObjectId": "b7f861a987023a637a31bc7414c40a40d8b158e6"
+    },
+    {
+      "path": "doudou/references/protobuf-message-fields.md",
+      "hash": "733ecb63710e99c8d2b9cdf67257fe6e6a5f7a98d02ff48e7d925d171947e020",
+      "size": 5560,
+      "type": "file",
+      "gitObjectId": "cc162953d9673ff9febf1ec70c8ad5e840a4a416"
+    },
+    {
+      "path": "doudou/references/runtime.md",
+      "hash": "d2814d45992b47df571e806fcd30c5d22305aafd37e1e139158a517045fdac44",
+      "size": 5276,
+      "type": "file",
+      "gitObjectId": "5810d7006edcdee639011124de40ced32af9a92c"
+    },
+    {
+      "path": "doudou/scripts/doudou.py",
+      "hash": "1121176c47a5e3662b0f5263f75ea54fd95d2ffd4fad99ad1e552288869a98a9",
+      "size": 1002,
+      "type": "file",
+      "gitObjectId": "644cb89a09d0f3d7d91de5db5b783f0d87880696"
+    },
+    {
+      "path": "doudou/scripts/doudou/__init__.py",
+      "hash": "bddc0ea02b58af231c34a33bd32f724fabcbfd8808ca5be4d92280095c604110",
+      "size": 56,
+      "type": "file",
+      "gitObjectId": "fc2ddabe369018737bec98c0a9e376f8daa4f6be"
+    },
+    {
+      "path": "doudou/scripts/doudou/cli.py",
+      "hash": "7c3984b863b189d8d382d5295a290b3e191c34a80bb2b916764eea022e889350",
+      "size": 18655,
+      "type": "file"
+    },
+    {
+      "path": "doudou/scripts/doudou/common/__init__.py",
+      "hash": "7ada3dd5ecdbb89701ed78aaec1cc423eed68cf5f46b625d4229d8dc13c5a858",
+      "size": 55,
+      "type": "file",
+      "gitObjectId": "25557d817568d6e16587639df7715ead6ccd8bc0"
+    },
+    {
+      "path": "doudou/scripts/doudou/common/core.py",
+      "hash": "9afaeaee3b23d3547dbb5bbdb43c43e05d2a4f6905de1bb2e0296110cf3f0352",
+      "size": 4404,
+      "type": "file",
+      "gitObjectId": "7f315a349f8672b1320a3319135c90ca08dd485f"
+    },
+    {
+      "path": "doudou/scripts/doudou/common/errors.py",
+      "hash": "0eceafcaab5e2f97de3aad74fc1578717a795b29f79f2c7dc04d49c910a060a3",
+      "size": 697,
+      "type": "file",
+      "gitObjectId": "ce6c725952012fc714de3a47d8f901b16fb06196"
+    },
+    {
+      "path": "doudou/scripts/doudou/features/__init__.py",
+      "hash": "a648bbfd19594efc46fc936c82f05d4f35d187e0874b9dd3e1dd6efad83e620d",
+      "size": 61,
+      "type": "file",
+      "gitObjectId": "452917676de8fac545a5a5d5b4e988e43edda50c"
+    },
+    {
+      "path": "doudou/scripts/doudou/features/broker.py",
+      "hash": "a0bd3436fe67780968dff40c5b79d85beb00106d91b2b85c6912b88a2d45185a",
+      "size": 3487,
+      "type": "file",
+      "gitObjectId": "0883f7646bc87e2c93dee075f26ff0fe80c259d8"
+    },
+    {
+      "path": "doudou/scripts/doudou/features/chat/__init__.py",
+      "hash": "ef71db2bafe114b519d367856ea80f6561ec000c3a5b1e3ade4978f32ca1db6b",
+      "size": 59,
+      "type": "file",
+      "gitObjectId": "ef7abe522ae5c72b195642122b4a54d2c0fd193d"
+    },
+    {
+      "path": "doudou/scripts/doudou/features/chat/service.py",
+      "hash": "d53ae96c47d0872ad304cdfaef0003e33cfa64fe4a875ae2b8c38421458a8291",
+      "size": 16901,
+      "type": "file",
+      "gitObjectId": "c620884b4ed2947c7dfebc54f8ffca005b4d4b15"
+    },
+    {
+      "path": "doudou/scripts/doudou/features/diagnostics.py",
+      "hash": "95ef41771c8693cd803e435a8475dc33ec3ff827135566370929767a3a2bc3de",
+      "size": 10596,
+      "type": "file"
+    },
+    {
+      "path": "doudou/scripts/doudou/features/video/__init__.py",
+      "hash": "4c22ac7342ca65074dc4619def5292b3a805245e2767793279c78ad676c6f7be",
+      "size": 68,
+      "type": "file",
+      "gitObjectId": "25edebdac59a9d9e084b775ed99184f1ad165e9d"
+    },
+    {
+      "path": "doudou/scripts/doudou/features/video/service.py",
+      "hash": "3658e34160fe64db7e19b1ea0e2d99b521f42ad803a79a185cf7a41f866678ac",
+      "size": 8973,
+      "type": "file"
+    },
+    {
+      "path": "doudou/scripts/doudou/models/__init__.py",
+      "hash": "18bcc25569d019b3fa96bba356d363f52359d36431399eb6d0008eae68acc5de",
+      "size": 54,
+      "type": "file",
+      "gitObjectId": "11276557503a6aa1a6f5507857122dcf40f25312"
+    },
+    {
+      "path": "doudou/scripts/doudou/models/identity.py",
+      "hash": "552b9949ad993954b7e93c9e6e4722e24776425078dba6bf28e07541183a938b",
+      "size": 9393,
+      "type": "file",
+      "gitObjectId": "c00a4fa36f9b151f3f02f66dd8d64f99da0a9784"
+    },
+    {
+      "path": "doudou/scripts/doudou/models/records.py",
+      "hash": "491f72ec13f19c47db768811a108e89162db609645bc37129d1f60bab4e5b0d0",
+      "size": 981,
+      "type": "file",
+      "gitObjectId": "8d5605cb45b2a05ee1a66ea8366f631a2d9af63f"
+    },
+    {
+      "path": "doudou/scripts/doudou/models/resolver.py",
+      "hash": "40f795a9d1f115666260fa3bda7971d643aeeae490a2ca121ea9822b78e122ba",
+      "size": 4118,
+      "type": "file",
+      "gitObjectId": "e192e7d518c6d99a654028c536a7130b543b3661"
+    },
+    {
+      "path": "doudou/scripts/doudou/protocol/__init__.py",
+      "hash": "a119b351dedd5dd5709278ac50eff131ffcf92bbaea994a1144adfe05a95919c",
+      "size": 59,
+      "type": "file",
+      "gitObjectId": "254f1390f339b12fa26b92f94f1a2cfb9728020b"
+    },
+    {
+      "path": "doudou/scripts/doudou/protocol/contracts.py",
+      "hash": "5ab00e190ccb168caad587c5c27183ce26696a929bde1eb65f2b3efeac2c127d",
+      "size": 2254,
+      "type": "file",
+      "gitObjectId": "345d52a3b3220b4370b7cf9ac7c0a9690386b3dc"
+    },
+    {
+      "path": "doudou/scripts/doudou/protocol/im.py",
+      "hash": "a336af0d8070ab6b7e8f80eb36dbcbe667beef0c7aba8235cf1d816d0bd7c2c7",
+      "size": 17789,
+      "type": "file",
+      "gitObjectId": "7154c8166f617acd9ae424ea660d9bde080180e7"
+    },
+    {
+      "path": "doudou/scripts/doudou/protocol/protobuf.py",
+      "hash": "066245b2e2a9f09603ab525c00f432fea7ba2a94c93da718501a6528561ff10e",
+      "size": 3576,
+      "type": "file",
+      "gitObjectId": "cf2ae25d8be1811a076c1882fd8e5993ff5b6971"
+    },
+    {
+      "path": "doudou/scripts/doudou/protocol/responses.py",
+      "hash": "c2602adcb55831733f578a3ed87556d2282ecddea78a0d1141dee10f5da0b633",
+      "size": 3833,
+      "type": "file",
+      "gitObjectId": "eed893126a7087e4ba5493a5e9edfea7b24835e7"
+    },
+    {
+      "path": "doudou/scripts/doudou/protocol/web.py",
+      "hash": "8da72ba7a3a101cafa7a51a7770bf29c9dbdfee280a283794d400f8c6640c238",
+      "size": 5355,
+      "type": "file",
+      "gitObjectId": "eac073c72ab7f18bb0e5d85a90e6849cb987a713"
+    },
+    {
+      "path": "doudou/scripts/doudou/protocol/write_responses.py",
+      "hash": "32244cf51974d36484c9f13b2d6c32a317610d2ada4884f26325f1083e990ede",
+      "size": 4226,
+      "type": "file",
+      "gitObjectId": "1e3f560ecf74b0fa4b3712d2309293ebe4f7210d"
+    },
+    {
+      "path": "doudou/scripts/doudou/reads/__init__.py",
+      "hash": "56a1f7a9a70fa08813a147303a1f8a401a84c9b1bce4ecf81d19824a888ba1f2",
+      "size": 36,
+      "type": "file",
+      "gitObjectId": "88330edc464946d6460d282e8a06042e9b2a1741"
+    },
+    {
+      "path": "doudou/scripts/doudou/reads/chat.py",
+      "hash": "98ca090e285a7ab0e9beea3bef0a7ad8ec52a6adaab9ebe92ba9e592004b1aea",
+      "size": 17083,
+      "type": "file",
+      "gitObjectId": "425db7ce5a7d20fd89f59cdab2b2d190d5a35f80"
+    },
+    {
+      "path": "doudou/scripts/doudou/reads/transport.py",
+      "hash": "8d6cf8482378652f4ea6c607a9d5e03683de863e6049105959b341f7d0359333",
+      "size": 2143,
+      "type": "file",
+      "gitObjectId": "b899b249c2afe4784a039e6b6d2ff5a5b3dd84d9"
+    },
+    {
+      "path": "doudou/scripts/doudou/reads/video.py",
+      "hash": "69cb48f027442cd220836cdc73be926e02c13fd97758bbe2e4ba2e495320c0a3",
+      "size": 26406,
+      "type": "file",
+      "gitObjectId": "569d657f24f861429eb9b8216db5138b3995ef30"
+    },
+    {
+      "path": "doudou/scripts/doudou/runtime/__init__.py",
+      "hash": "e3381a79138d4645276b6446d9e207bcfda147c973c6ad62cb1779eb8c5f1e0d",
+      "size": 59,
+      "type": "file",
+      "gitObjectId": "414ff09662a3b8ae6d39151c1dbb80539560ec4c"
+    },
+    {
+      "path": "doudou/scripts/doudou/runtime/broker/__init__.py",
+      "hash": "8f5982c4d18e57d900a7641427cfde85f62b4f8c71d3c19525b53c724d46282e",
+      "size": 64,
+      "type": "file",
+      "gitObjectId": "419f8def47e01215e4a8b262a44429e67076986c"
+    },
+    {
+      "path": "doudou/scripts/doudou/runtime/broker/client.py",
+      "hash": "49b4aaaf6c8aeb9214dcce9711aefa297a7583ec9da732e6231b94b360295424",
+      "size": 12129,
+      "type": "file",
+      "gitObjectId": "1ef806b46247edd9eff6f9dedacb90cedc44acd4"
+    },
+    {
+      "path": "doudou/scripts/doudou/runtime/broker/registration.py",
+      "hash": "8eaa9acd9c2f0576102ddf576075806d98be4daecfdcd76cb5f2da35ce49cf1d",
+      "size": 1516,
+      "type": "file",
+      "gitObjectId": "dbcc33293d57ab3e4115b8be83e766f4400c8439"
+    },
+    {
+      "path": "doudou/scripts/doudou/runtime/broker/server.py",
+      "hash": "f02c2f5c166d2decb5fa2ec3d246c859474487dccc9205a33dd20f722e6ba3a5",
+      "size": 19177,
+      "type": "file",
+      "gitObjectId": "f59fa7a0f54ffdc5a9a2dd203918a6bea430bc3e"
+    },
+    {
+      "path": "doudou/scripts/doudou/runtime/browser/__init__.py",
+      "hash": "29a0da985768c585fc32a0262be34eb1e2e4eac11f1b5a23b83bcff1de22c4c5",
+      "size": 56,
+      "type": "file",
+      "gitObjectId": "030106f8bec1c199ba52f0ab2fdc99dea7b4f9a0"
+    },
+    {
+      "path": "doudou/scripts/doudou/runtime/browser/session.py",
+      "hash": "c3c5bfb416f8c8f2f96c8b3ba329a910923c206d221ce4ed449c40f0065d8b1a",
+      "size": 34815,
+      "type": "file"
+    },
+    {
+      "path": "doudou/scripts/doudou/runtime/camoufox_asset.py",
+      "hash": "a091ab378225af6e24bc1fd32542684d3a26586c62c461a7501b2e5260617c11",
+      "size": 5241,
+      "type": "file",
+      "gitObjectId": "aa731fef7777d53fbf17b504667cba0c2b757122"
+    },
+    {
+      "path": "doudou/scripts/doudou/runtime/environment.py",
+      "hash": "b0eb9517a33f19985ec48888d2e99e194cda721c78b482571e008ad1e96b128e",
+      "size": 12215,
+      "type": "file",
+      "gitObjectId": "9b5ded14717eef1fd86224701eb9b3dfcf1e7224"
+    },
+    {
+      "path": "doudou/scripts/doudou/runtime/home.py",
+      "hash": "c1d7335769ee8b24adfd67450a8d5c0354860afa89debeb46dbfa9952d0dc642",
+      "size": 434,
+      "type": "file",
+      "gitObjectId": "7303443b86d82505253444bd10b57b1996595051"
+    },
+    {
+      "path": "doudou/scripts/doudou/runtime/lock.py",
+      "hash": "3019b94d52dcf60d8bdf8d3b9339e42dd78998eea8c05eb89948b08dfb0feade",
+      "size": 3330,
+      "type": "file",
+      "gitObjectId": "670dd19a77a16bac1f8aba38966d02afbf80b1b7"
+    },
+    {
+      "path": "doudou/scripts/doudou/runtime/paths.py",
+      "hash": "a1f270abcc1c66026319acbede04d21102a42d66c79d2abfd795260767d69e2f",
+      "size": 2624,
+      "type": "file",
+      "gitObjectId": "75329d30815ebdb0a8ffa576ca9e5da226381561"
+    },
+    {
+      "path": "doudou/scripts/doudou/runtime/platform/__init__.py",
+      "hash": "47168cde9252b5c238ed8583f6058a5c40e773e60f79a0de6426d263889008b6",
+      "size": 55,
+      "type": "file",
+      "gitObjectId": "5033e90c447f652052efd1e824482e22b254b99f"
+    },
+    {
+      "path": "doudou/scripts/doudou/runtime/platform/windows_guard_worker.py",
+      "hash": "afdab31f848c1fc7f4cf40428e14e50e2595fc588e065627af7115881d7ba965",
+      "size": 7000,
+      "type": "file",
+      "gitObjectId": "83ebc6fc79ba55e79f1067188dc6b74acb497576"
+    },
+    {
+      "path": "doudou/scripts/doudou/runtime/platform/windows.py",
+      "hash": "d97edb0e45d6ae7c04bec8a4eb9c121444e649a8f8b85bcfafff38896c724b1d",
+      "size": 23890,
+      "type": "file",
+      "gitObjectId": "f2615872303ed21485b24cb613be29a792bff224"
+    },
+    {
+      "path": "doudou/scripts/doudou/runtime/process.py",
+      "hash": "b902d9e05a99c0040f08434ade8581ce688b46243bdeb23b5350d6f16b7333ca",
+      "size": 2406,
+      "type": "file",
+      "gitObjectId": "0dcb7e54362b1d6001041bfdc8206f58291f2aff"
+    },
+    {
+      "path": "doudou/scripts/doudou/runtime/profile.py",
+      "hash": "8eae76a1acc3bb6486d816b371605fac1bf81c5ab55a61dadf87465d11b5e633",
+      "size": 9499,
+      "type": "file",
+      "gitObjectId": "f60ab378e524d7f12f5d4f1bde6b92a4115bd4bc"
+    },
+    {
+      "path": "doudou/scripts/doudou/storage/__init__.py",
+      "hash": "52ea032c37e10d36d03eaacc5b18aed5c8e3a865bb56c061ce7bff81df890080",
+      "size": 59,
+      "type": "file",
+      "gitObjectId": "ada7c24d37f71342a147c8b431a9b5760a9917bb"
+    },
+    {
+      "path": "doudou/scripts/doudou/storage/content.py",
+      "hash": "7e0bf59f004f19eb87a19822da959f1e37f987aa358d308885b206f79bdc350b",
+      "size": 5712,
+      "type": "file",
+      "gitObjectId": "f21348f6a80db5c1eef04163d9e07663c8658498"
+    },
+    {
+      "path": "doudou/scripts/doudou/storage/identity_migration.py",
+      "hash": "76305765c58103132d95189ce3362aae5b3cc2dcbda7c89ecddbc97ef6bf0b93",
+      "size": 2143,
+      "type": "file",
+      "gitObjectId": "7a11b262f615d1f2438b9c985b686b2f25853cec"
+    },
+    {
+      "path": "doudou/scripts/doudou/storage/media.py",
+      "hash": "382ed00f1ffdb906cd73a681ca43a8550d21a22514fdfaf053b7e25ae6936b75",
+      "size": 4883,
+      "type": "file",
+      "gitObjectId": "f8a2760253c1561e5716e32eb033ddb3306c68c9"
+    },
+    {
+      "path": "doudou/scripts/doudou/storage/repository.py",
+      "hash": "46d319e051e352c4131d2fb3924b30a97cb3b693359fa969c0f4ce16746e903d",
+      "size": 8553,
+      "type": "file",
+      "gitObjectId": "282c92a57443b3c7111f88a96107b800b45f448d"
+    },
+    {
+      "path": "doudou/scripts/doudou/ui/__init__.py",
+      "hash": "55da96c6fc11202f59d01b4abfa2b730698b26d38cf9ee2b9636915ab87a05ea",
+      "size": 45,
+      "type": "file",
+      "gitObjectId": "e94b24753dc15571a8fad015bfca496aee500def"
+    },
+    {
+      "path": "doudou/scripts/doudou/ui/adapters.py",
+      "hash": "97b1140255b2170ebbca51feee030e63abb987d00bb3c9d7b6b1e71c4a811831",
+      "size": 4781,
+      "type": "file",
+      "gitObjectId": "b65b684e39c9c67f2147d41f8b37e855746ef550"
+    },
+    {
+      "path": "doudou/scripts/doudou/ui/chat.py",
+      "hash": "da1c9424490070b0b18ad458ccea77932d59c4323a56cce5062e0c3a8842bc70",
+      "size": 11904,
+      "type": "file",
+      "gitObjectId": "f4ca5998f2c24852f7763e6b3868f56700a2a354"
+    },
+    {
+      "path": "doudou/scripts/doudou/ui/common.py",
+      "hash": "c04fb5e5efa936f89a17330d876f8a51e45fa312495270d36064758be544d57d",
+      "size": 3273,
+      "type": "file",
+      "gitObjectId": "eca7f91b0761bee406b8f44578f919570f2031e1"
+    },
+    {
+      "path": "doudou/scripts/doudou/ui/components/__init__.py",
+      "hash": "23b4057fe6c6fa91797e320ad34f75729a050fdc37ec14a41e373310c6fae308",
+      "size": 733,
+      "type": "file",
+      "gitObjectId": "1619e8896b74fb164549d143663bd1a397eedb30"
+    },
+    {
+      "path": "doudou/scripts/doudou/ui/components/auth.py",
+      "hash": "7d263d2f844d19b0fa1fa735959d9ce32dea9e631be2ff9747ca17f5cc70f628",
+      "size": 6071,
+      "type": "file",
+      "gitObjectId": "7a5cbab045fd10c211778dcbfc1cd5785ae24f08"
+    },
+    {
+      "path": "doudou/scripts/doudou/ui/components/base.py",
+      "hash": "3df0d6f6c2c2ff69f4af1bf36390db5dd2a789bf82f89b5688030d1d83f2465d",
+      "size": 16185,
+      "type": "file"
+    },
+    {
+      "path": "doudou/scripts/doudou/ui/components/chat.py",
+      "hash": "0307122f28ec10969ffa68d6f29abe6d9580b4f70e3e5cc30ac694eed6a0514e",
+      "size": 21239,
+      "type": "file"
+    },
+    {
+      "path": "doudou/scripts/doudou/ui/components/video.py",
+      "hash": "b6f7d941434b69df7b87653706379fe5a92ca124d7b48b8cde2d95d6a26b61d7",
+      "size": 28994,
+      "type": "file"
+    },
+    {
+      "path": "doudou/scripts/doudou/ui/video.py",
+      "hash": "d76f985ebc0096110e9e211eb50b05b00e44ea0be59d18d626b84cb714e3705b",
+      "size": 7063,
+      "type": "file",
+      "gitObjectId": "2208fa0e95c0262d273125a18c28514318bc8c79"
+    },
+    {
+      "path": "doudou/scripts/doudou/writes/__init__.py",
+      "hash": "50e7ab6749b7a02e12295f7dc813dfef1352f3e8223e1e5a1b1f72a363110391",
+      "size": 56,
+      "type": "file",
+      "gitObjectId": "7b76b38a74382e72dafde62ae943467242093927"
+    },
+    {
+      "path": "doudou/scripts/doudou/writes/plans.py",
+      "hash": "0b9ccaf8738ff5694d12adbd17f41b0094706efa435fa11d4190710e25689886",
+      "size": 3921,
+      "type": "file",
+      "gitObjectId": "119847d39f31b900b9ebfe619eeb1401d8cf6d49"
+    },
+    {
+      "path": "doudou/scripts/doudou/writes/receipts.py",
+      "hash": "4cb436355380ec3ec6ae3c0ef0a8326998242ab6b69fe196a128b17a22704c94",
+      "size": 1352,
+      "type": "file",
+      "gitObjectId": "f7b40b1ff9df2aa2669552f25639dbd886c37bc6"
+    },
+    {
+      "path": "doudou/scripts/requirements.lock",
+      "hash": "b0126b047855c84519deb053000e8ba49497386c0a3dfa4f2bc4c455f5b7cdd2",
+      "size": 68035,
+      "type": "file",
+      "gitObjectId": "61e4b3d339f839179cd0e7b392203206098875c6"
+    },
+    {
+      "path": "doudou/scripts/runtime-manifest.json",
+      "hash": "ac32b2f25c91c37dbfb4f36ae833d0411606e8a9389521b18fa8343fb3959c48",
+      "size": 1754,
+      "type": "file",
+      "gitObjectId": "28f579b9adfc02ae6827f12877882811d6f08a78"
+    },
+    {
+      "path": "doudou/SKILL.md",
+      "hash": "5592e46b311d1f84937ea1d74bc16618aa7d1efd8eea8705989883ef2de19462",
+      "size": 5106,
+      "type": "file",
+      "gitObjectId": "8f02af3d2ee1236a3ca1b246aca9d77e4386c209"
+    },
+    {
+      "path": "npm/bin/doudou.mjs",
+      "hash": "952f4e8884f46444c758e5d63b108126cf50f186c7bfd0ea336fdd8bbda5fcc4",
+      "size": 4209,
+      "type": "file",
+      "gitObjectId": "f88a43a0dc0c7e4c18af31a34245b1d1f6237f7b"
+    },
+    {
+      "path": "npm/lib/controlled-download.mjs",
+      "hash": "cfb3375867ba5335234966427a3e054e1eef2545e519294e8e2799c71c6a1c04",
+      "size": 11755,
+      "type": "file",
+      "gitObjectId": "31e7a2fea845443a684fe7909329e2bc6b2bc8e2"
+    },
+    {
+      "path": "npm/lib/managed-install.mjs",
+      "hash": "9e9a6555255ab2061f41fdbf5c9483d69d8b63ae6bba6426ef1bf1241d97e976",
+      "size": 2694,
+      "type": "file",
+      "gitObjectId": "c9a8a8e7503391de9156ae31e40a321f9d90f36b"
+    },
+    {
+      "path": "npm/lib/options.mjs",
+      "hash": "3cd024a7e6f41705767b13d16d7e73d3b4351e484346738feb92dc7bdd1e97f6",
+      "size": 1750,
+      "type": "file",
+      "gitObjectId": "521307204734bc17167900f3e5b5590ff60914fb"
+    },
+    {
+      "path": "npm/lib/python.mjs",
+      "hash": "d56c717e623f858dd36396bf934e5781edcccfe56f8f69cc71367f9758244ec1",
+      "size": 1800,
+      "type": "file",
+      "gitObjectId": "39b8fe3aa3b438c65893f1aa38e6030a0b0cb236"
+    },
+    {
+      "path": "npm/lib/runtime-setup.mjs",
+      "hash": "16e59d7ef01c154bc7a5712e29c02999d2913c09431bc90d0cf8f16724fbb504",
+      "size": 21580,
+      "type": "file",
+      "gitObjectId": "14d83cab0aea11277e1e503c2fc5ba57a67a9d51"
+    },
+    {
+      "path": "npm/lib/self-remove.mjs",
+      "hash": "3c2f929697456380191b88189066148b32e3497d215dc5f9d0d7d76d9fcd77a3",
+      "size": 2588,
+      "type": "file",
+      "gitObjectId": "006b3f735f94b32070289a9031f9261fad0b8aca"
+    },
+    {
+      "path": "npm/lib/skill-installer.mjs",
+      "hash": "9a707d94d1f5838272e07b749d88fff8b75f06f880ef14883cbfa43e14521511",
+      "size": 7780,
+      "type": "file",
+      "gitObjectId": "f85b3a600b24e55e70784458c0d095d980fb7d71"
+    },
+    {
+      "path": "npm/lib/uninstall.mjs",
+      "hash": "2ae89d495ea9fb8868e65bdc0cf91c78737f760308cf62fa8a9ffad42d27cd27",
+      "size": 11796,
+      "type": "file",
+      "gitObjectId": "7d5e83e06b400cdd99ed5676ac839c7c959b3797"
+    },
+    {
+      "path": "npm/lib/update.mjs",
+      "hash": "e6258add5d82a5b948783d2d93ce306c32538dd90332176ac99b11e8cc93a393",
+      "size": 6179,
+      "type": "file",
+      "gitObjectId": "1cd611ecfef26ea9805da99cc5770dbb14ac5d94"
+    },
+    {
+      "path": "npm/postinstall.mjs",
+      "hash": "424a96fc9910f7194ff2b4e046f4550eeff6a774eb1c6dff4d123692b755b96e",
+      "size": 685,
+      "type": "file",
+      "gitObjectId": "507aa85e4c51552514e1f2f812085d27c6d9199d"
+    },
+    {
+      "path": "npm/scripts/build-skill-manifest.mjs",
+      "hash": "46f11b70cb031febb2f1095dcc76b518aacd6e129b0099e9915e57b4a35dcdc4",
+      "size": 3460,
+      "type": "file",
+      "gitObjectId": "7822a26e788abc4046b28a01ebe99e42e9b304a5"
+    },
+    {
+      "path": "npm/scripts/check-release-version.mjs",
+      "hash": "372bfceeee566c814c9362267488c25b3976abf380b336d26ac5ae32636c51c5",
+      "size": 955,
+      "type": "file",
+      "gitObjectId": "a144e5a6c5ac226ce88e4263db791890086a39b0"
+    },
+    {
+      "path": "npm/scripts/run-node-tests.mjs",
+      "hash": "74d6766005bc3c147a63fbdc83461516f8596998f773693769b748b8dc51ec9f",
+      "size": 738,
+      "type": "file",
+      "gitObjectId": "c282eee046b000d3cf2a1cca9f09a678336e229e"
+    },
+    {
+      "path": "npm/scripts/test-install.mjs",
+      "hash": "a581f19eb6d8a0989ba8d449e226d84948b967a28c7ab0b25bc30975f31f8e18",
+      "size": 7296,
+      "type": "file",
+      "gitObjectId": "3050a0091de5cff8bec6aa1113d4bb60561a52ed"
+    },
+    {
+      "path": "npm/scripts/verify-package.mjs",
+      "hash": "5637b820abfceedc488708c0dfc7b1d4f0e71f9a1c70215ab00d4723c02458b5",
+      "size": 2405,
+      "type": "file",
+      "gitObjectId": "f1b015d68bbbb9c7cabb7a50550b3e0eabc6b7ff"
+    },
+    {
+      "path": "npm/skill-manifest.json",
+      "hash": "6cbaf9413cfb60e3f0d7380ab37606e0afa36f92cf2e90d7690fcf2716aabb6b",
+      "size": 12157,
+      "type": "file"
+    },
+    {
+      "path": "npm/test/controlled-download.test.mjs",
+      "hash": "2e64412f6496fbf9c07e611e108c920ddced3b8a754bba39371939b9f32726fc",
+      "size": 5737,
+      "type": "file",
+      "gitObjectId": "68f7adbce3c9c4bba694a564fd62c99b61c3d859"
+    },
+    {
+      "path": "npm/test/managed-install.test.mjs",
+      "hash": "7e85981889ff3899809ffff6012d3c37f5039acda78102071143a061995df110",
+      "size": 1507,
+      "type": "file",
+      "gitObjectId": "f746839f8c1b0558dc20898b845b2da168257cec"
+    },
+    {
+      "path": "npm/test/options.test.mjs",
+      "hash": "45dd9b9792b824d6e78ccc915a2fddf22be32e8805e3449a4dbab5f4802ccad4",
+      "size": 1608,
+      "type": "file",
+      "gitObjectId": "697d591567c1e724acc357c40d60e7b8840ba7a5"
+    },
+    {
+      "path": "npm/test/python.test.mjs",
+      "hash": "6b52d7ff8bf05de2f7eb0e523aa91800ed16aecc85e12a549e4ea8bca8736a68",
+      "size": 4217,
+      "type": "file",
+      "gitObjectId": "c0151ce365467c629c7ee8bba5afa748d2355be8"
+    },
+    {
+      "path": "npm/test/runtime-setup.test.mjs",
+      "hash": "701a60062d8d0e51335af39be9738c113eb34cfea5fae179a513f810b89c9d3c",
+      "size": 8566,
+      "type": "file",
+      "gitObjectId": "fee2e8f9be924070a1f2a0726be7d4ee02ce5bf8"
+    },
+    {
+      "path": "npm/test/self-remove.test.mjs",
+      "hash": "2f63350672d25e59a698d9cae8517d8cf46785ea65c08019dfc42d60fcc308ee",
+      "size": 2101,
+      "type": "file",
+      "gitObjectId": "13c75223b092d0641e1f1b57ae4b3411e9083b50"
+    },
+    {
+      "path": "npm/test/skill-installer.test.mjs",
+      "hash": "ede677fda131eacc57cc2d1fbf72a2154fe73647fc2746ef99c34fa0b56d82ab",
+      "size": 3214,
+      "type": "file",
+      "gitObjectId": "354d2b62621285a8e8318e2cf6310b9ef80110e9"
+    },
+    {
+      "path": "npm/test/uninstall.test.mjs",
+      "hash": "e5308822e5acf0b5321af77122f272d2168c4b9c2f433eb1338d759d142103c8",
+      "size": 6227,
+      "type": "file",
+      "gitObjectId": "b0845b7c315f4217fe02754655b4b2a601704cce"
+    },
+    {
+      "path": "npm/test/update.test.mjs",
+      "hash": "7537b3c5afe8709018a3638593e7d876b0741f234e4ac1873da13cc4bd9e9933",
+      "size": 6308,
+      "type": "file",
+      "gitObjectId": "c3d30888ef809c02e5bb1ef0321c06b7bf0afff2"
+    },
+    {
+      "path": "package-lock.json",
+      "hash": "f964202d069789ddafab731f900dd963796243dc074c4386eff971f9963e3900",
+      "size": 773,
+      "type": "file",
+      "gitObjectId": "3908a3c7a93929fb5caa9b588d73295e566613ae"
+    },
+    {
+      "path": "package.json",
+      "hash": "3f1715b4b478bb5028c0b54645cc949df61de39330227119eff55572974fb27f",
+      "size": 1178,
+      "type": "file",
+      "gitObjectId": "7e96a1048ff7a6c87e4ce72ba596786aa9147c18"
+    },
+    {
+      "path": "README.md",
+      "hash": "6357ca7592d2961d817ea0d2df4ce2aed3119bf7fb940a2f248d20f1f4ecdd8a",
+      "size": 5920,
+      "type": "file",
+      "gitObjectId": "55070acf5b3021e3d86d06e727fa6a372b6e5d72"
+    }
+  ],
+  "omitted": [],
+  "omittedCount": 0
+}

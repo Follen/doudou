@@ -1,0 +1,27 @@
+schema: comet.native.v3
+minimum_runtime_version: 3
+revision: 5
+verification_protocol: legacy-v1
+name: default-headless-with-visible-auth-takeover
+language: zh-CN
+phase: archive
+brief: brief.md
+approval: confirmed
+approved_contract_hash: e0fa55810ef247f2932f0d19e73ee61576f5c161e706102cf402ba7c33d91412
+spec_changes:
+  - capability: broker-auth-state
+    operation: replace
+    source: specs/broker-auth-state/spec.md
+    base_hash: e935c5334a34f1f3b9cae5bb7aa42f903bbd522034165b63689c340c559c3245
+  - capability: browser-runtime-lifecycle
+    operation: create
+    source: specs/browser-runtime-lifecycle/spec.md
+    base_hash: null
+verification_result: pass
+verification_report: verification.md
+implementation_scope: runtime/evidence/scopes/87c5a2ec8f172b1e79e278ea8832164912b6f665a22df4cd1e57131ec1a0afef.json
+verification_evidence: runtime/evidence/verifications/b169ad69121697180f13d3b462f83c58a48d3c71f6cd3b5f7ff0be6f340a2e1c.json
+partial_allowance: null
+archived: true
+created_at: 2026-08-02
+run_id: 1d9aa81f-2bfb-4557-9de9-cce739dd9e26

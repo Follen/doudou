@@ -7,6 +7,7 @@ from typing import Any
 from ...common.errors import DoudouError
 from ..adapters import CHAT_ADAPTER
 from .base import (
+    click_verified_target,
     component_probe,
     not_exercised_probe,
     require_target,
@@ -16,9 +17,33 @@ from .base import (
 )
 
 
+def message_semantics_match(expected: str, evidence: dict[str, Any]) -> bool:
+    remaining = expected
+    for label in evidence.get("media_labels") or []:
+        if not label or label not in remaining:
+            return False
+        remaining = remaining.replace(label, "", 1)
+    normalized_expected = (
+        remaining.replace("\r\n", "\n")
+        .rstrip("\n")
+        .translate(
+            {ord(char): None for char in ("\u200b", "\u200c", "\u200d", "\ufeff")}
+        )
+    )
+    normalized_actual = (
+        str(evidence.get("text") or "")
+        .replace("\r\n", "\n")
+        .rstrip("\n")
+        .translate(
+            {ord(char): None for char in ("\u200b", "\u200c", "\u200d", "\ufeff")}
+        )
+    )
+    return normalized_actual == normalized_expected
+
+
 class ConversationListComponent:
     name = "conversation-list"
-    version = "2026-08-02.3"
+    version = "2026-08-03.3"
 
     def __init__(self, page: Any) -> None:
         self.page = page
@@ -62,10 +87,48 @@ class ConversationListComponent:
             "strategy": "unique versioned conversation list -> local data-e2e items",
         }
 
+    async def _scroll_local_viewport(
+        self, container: Any, *, reset: bool = False
+    ) -> dict[str, Any]:
+        return await container.evaluate(
+            """(element, reset) => {
+              const first = element.querySelector('[data-e2e="conversation-item"]');
+              if (!first) return {resolved: false, reason: 'no_session_item'};
+              const candidates = [];
+              let current = first.parentElement;
+              while (current && element.contains(current)) {
+                if (current.scrollHeight > current.clientHeight + 1) candidates.push(current);
+                if (current === element) break;
+                current = current.parentElement;
+              }
+              if (candidates.length !== 1) {
+                return {resolved: false, reason: 'scroll_viewport_not_unique', candidate_count: candidates.length};
+              }
+              const viewport = candidates[0];
+              const before = viewport.scrollTop;
+              viewport.scrollTop = reset
+                ? 0
+                : Math.min(viewport.scrollHeight, before + Math.max(160, viewport.clientHeight * 0.8));
+              return {
+                resolved: true,
+                before,
+                after: viewport.scrollTop,
+                client_height: viewport.clientHeight,
+                scroll_height: viewport.scrollHeight,
+                moved: viewport.scrollTop !== before,
+              };
+            }""",
+            reset,
+        )
+
     async def open(self, display_name: str) -> int:
         deadline = asyncio.get_running_loop().time() + 15
         target = None
         diagnostics = {"candidate_count": 0, "visible_count": 0}
+        initial_container = await self._container()
+        scroll = await self._scroll_local_viewport(initial_container, reset=True)
+        if scroll.get("resolved") and scroll.get("moved"):
+            await self.page.wait_for_timeout(250)
         while asyncio.get_running_loop().time() < deadline:
             try:
                 container, items, total_items = await self._items()
@@ -95,6 +158,7 @@ class ConversationListComponent:
                 "candidate_count": total_items,
                 "visible_count": len(items),
                 "matching_items": len(matches),
+                "scroll": scroll,
             }
             if len(matches) == 1:
                 target = await require_target(
@@ -109,9 +173,9 @@ class ConversationListComponent:
                 break
             if len(matches) > 1:
                 break
-            await container.evaluate(
-                "element => { const before=element.scrollTop; element.scrollBy(0, Math.max(300, element.clientHeight * 0.7)); return element.scrollTop !== before; }"
-            )
+            scroll = await self._scroll_local_viewport(container)
+            if not scroll.get("resolved") or not scroll.get("moved"):
+                break
             await self.page.wait_for_timeout(250)
         if target is None:
             raise DoudouError(
@@ -129,8 +193,39 @@ class ConversationListComponent:
         class_name = str(await target.get_attribute("class") or "")
         if "conversationConversationItemcurConversation" in class_name:
             return 0
-        await target.click(timeout=15_000)
-        return 1
+        click_evidence = await click_verified_target(
+            self.page,
+            target,
+            component=self.name,
+            version=self.version,
+            capability="chat.conversation.open",
+            strategy=(
+                "versioned session items -> exact protocol label -> stable hit target "
+                "-> dynamic mouse click"
+            ),
+            scroll_into_view=False,
+        )
+        selected_deadline = asyncio.get_running_loop().time() + 5
+        while asyncio.get_running_loop().time() < selected_deadline:
+            class_name = str(await target.get_attribute("class") or "")
+            if "conversationConversationItemcurConversation" in class_name:
+                return 1
+            await self.page.wait_for_timeout(100)
+        raise DoudouError(
+            "PAGE_ADAPTER_DRIFTED",
+            "The verified conversation click did not select the target row.",
+            {
+                "component": self.name,
+                "component_version": self.version,
+                "capability": "chat.conversation.open",
+                "strategy": (
+                    "versioned session items -> exact protocol label -> stable hit "
+                    "target -> selected-state confirmation"
+                ),
+                "geometry_reason": "conversation_not_selected_after_click",
+                "click_evidence": click_evidence,
+            },
+        )
 
     async def probe(self, exercised: bool = True) -> dict[str, Any]:
         if not exercised:
@@ -217,12 +312,40 @@ class ChatComposerComponent:
         )
 
     async def send(self) -> int:
-        await (await self.send_control()).click(timeout=15_000)
+        await self.send_control()
+        editor = await self.editor()
+        await editor.press("Enter", timeout=5_000)
         return 1
 
     async def clear(self) -> Any:
         editor = await self.editor()
-        await editor.click(timeout=5_000)
+        await click_verified_target(
+            self.page,
+            editor,
+            component=self.name,
+            version=self.version,
+            capability="chat.compose.clear",
+            strategy="unique editor -> stable hit target -> dynamic mouse focus",
+            scroll_into_view=False,
+        )
+        focused = await editor.evaluate(
+            "element => element === document.activeElement || "
+            "element.contains(document.activeElement)"
+        )
+        if not focused:
+            raise DoudouError(
+                "PAGE_ADAPTER_DRIFTED",
+                "The verified composer focus action did not focus the editor.",
+                {
+                    "component": self.name,
+                    "component_version": self.version,
+                    "capability": "chat.compose.clear",
+                    "strategy": (
+                        "unique editor -> stable hit target -> activeElement confirmation"
+                    ),
+                    "geometry_reason": "composer_not_focused_after_action",
+                },
+            )
         await editor.press("Control+A", timeout=5_000)
         await editor.press("Backspace", timeout=5_000)
         if await self.text():
@@ -311,11 +434,23 @@ class MessageItemComponent:
             capability=capability,
             strategy="page body local scope",
         )
-        candidates = self.page.locator(self.item_selector).filter(has_text=text)
-        exact = []
-        for item in await visible_candidates(candidates):
-            if (await item.inner_text()).strip() == text:
-                exact.append(item)
+        async def resolve() -> tuple[list[Any], Any]:
+            candidates = self.page.locator(self.item_selector)
+            exact = []
+            for item in await visible_candidates(candidates, limit=100):
+                evidence = await item.evaluate(
+                    """element => ({
+                      text: element.innerText || element.textContent || '',
+                      media_labels: [...element.querySelectorAll('img')]
+                        .map(image => image.getAttribute('title') || image.getAttribute('alt'))
+                        .filter(Boolean),
+                    })"""
+                )
+                if message_semantics_match(text, evidence):
+                    exact.append(item)
+            return exact, candidates
+
+        exact, candidates = await resolve()
         if len(exact) != 1:
             raise DoudouError(
                 "PAGE_ADAPTER_DRIFTED",
@@ -324,8 +459,32 @@ class MessageItemComponent:
                     "component": self.name,
                     "component_version": self.version,
                     "capability": capability,
-                    "strategy": "data-e2e message item plus exact protocol text",
+                    "strategy": (
+                        "data-e2e message item -> exact rendered text plus local "
+                        "emoji semantics"
+                    ),
                     "candidate_count": len(exact),
+                    "visible_message_items": min(await candidates.count(), 100),
+                },
+            )
+        await exact[0].scroll_into_view_if_needed(timeout=10_000)
+        await self.page.wait_for_timeout(150)
+        exact, candidates = await resolve()
+        if len(exact) != 1:
+            raise DoudouError(
+                "PAGE_ADAPTER_DRIFTED",
+                "The virtualized message component did not remain uniquely bound after scrolling.",
+                {
+                    "component": self.name,
+                    "component_version": self.version,
+                    "capability": capability,
+                    "strategy": (
+                        "protocol text plus emoji semantics -> component scroll -> "
+                        "post-scroll semantic rebind"
+                    ),
+                    "candidate_count": len(exact),
+                    "visible_message_items": min(await candidates.count(), 100),
+                    "geometry_reason": "message_rebind_not_unique_after_scroll",
                 },
             )
         return await require_target(
@@ -333,26 +492,108 @@ class MessageItemComponent:
             component=self.name,
             version=self.version,
             capability=capability,
-            strategy="data-e2e message item plus exact protocol text",
+            strategy=(
+                "data-e2e message item -> exact rendered text plus local emoji semantics"
+            ),
             scope=root,
         )
 
     async def menu_action(self, item: Any, label: str, capability: str) -> int:
         await item.click(button="right", timeout=15_000)
         menu = await self.context_menu(item, capability)
+        ready_deadline = asyncio.get_running_loop().time() + 3
+        while asyncio.get_running_loop().time() < ready_deadline:
+            if "MessageOperatePopWindowisReady" in str(
+                await menu.get_attribute("class") or ""
+            ):
+                break
+            await self.page.wait_for_timeout(50)
+        else:
+            raise DoudouError(
+                "PAGE_ADAPTER_DRIFTED",
+                "The message action menu did not reach its ready state.",
+                {
+                    "component": self.name,
+                    "component_version": self.version,
+                    "capability": capability,
+                    "strategy": "target message -> local menu -> ready state",
+                    "geometry_reason": "message_menu_not_ready",
+                },
+            )
+        action_rows = menu.locator(
+            CHAT_ADAPTER.selectors["message_context_action"]
+        ).filter(has_text=label)
+        exact_rows = [
+            row
+            for row in await visible_candidates(action_rows)
+            if (await row.inner_text()).strip() == label
+        ]
+        if len(exact_rows) != 1:
+            raise DoudouError(
+                "PAGE_ADAPTER_DRIFTED",
+                "The message action menu did not resolve one exact action row.",
+                {
+                    "component": self.name,
+                    "component_version": self.version,
+                    "capability": capability,
+                    "strategy": (
+                        "target message -> ready local action popup -> exact "
+                        "semantic action row"
+                    ),
+                    "candidate_count": len(exact_rows),
+                    "geometry_reason": "message_menu_action_not_unique",
+                },
+            )
         action = await require_target(
-            menu.get_by_text(label, exact=True),
+            exact_rows[0],
             component=self.name,
             version=self.version,
             capability=capability,
-            strategy="target message -> versioned local action popup -> exact semantic action",
+            strategy=(
+                "target message -> ready local action popup -> exact semantic action row"
+            ),
             require_enabled=True,
             scope=menu,
             anchor=item,
             max_anchor_distance=600,
             filter_by_geometry=True,
         )
-        await action.click(timeout=15_000)
+        stable_samples = 0
+        previous_box = None
+        stable_deadline = asyncio.get_running_loop().time() + 3
+        while asyncio.get_running_loop().time() < stable_deadline:
+            box = await action.bounding_box()
+            if box and previous_box:
+                delta = max(
+                    abs(box[key] - previous_box[key])
+                    for key in ("x", "y", "width", "height")
+                )
+                stable_samples = stable_samples + 1 if delta <= 1 else 0
+                if stable_samples >= 3:
+                    break
+            previous_box = box
+            await self.page.wait_for_timeout(80)
+        else:
+            raise DoudouError(
+                "PAGE_ADAPTER_DRIFTED",
+                "The message action row did not settle before the click.",
+                {
+                    "component": self.name,
+                    "component_version": self.version,
+                    "capability": capability,
+                    "strategy": "ready local action row -> stable geometry samples",
+                    "geometry_reason": "message_menu_action_unstable",
+                },
+            )
+        await click_verified_target(
+            self.page,
+            action,
+            component=self.name,
+            version=self.version,
+            capability=capability,
+            strategy="ready local action row -> stable hit target -> dynamic mouse click",
+            scroll_into_view=False,
+        )
         return 2
 
     async def context_menu(self, item: Any, capability: str) -> Any:

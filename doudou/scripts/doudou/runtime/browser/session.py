@@ -9,12 +9,7 @@ from typing import Any
 from ...common.core import atomic_write_json, read_json, utc_now
 from ...common.errors import DoudouError
 from ..paths import ProfilePaths
-from ..platform.windows import (
-    WindowVisibilityGuard,
-    descendant_window_states,
-    set_descendant_windows_visible,
-    suppress_asyncio_console_windows,
-)
+from ..platform.windows import suppress_asyncio_console_windows
 from ..profile import (
     CAMOUFOX_BROWSER_VERSION,
     CAMOUFOX_PACKAGE_VERSION,
@@ -43,7 +38,15 @@ class BrowserSession:
         self.paths = paths
         self.visible = visible
         self.fake = fake
-        self.mode = "fake" if fake else platform_background_mode()
+        requested_mode = os.environ.get("DOUDOU_BROWSER_MODE", "").strip().lower()
+        self.background_mode = (
+            "fake"
+            if fake
+            else "headless"
+            if requested_mode == "headless"
+            else platform_background_mode()
+        )
+        self.mode = "headed_takeover" if visible and not fake else self.background_mode
         self.manager: Any = None
         self.context: Any = None
         self.page: Any = None
@@ -55,8 +58,12 @@ class BrowserSession:
         self.init_request: bytes | None = None
         self.init_response: bytes | None = None
         self.init_endpoint: str | None = None
+        self.user_info_responses: list[bytes] = []
+        self.user_info_endpoint: str | None = None
         self._init_request_future: asyncio.Future[bytes] | None = None
         self._init_response_future: asyncio.Future[bytes] | None = None
+        self._user_info_response_event = asyncio.Event()
+        self._user_info_endpoint_event = asyncio.Event()
         self._network_tasks: set[asyncio.Task[Any]] = set()
         self._auth_state_event = asyncio.Event()
         self._auth_event_generation = 0
@@ -67,8 +74,11 @@ class BrowserSession:
         self.takeover_kind: str | None = None
         self.takeover_started_at: str | None = None
         self.takeover_sms_requested = False
-        self._visibility_task: asyncio.Task[None] | None = None
-        self._window_guard: WindowVisibilityGuard | None = None
+        self.context_generation = 0
+        self.mode_transition_count = 0
+        self.last_mode_transition: dict[str, Any] | None = None
+        self._mode_transition_lock = asyncio.Lock()
+        self._mode_transitioning = False
 
     def _record_login_state(self, login: dict[str, Any]) -> None:
         metadata = read_json(self.paths.metadata, optional=True)
@@ -110,7 +120,20 @@ class BrowserSession:
             self.context = _FakeContext()
             self.page = self.context.pages[0]
             self.started_at = utc_now()
+            self.context_generation += 1
             return
+        await self._launch_context(self.visible)
+
+    def _headless_setting(self, visible: bool) -> bool | str:
+        if visible:
+            return False
+        if self.background_mode in {"headless", "windows_headless"}:
+            return True
+        if self.background_mode == "linux_virtual_headed":
+            return "virtual"
+        return False
+
+    async def _launch_context(self, visible: bool) -> None:
         try:
             from ..camoufox_asset import configure_cache
 
@@ -123,18 +146,9 @@ class BrowserSession:
             ) from error
         config_record = read_json(self.paths.camoufox_config)
         config = self._fingerprint_config()
-        if os.name == "nt":
-            headless: bool | str = False
-        elif self.mode == "linux_virtual_headed":
-            headless = "virtual"
-        else:
-            headless = False
-        if os.name == "nt" and not self.visible:
-            self._window_guard = WindowVisibilityGuard(os.getpid(), visible=False)
-            self._window_guard.start()
-            self._visibility_task = asyncio.create_task(
-                self._maintain_window_visibility()
-            )
+        headless = self._headless_setting(visible)
+        self.visible = visible
+        self.mode = "headed_takeover" if visible else self.background_mode
         self.manager = AsyncCamoufox(
             headless=headless,
             persistent_context=True,
@@ -146,12 +160,8 @@ class BrowserSession:
             firefox_user_prefs=FIREFOX_PREFS,
             enable_cache=True,
         )
-        try:
-            with suppress_asyncio_console_windows():
-                self.context = await self.manager.__aenter__()
-        finally:
-            if self._window_guard is not None:
-                await asyncio.to_thread(self._window_guard.finish_startup)
+        with suppress_asyncio_console_windows():
+            self.context = await self.manager.__aenter__()
         await self._adopt_single_business_page()
 
         async def route_media(route) -> None:
@@ -165,18 +175,7 @@ class BrowserSession:
         await self._attach_auth_state_observer()
         self._attach_im_capture()
         self.started_at = utc_now()
-
-    async def _maintain_window_visibility(self) -> None:
-        startup_deadline = asyncio.get_running_loop().time() + 5
-        while True:
-            if not self.visible:
-                await asyncio.to_thread(
-                    set_descendant_windows_visible, os.getpid(), False
-                )
-            delay = (
-                0.01 if asyncio.get_running_loop().time() < startup_deadline else 0.25
-            )
-            await asyncio.sleep(delay)
+        self.context_generation += 1
 
     async def _adopt_single_business_page(self) -> None:
         restored_pages = [
@@ -188,28 +187,56 @@ class BrowserSession:
                 await extra.close()
 
     async def set_visible(self, visible: bool) -> dict[str, Any]:
-        self.visible = visible
-        changed = 0
-        if os.name == "nt" and not self.fake:
-            if self._window_guard is not None:
-                changed = await asyncio.to_thread(
-                    self._window_guard.set_visible, visible
-                )
-            else:
-                changed = await asyncio.to_thread(
-                    set_descendant_windows_visible, os.getpid(), visible
-                )
-        windows = (
-            await asyncio.to_thread(descendant_window_states, os.getpid())
-            if os.name == "nt" and not self.fake
-            else []
-        )
+        previous_mode = self.mode
+        if self.fake:
+            self.visible = visible
+            self.mode = "fake"
+        elif visible != self.visible or self.context is None:
+            await self._restart_context(visible, preserve_url=True)
         return {
             "visible": visible,
-            "windows_changed": changed,
             "mode": self.mode,
-            "windows": windows,
+            "previous_mode": previous_mode,
+            "context_generation": self.context_generation,
+            "mode_transition_count": self.mode_transition_count,
         }
+
+    async def _restart_context(self, visible: bool, preserve_url: bool) -> None:
+        async with self._mode_transition_lock:
+            previous_mode = self.mode
+            previous_url = (
+                str(self.page.url)
+                if preserve_url and self.page and not self.page.is_closed()
+                else None
+            )
+            self._mode_transitioning = True
+            await self._close_context(cancel_background_tasks=True)
+            try:
+                await self._launch_context(visible)
+                if previous_url and previous_url.startswith("https://www.douyin.com"):
+                    await self.open(previous_url)
+            except BaseException:
+                self.last_mode_transition = {
+                    "at": utc_now(),
+                    "from": previous_mode,
+                    "to": "headed_takeover" if visible else self.background_mode,
+                    "status": "failed",
+                }
+                raise
+            finally:
+                self._mode_transitioning = False
+            self.mode_transition_count += 1
+            self.last_mode_transition = {
+                "at": utc_now(),
+                "from": previous_mode,
+                "to": self.mode,
+                "status": "completed",
+            }
+            if (
+                self.takeover_active
+                and self._auth_reconciled_generation < self._auth_event_generation
+            ):
+                self._schedule_auth_reconciliation()
 
     async def present_for_takeover(
         self, reason: str, kind: str | None
@@ -218,8 +245,8 @@ class BrowserSession:
         self.takeover_reason = reason
         self.takeover_kind = kind
         self.takeover_started_at = self.takeover_started_at or utc_now()
-        await self._set_page_auth_observer_active(True)
         presentation = await self.set_visible(True)
+        await self._set_page_auth_observer_active(True)
         return {
             "active": True,
             "reason": reason,
@@ -230,18 +257,22 @@ class BrowserSession:
         }
 
     async def finish_takeover(self) -> None:
+        await self._set_page_auth_observer_active(False)
+        await self.set_visible(False)
         self.takeover_active = False
         self.takeover_reason = None
         self.takeover_kind = None
         self.takeover_started_at = None
         self.takeover_sms_requested = False
-        await self._set_page_auth_observer_active(False)
-        await self.set_visible(False)
 
     async def finalize_takeover_for_current_page(self) -> bool:
         if not self.takeover_active:
             return False
         if await self._verification_kind() is not None:
+            return False
+        login = await self.classify_login()
+        self._record_login_state(login)
+        if not login["valid"]:
             return False
         await self.finish_takeover()
         return True
@@ -280,7 +311,8 @@ class BrowserSession:
                         }:
                             raise
                     else:
-                        await self.finish_takeover()
+                        if self.takeover_active:
+                            await self.finish_takeover()
                         return result
             await self.page.wait_for_timeout(250)
         raise DoudouError(
@@ -369,8 +401,13 @@ class BrowserSession:
         loop = asyncio.get_running_loop()
         self._init_request_future = loop.create_future()
         self._init_response_future = loop.create_future()
+        self._user_info_response_event.clear()
+        self._user_info_endpoint_event.clear()
 
         def on_request(request: Any) -> None:
+            if "/aweme/v1/web/im/user/info/" in request.url:
+                self.user_info_endpoint = request.url
+                self._user_info_endpoint_event.set()
             if "/v1/message/get_message_by_init" not in request.url:
                 return
             value = request.post_data_buffer
@@ -385,18 +422,23 @@ class BrowserSession:
                 ("https://www.douyin.com/", "https://imapi.douyin.com/")
             ):
                 self._signal_auth_state_change()
-            if (
-                "/v1/message/get_message_by_init" not in response.url
-                or response.status != 200
-            ):
+            is_init = "/v1/message/get_message_by_init" in response.url
+            is_user_info = "/aweme/v1/web/im/user/info/" in response.url
+            if response.status != 200 or not (is_init or is_user_info):
                 return
             try:
                 value = await response.body()
             except Exception:  # noqa: BLE001 - detached Playwright response callback
                 return
-            self.init_response = bytes(value)
-            if self._init_response_future and not self._init_response_future.done():
-                self._init_response_future.set_result(self.init_response)
+            if is_user_info:
+                response_body = bytes(value)
+                if response_body not in self.user_info_responses:
+                    self.user_info_responses.append(response_body)
+                self._user_info_response_event.set()
+            if is_init:
+                self.init_response = bytes(value)
+                if self._init_response_future and not self._init_response_future.done():
+                    self._init_response_future.set_result(self.init_response)
 
         def on_response(response: Any) -> None:
             task = asyncio.create_task(consume_response(response))
@@ -406,8 +448,51 @@ class BrowserSession:
         self.page.on("request", on_request)
         self.page.on("response", on_response)
 
+    async def captured_user_info_responses(
+        self, timeout_seconds: float = 10, quiet_seconds: float = 0.75
+    ) -> list[bytes]:
+        loop = asyncio.get_running_loop()
+        deadline = loop.time() + timeout_seconds
+        observed_count = -1
+        quiet_since: float | None = None
+        while loop.time() < deadline:
+            count = len(self.user_info_responses)
+            if count != observed_count:
+                observed_count = count
+                quiet_since = loop.time() if count else None
+            if quiet_since is not None and loop.time() - quiet_since >= quiet_seconds:
+                return list(self.user_info_responses)
+            self._user_info_response_event.clear()
+            remaining = min(0.25, max(0.0, deadline - loop.time()))
+            if not remaining:
+                break
+            try:
+                await asyncio.wait_for(
+                    self._user_info_response_event.wait(), timeout=remaining
+                )
+            except TimeoutError:
+                pass
+        return list(self.user_info_responses)
+
+    async def captured_user_info_endpoint(
+        self, timeout_seconds: float = 5
+    ) -> str | None:
+        if self.user_info_endpoint:
+            return self.user_info_endpoint
+        try:
+            await asyncio.wait_for(
+                self._user_info_endpoint_event.wait(), timeout=timeout_seconds
+            )
+        except TimeoutError:
+            return None
+        return self.user_info_endpoint
+
     def _schedule_auth_reconciliation(self) -> None:
-        if not self.takeover_active or self._auth_reconcile_task is not None:
+        if (
+            not self.takeover_active
+            or self._mode_transitioning
+            or self._auth_reconcile_task is not None
+        ):
             return
         self._auth_reconcile_task = asyncio.create_task(
             self._reconcile_auth_state_after_event()
@@ -518,14 +603,26 @@ class BrowserSession:
         await self.present_for_takeover("LOGIN_REQUIRED", "qr_login")
         if not str(self.page.url).startswith("https://www.douyin.com"):
             await self.open("https://www.douyin.com/")
+        observed_challenge = False
         try:
             while asyncio.get_running_loop().time() < deadline:
                 observed_generation = self._auth_event_generation
                 login = await self.classify_login()
                 self._record_login_state(login)
+                observed_challenge = observed_challenge or bool(
+                    login.get("verification_visible")
+                )
                 if login["valid"]:
-                    await self.finalize_takeover_for_current_page()
                     return await self.ensure_ready(force_refresh=True)
+                if observed_challenge and not login.get("verification_visible"):
+                    try:
+                        return await self.ensure_ready(force_refresh=True)
+                    except DoudouError as error:
+                        if error.code not in {
+                            "LOGIN_REQUIRED",
+                            "VERIFICATION_REQUIRED",
+                        }:
+                            raise
                 if self._auth_event_generation != observed_generation:
                     continue
                 self._auth_state_event.clear()
@@ -614,6 +711,10 @@ class BrowserSession:
         else:
             self.init_request = None
             self.init_response = None
+            self.user_info_responses = []
+            self.user_info_endpoint = None
+            self._user_info_response_event.clear()
+            self._user_info_endpoint_event.clear()
             self._attach_im_capture()
             await self.open("https://www.douyin.com/")
             await self.page.wait_for_timeout(1000)
@@ -637,8 +738,15 @@ class BrowserSession:
                 "The Profile requires headed login or verification.",
                 login,
             )
-        await self.finalize_takeover_for_current_page()
-        self._require_im_initialization(login)
+        try:
+            self._require_im_initialization(login)
+        except DoudouError:
+            if self.takeover_active:
+                await self.finish_takeover()
+            raise
+        if self.takeover_active:
+            await self.finish_takeover()
+            return await self.ensure_ready(force_refresh=True)
         self.ready = True
         self.ready_at = utc_now()
         self.initialization_count += 1
@@ -659,14 +767,7 @@ class BrowserSession:
 
     async def _restart_after_user_close(self) -> None:
         """Replace a context whose last native browser window was closed by the user."""
-        with contextlib.suppress(Exception):
-            await self.close()
-        self.manager = None
-        self.context = None
-        self.page = None
-        self.ready = False
-        self.ready_at = None
-        await self.start()
+        await self._restart_context(self.visible, preserve_url=False)
 
     async def post_protobuf(self, endpoint: str, body: bytes) -> tuple[int, bytes]:
         if not self.page or not endpoint.startswith("https://imapi.douyin.com/"):
@@ -730,6 +831,9 @@ class BrowserSession:
             "ready": self.ready,
             "ready_at": self.ready_at,
             "initialization_count": self.initialization_count,
+            "context_generation": self.context_generation,
+            "mode_transition_count": self.mode_transition_count,
+            "last_mode_transition": self.last_mode_transition,
             "verification_visible": verification_kind is not None,
             "verification_kind": verification_kind,
             "takeover": {
@@ -742,62 +846,26 @@ class BrowserSession:
             "init_response_bytes": len(self.init_response or b""),
             "camoufox_package_version": CAMOUFOX_PACKAGE_VERSION,
             "browser_version": CAMOUFOX_BROWSER_VERSION,
-            "window_guard": {
-                "active": self._window_guard is not None,
-                "events_seen": self._window_guard.events_seen
-                if self._window_guard
-                else 0,
-                "hidden_before_show": self._window_guard.windows_hidden_before_show
-                if self._window_guard
-                else 0,
-                "create_events_seen": self._window_guard.create_events_seen
-                if self._window_guard
-                else 0,
-                "show_events_seen": self._window_guard.show_events_seen
-                if self._window_guard
-                else 0,
-                "show_events_prepared": self._window_guard.show_events_prepared
-                if self._window_guard
-                else 0,
-                "show_events_unprepared": self._window_guard.show_events_unprepared
-                if self._window_guard
-                else 0,
-                "max_callback_latency_ms": self._window_guard.max_callback_latency_ms
-                if self._window_guard
-                else 0,
-                "job_filter_active": self._window_guard.job_filter_active
-                if self._window_guard
-                else False,
-                "window_events": list(self._window_guard.window_events)
-                if self._window_guard
-                else [],
-                "startup_worker_ready": self._window_guard.startup_worker_ready
-                if self._window_guard
-                else False,
-                "startup_worker_max_callback_latency_ms": (
-                    self._window_guard.startup_worker_max_callback_latency_ms
-                    if self._window_guard
-                    else 0
-                ),
-                "startup_worker_events": list(
-                    self._window_guard.startup_worker_events
-                )
-                if self._window_guard
-                else [],
-                "startup_worker_poll_events": list(
-                    self._window_guard.startup_worker_poll_events
-                )
-                if self._window_guard
-                else [],
-                "windows": await asyncio.to_thread(
-                    descendant_window_states, os.getpid()
-                )
-                if os.name == "nt" and not self.fake
-                else [],
-            },
         }
 
-    async def close(self) -> None:
+    async def _close_context(self, *, cancel_background_tasks: bool) -> None:
+        current_task = asyncio.current_task()
+        if cancel_background_tasks:
+            cancellable = [
+                task
+                for task in self._network_tasks
+                if task is not current_task and not task.done()
+            ]
+            for task in cancellable:
+                task.cancel()
+            for task in cancellable:
+                with contextlib.suppress(asyncio.CancelledError, Exception):
+                    await task
+            self._network_tasks = {
+                task
+                for task in self._network_tasks
+                if task is current_task and not task.done()
+            }
         try:
             with contextlib.suppress(Exception):
                 if self.manager is not None:
@@ -805,24 +873,29 @@ class BrowserSession:
                 elif self.context is not None:
                     await self.context.close()
         finally:
-            if self._auth_reconcile_task is not None:
+            self.manager = None
+            self.context = None
+            self.page = None
+            self.ready = False
+            self.ready_at = None
+            self.init_request = None
+            self.init_response = None
+            self.init_endpoint = None
+            self.user_info_responses = []
+            self.user_info_endpoint = None
+            self._user_info_response_event.clear()
+            self._user_info_endpoint_event.clear()
+            self._init_request_future = None
+            self._init_response_future = None
+
+    async def close(self) -> None:
+        await self._close_context(cancel_background_tasks=True)
+        if self._auth_reconcile_task is not None:
+            if self._auth_reconcile_task is not asyncio.current_task():
                 self._auth_reconcile_task.cancel()
                 with contextlib.suppress(asyncio.CancelledError):
                     await self._auth_reconcile_task
-                self._auth_reconcile_task = None
-            if self._visibility_task is not None:
-                self._visibility_task.cancel()
-                with contextlib.suppress(asyncio.CancelledError):
-                    await self._visibility_task
-                self._visibility_task = None
-            if self._window_guard is not None:
-                await asyncio.to_thread(self._window_guard.stop)
-                self._window_guard = None
-        self.manager = None
-        self.context = None
-        self.page = None
-        self.ready = False
-        self.ready_at = None
+            self._auth_reconcile_task = None
         self.takeover_active = False
         self.takeover_reason = None
         self.takeover_kind = None

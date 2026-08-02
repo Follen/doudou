@@ -3,7 +3,7 @@
   "package_name": "@follenfang/doudou",
   "package_version": "0.0.2",
   "skill_version": "0.0.2",
-  "tree_sha256": "afaf44476dc857ad2ddea06ac607dbb04e7059ad9f9f005ba996a6574a635aa5",
+  "tree_sha256": "cb58ef51e1642decf7461ef9177850d8dc884680b4f8a544f1891c223f0f7a72",
   "files": [
     {
       "path": "agents/openai.yaml",
@@ -12,8 +12,8 @@
     },
     {
       "path": "references/cli.md",
-      "bytes": 3208,
-      "sha256": "0ddaa3a1932482808fc4f01578bc594c138efaf025e3da81be084f9fdc0c6c04"
+      "bytes": 3438,
+      "sha256": "deac8c770f7041d3982508fd6233bc4c3d3477edc5f9b39c640d4865218f189f"
     },
     {
       "path": "references/layout.md",
@@ -27,8 +27,8 @@
     },
     {
       "path": "references/runtime.md",
-      "bytes": 5276,
-      "sha256": "d2814d45992b47df571e806fcd30c5d22305aafd37e1e139158a517045fdac44"
+      "bytes": 5684,
+      "sha256": "9202cd4024209a2c421df8d86980bde9c0e19367c784c57091de0b855a8fcd75"
     },
     {
       "path": "scripts/doudou.py",
@@ -42,8 +42,8 @@
     },
     {
       "path": "scripts/doudou/cli.py",
-      "bytes": 18553,
-      "sha256": "831993faec902218307fa7c5bd3db8c45def6b88b29155556ec36e9274730baa"
+      "bytes": 18655,
+      "sha256": "7c3984b863b189d8d382d5295a290b3e191c34a80bb2b916764eea022e889350"
     },
     {
       "path": "scripts/doudou/common/__init__.py",
@@ -82,8 +82,8 @@
     },
     {
       "path": "scripts/doudou/features/diagnostics.py",
-      "bytes": 9996,
-      "sha256": "5b832aa9c2f039ea5d5a696d203487f1fcf2d6c6ccddc5f43adb490c6e640ca7"
+      "bytes": 10906,
+      "sha256": "dd60f4e4d2bb68d6d7712306b9a86c47b4791d49d97dc24d64696f9f46b58677"
     },
     {
       "path": "scripts/doudou/features/video/__init__.py",
@@ -92,8 +92,8 @@
     },
     {
       "path": "scripts/doudou/features/video/service.py",
-      "bytes": 8352,
-      "sha256": "ad25783a93cf7132aafc864db52edf1e33266b89af53d800d36aec5a7838e082"
+      "bytes": 9197,
+      "sha256": "24a7bc191adb85177bf547d97ffc0f971f25f16d7fb77e27fa9d029db98d2372"
     },
     {
       "path": "scripts/doudou/models/__init__.py",
@@ -102,8 +102,8 @@
     },
     {
       "path": "scripts/doudou/models/identity.py",
-      "bytes": 9393,
-      "sha256": "552b9949ad993954b7e93c9e6e4722e24776425078dba6bf28e07541183a938b"
+      "bytes": 9741,
+      "sha256": "5bc4334b5c6286b3d9ec8ba978891ffb3bd6fbc34aa1b39911b7ade87042f054"
     },
     {
       "path": "scripts/doudou/models/records.py",
@@ -147,8 +147,8 @@
     },
     {
       "path": "scripts/doudou/protocol/write_responses.py",
-      "bytes": 4226,
-      "sha256": "32244cf51974d36484c9f13b2d6c32a317610d2ada4884f26325f1083e990ede"
+      "bytes": 4455,
+      "sha256": "36c895f20eb72d34992f2fc499471c70ebfc87546e20633a7c6dbd68ed4c59f9"
     },
     {
       "path": "scripts/doudou/reads/__init__.py",
@@ -157,8 +157,8 @@
     },
     {
       "path": "scripts/doudou/reads/chat.py",
-      "bytes": 17083,
-      "sha256": "98ca090e285a7ab0e9beea3bef0a7ad8ec52a6adaab9ebe92ba9e592004b1aea"
+      "bytes": 17934,
+      "sha256": "df6658732fcf6e0ef8f3d15abaf9cd7d958bfefb5466450d7e2bb598026efb1f"
     },
     {
       "path": "scripts/doudou/reads/transport.py",
@@ -192,8 +192,8 @@
     },
     {
       "path": "scripts/doudou/runtime/broker/server.py",
-      "bytes": 19177,
-      "sha256": "f02c2f5c166d2decb5fa2ec3d246c859474487dccc9205a33dd20f722e6ba3a5"
+      "bytes": 19402,
+      "sha256": "d827e217d5c2a3124dfdb2ea519c34c1a098ef3b4c285e529fe49aec7956655c"
     },
     {
       "path": "scripts/doudou/runtime/browser/__init__.py",
@@ -202,8 +202,8 @@
     },
     {
       "path": "scripts/doudou/runtime/browser/session.py",
-      "bytes": 34506,
-      "sha256": "9ebe726e9c4bde63ec340fe2768df2419aa5d1b83957594937fd8d656e9c6eea"
+      "bytes": 37726,
+      "sha256": "c08b1958153efea44083c37533a534b3f246203fc1f071477cc0b2ca16844422"
     },
     {
       "path": "scripts/doudou/runtime/camoufox_asset.py",
@@ -212,8 +212,8 @@
     },
     {
       "path": "scripts/doudou/runtime/environment.py",
-      "bytes": 12215,
-      "sha256": "b0eb9517a33f19985ec48888d2e99e194cda721c78b482571e008ad1e96b128e"
+      "bytes": 11127,
+      "sha256": "03701d2d9cf78541e65ab48714c9ffaca8dcdc78022cd0c14639e3a975147f4e"
     },
     {
       "path": "scripts/doudou/runtime/home.py",
@@ -236,14 +236,9 @@
       "sha256": "47168cde9252b5c238ed8583f6058a5c40e773e60f79a0de6426d263889008b6"
     },
     {
-      "path": "scripts/doudou/runtime/platform/windows_guard_worker.py",
-      "bytes": 7000,
-      "sha256": "afdab31f848c1fc7f4cf40428e14e50e2595fc588e065627af7115881d7ba965"
-    },
-    {
       "path": "scripts/doudou/runtime/platform/windows.py",
-      "bytes": 23890,
-      "sha256": "d97edb0e45d6ae7c04bec8a4eb9c121444e649a8f8b85bcfafff38896c724b1d"
+      "bytes": 1084,
+      "sha256": "7ff9b0c4dde6908bcc8f77b7c08426c12850f5696bfe71c2878b57d02df44bc2"
     },
     {
       "path": "scripts/doudou/runtime/process.py",
@@ -252,8 +247,8 @@
     },
     {
       "path": "scripts/doudou/runtime/profile.py",
-      "bytes": 9499,
-      "sha256": "8eae76a1acc3bb6486d816b371605fac1bf81c5ab55a61dadf87465d11b5e633"
+      "bytes": 9494,
+      "sha256": "138a10d7e9c4d6ab555fa3b0d402b1d7f309dd88bb6c28369ce13ecf7883db55"
     },
     {
       "path": "scripts/doudou/storage/__init__.py",
@@ -267,8 +262,8 @@
     },
     {
       "path": "scripts/doudou/storage/identity_migration.py",
-      "bytes": 2143,
-      "sha256": "76305765c58103132d95189ce3362aae5b3cc2dcbda7c89ecddbc97ef6bf0b93"
+      "bytes": 3058,
+      "sha256": "6ba8e3e834dc0942ef33829e2e3fce3269e490c9c0f0a26aba1363a4b03cfd5b"
     },
     {
       "path": "scripts/doudou/storage/media.py",
@@ -287,8 +282,8 @@
     },
     {
       "path": "scripts/doudou/ui/adapters.py",
-      "bytes": 4781,
-      "sha256": "97b1140255b2170ebbca51feee030e63abb987d00bb3c9d7b6b1e71c4a811831"
+      "bytes": 4994,
+      "sha256": "39cda3de36e66098e81f62bca2a283ba2e91b8319867b3f5eeb72d91f070b5b6"
     },
     {
       "path": "scripts/doudou/ui/chat.py",
@@ -307,28 +302,28 @@
     },
     {
       "path": "scripts/doudou/ui/components/auth.py",
-      "bytes": 6071,
-      "sha256": "7d263d2f844d19b0fa1fa735959d9ce32dea9e631be2ff9747ca17f5cc70f628"
+      "bytes": 6235,
+      "sha256": "0a58d59f7ded677a7e9a0aefd09142d8140e45eb7780961285252280bcf3a1fb"
     },
     {
       "path": "scripts/doudou/ui/components/base.py",
-      "bytes": 12568,
-      "sha256": "4c9b498722a780a297af2c2e9db36f980a1ca4df036c507ce5886d24f8616bbc"
+      "bytes": 16185,
+      "sha256": "3df0d6f6c2c2ff69f4af1bf36390db5dd2a789bf82f89b5688030d1d83f2465d"
     },
     {
       "path": "scripts/doudou/ui/components/chat.py",
-      "bytes": 18730,
-      "sha256": "460cd0e93c8ab97c010417249746067dce1656d71fb072fb460a8f58d0317ace"
+      "bytes": 28757,
+      "sha256": "bad2954ba9b30c0eb8d773c63169e63ba4c133d91d5e667c9419c7fc485519f5"
     },
     {
       "path": "scripts/doudou/ui/components/video.py",
-      "bytes": 26287,
-      "sha256": "c2da9ef1d7324caf95eb32590ec92760387d1d493c5a3d8e3cd7c32904c64353"
+      "bytes": 32494,
+      "sha256": "c3a30b682332b55f559002bd09c27a45aba61dd50c37f92056ab4cb0aa093172"
     },
     {
       "path": "scripts/doudou/ui/video.py",
-      "bytes": 7063,
-      "sha256": "d76f985ebc0096110e9e211eb50b05b00e44ea0be59d18d626b84cb714e3705b"
+      "bytes": 7248,
+      "sha256": "7eda1f6e997498b7aa774941e7a5f2a9628ba9eb24230472a252d8c5d95207f0"
     },
     {
       "path": "scripts/doudou/writes/__init__.py",
@@ -357,8 +352,8 @@
     },
     {
       "path": "SKILL.md",
-      "bytes": 5106,
-      "sha256": "5592e46b311d1f84937ea1d74bc16618aa7d1efd8eea8705989883ef2de19462"
+      "bytes": 5402,
+      "sha256": "aba3fa40fa0fd6906de2a6e46a689d36e57a26576a2ec3fadad6a26e0a4aa760"
     }
   ]
 }

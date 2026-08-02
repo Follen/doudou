@@ -1,6 +1,6 @@
 # Doudou
 
-可交付的 Codex Skill 与 Python CLI，用项目本地 Camoufox Profile 读取抖音聊天、图片、系统事件、用户视频和评论，并通过常驻后台有头浏览器执行受控写操作。
+可交付的 Codex Skill 与 Python CLI，用项目本地 Camoufox Profile 读取抖音聊天、图片、系统事件、用户视频和评论，并通过常驻浏览器执行受控页面写操作。
 
 ## 安装
 
@@ -36,11 +36,11 @@ message/profiles/<profile>/
 ## 工作方式
 
 - 每个项目和 Profile 只有一个 Python broker。
-- Windows 默认隐藏有头；Linux 默认 Xvfb 虚拟有头。
+- Windows 默认真无头；登录、短信、滑块或 Passkey 等人工认证出现时，串行切换同一 Profile 到可见有头，完成后恢复真无头。Linux 保留 Xvfb 虚拟有头。
 - broker 串行执行命令，空闲 20 分钟退出。
 - 首条业务命令内部初始化页面与 IM；没有用户侧预热流程。
 - 会话、消息、图片、视频和评论读取使用页面上下文协议。
-- 文字、引用、图片、聊天点赞、视频评论/回复/点赞通过一次正常页面动作提交，并用网络回执和只读协议复查验证。
+- 文字、引用、图片、聊天点赞、视频评论/回复/点赞通过一次正常页面动作提交；聊天文字/引用和评论/回复使用编辑器 `Enter`。网络回执验证写结果，只读协议负责补充复查。
 - 图片下载先校验 AES-GCM，再按平台字段口径校验加密体或明文 MD5、明文大小与实际文件格式。
 - 视频列表从协议响应读取；翻页由版本化 Profile Component 的受控滚动触发，不复用过期签名 URL。
 - 页面读协议统一按 HTTP、Content-Type、Retry-After、响应长度/哈希和 JSON 业务状态分类；评论分页逐页保存检查点，可从失败游标恢复。
@@ -80,7 +80,7 @@ doudou uninstall
 - `BROWSER_DOWNLOAD_STALLED`：浏览器下载 90 秒无新字节；网络恢复后再次 setup 会续传有效 `.part`。
 - `BROWSER_DOWNLOAD_CHECKSUM_MISMATCH`：浏览器资产哈希不符，损坏文件不会激活。
 - `RUNTIME_SETUP_FAILED`：运行 `doudou doctor` 查看 setup owner、下载 partial、缓存和可执行修复命令。
-- 登录、短信、滑块或写验证：运行对应命令后，由同一 broker 显示浏览器供人工接管。
+- 登录、短信、滑块或 Passkey：运行对应命令后，由同一 broker 关闭后台 context，再用同一 Profile 显示有头浏览器供人工接管。
 
 ## 发布
 

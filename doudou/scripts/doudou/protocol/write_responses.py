@@ -40,6 +40,7 @@ def validate_comment_request(
     aweme_id: str,
     text: str | None = None,
     comment_id: str | None = None,
+    digg_type: str | None = None,
 ) -> dict[str, str]:
     actual_aweme = fields.get("aweme_id") or fields.get("item_id")
     actual_text = fields.get("text")
@@ -53,6 +54,8 @@ def validate_comment_request(
         mismatches.append("text")
     if comment_id is not None and actual_comment != comment_id:
         mismatches.append("comment_id")
+    if digg_type is not None and fields.get("digg_type") != digg_type:
+        mismatches.append("digg_type")
     if mismatches:
         raise DoudouError(
             "PAGE_WRITE_REQUEST_DRIFTED",
@@ -63,6 +66,7 @@ def validate_comment_request(
         "aweme_id": actual_aweme,
         **({"text": actual_text} if text is not None else {}),
         **({"comment_id": actual_comment} if comment_id is not None else {}),
+        **({"digg_type": fields.get("digg_type")} if digg_type is not None else {}),
     }
 
 

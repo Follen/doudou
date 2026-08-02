@@ -41,7 +41,7 @@ npm 安装版使用 `doudou uninstall`：它删除全部受管 Skill、整个 `$
 <cli> profile login --profile <name>
 ```
 
-扫码、快捷登录短信、普通短信、滑块或写验证出现时，使用 broker 显示的同一窗口让用户接管。不要另开浏览器。按以下错误分类处理：
+扫码、快捷登录短信、普通短信、滑块、Passkey 或其他人工验证出现时，由 broker 先关闭后台 context，再用同一 Profile 启动可见有头浏览器让用户接管。不要另建 Profile 或并行启动第二个 broker。按以下错误分类处理：
 
 - `LOGIN_REQUIRED`：页面仍显示登录入口或二维码，执行登录。
 - `VERIFICATION_REQUIRED`：页面仍显示短信、滑块或其他验证组件，等待用户完成。
@@ -49,7 +49,7 @@ npm 安装版使用 `doudou uninstall`：它删除全部受管 Skill、整个 `$
 - `IM_INITIALIZATION_MISSING`：账号已登录，但 IM 初始化响应不可用；保持登录状态并诊断初始化链路。
 - `WRITE_VERIFICATION_REQUIRED`：写操作触发验证；先只读检查结果，不重发。
 
-broker 通过浏览器网络事件异步重算登录状态。会话列表或有效 IM 会话证明账号已登录后，应立即结束接管并隐藏同一窗口；Cookie 名称只用于诊断，不能单独决定登录状态。业务读取随后失败时也要保留真实错误分类，不能降级为重新登录。
+broker 通过浏览器网络事件异步重算登录状态。会话列表或有效 IM 会话证明账号已登录后，应立即关闭可见有头 context：Windows 恢复真无头，Linux 回到 Xvfb；Cookie 名称只用于诊断，不能单独决定登录状态。业务读取随后失败时也要保留真实错误分类，不能降级为重新登录。
 
 ## 执行规则
 
@@ -57,9 +57,9 @@ broker 通过浏览器网络事件异步重算登录状态。会话列表或有�
 - 消息、会话成员、进群事件、引用关系、视频作者和评论用户统一保存 `uid/sec_uid/unique_id/nickname/remark_name/display_name`；缺失值保持 null，不用昵称冒充抖音号。
 - 写入先生成 plan，向用户展示计划并取得明确确认；确认后仅以 plan ID 执行一次。
 - 写控件按稳定语义、局部组件、唯一可见/启用状态和几何关系定位；非唯一时返回 `PAGE_ADAPTER_DRIFTED`，不猜测点击。
-- 写入必须同时验证唯一网络回执和只读结果；`WRITE_RESULT_UNKNOWN` 不自动重试。
+- 写入必须验证唯一网络回执；只读协议复查是补充证据。评论页面回执已确认成功时，慢速或缺失的协议复查不得覆盖成功；`WRITE_RESULT_UNKNOWN` 不自动重试。
 - 批量发送严格串行，相邻尝试至少间隔 5 秒；首个失败后停止。
-- broker 复用同一 Profile，空闲 20 分钟退出。Windows 后台隐藏有头；Linux 使用虚拟有头。
+- broker 复用同一 Profile，空闲 20 分钟退出。Windows 日常使用真无头，只有人工认证时切换可见有头；Linux 保留 Xvfb 虚拟有头。
 - stdout 是 NDJSON。保留稳定错误码和 details，不用页面文案替代协议结论。
 
 ## 功能路由

@@ -116,6 +116,15 @@ class IdentityCache:
                 return merge_identity(candidate, record)
         return candidate
 
+    def exact_unique_id(self, unique_id: str) -> dict[str, Any] | None:
+        matches = [
+            record
+            for record in self.records
+            if (record.get("unique_id") or "").casefold() == unique_id.casefold()
+            and record.get("sec_uid")
+        ]
+        return deepcopy(matches[0]) if len(matches) == 1 else None
+
     def save(self) -> None:
         atomic_write_json(
             self.filename,

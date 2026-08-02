@@ -16,7 +16,7 @@
 <cli> session refresh --profile <name>
 ```
 
-`session status` 会分别报告账号登录、可见验证组件、IM 初始化捕获和人工接管状态。账号已登录但 IM 捕获缺失时，应刷新当前会话初始化；不要把 `IM_CAPTURE_MISSING` 或 `IM_INITIALIZATION_MISSING` 当成重新登录。
+`session status` 会分别报告当前浏览器模式、账号登录、可见验证组件、IM 初始化捕获和人工接管状态。Windows 正常模式为 `windows_headless`，人工接管时为 `headed_takeover`；账号已登录但 IM 捕获缺失时，应刷新当前会话初始化，不要重新登录。
 
 ## Conversations and messages
 
@@ -83,7 +83,8 @@
 
 ```text
 <cli> page-doctor --profile <name>
+<cli> page-doctor --profile <name> --conversation <会话名称>
 <cli> protocol capture --profile <name>
 ```
 
-`page-doctor` 诊断页面组件契约。`protocol capture` 显示同一 Profile 的窗口，等待一次正常页面发送并保存脱敏请求/响应证据。
+`page-doctor` 诊断页面组件契约；传入 `--conversation` 时会选择该会话并实际检查输入框与发送控件，但不会填写或发送消息。`protocol capture` 显示同一 Profile 的窗口，等待一次正常页面发送并保存脱敏请求/响应证据。

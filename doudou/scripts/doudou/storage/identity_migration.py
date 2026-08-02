@@ -1,15 +1,33 @@
 from __future__ import annotations
 
+from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
 from ..common.core import atomic_write_json, atomic_write_jsonl, read_json, read_jsonl
+from ..common.errors import DoudouError
 from ..models.identity import (
     IdentityCache,
     enrich_known_identities,
     enrich_message_identities,
 )
 from ..runtime.paths import profile_paths
+
+
+def _fixed_point(
+    value: Any, transform: Callable[[Any], Any], *, max_passes: int = 8
+) -> Any:
+    current = value
+    for _ in range(max_passes):
+        migrated = transform(current)
+        if migrated == current:
+            return current
+        current = migrated
+    raise DoudouError(
+        "IDENTITY_MIGRATION_DID_NOT_CONVERGE",
+        "Identity enrichment did not reach a stable record shape.",
+        {"max_passes": max_passes},
+    )
 
 
 def migrate_identity_records(data_root: Path, profile: str) -> dict[str, Any]:
@@ -28,7 +46,12 @@ def migrate_identity_records(data_root: Path, profile: str) -> dict[str, Any]:
                 if not isinstance(value, (dict, list)):
                     continue
                 scanned += 1
-                migrated = enrich_known_identities(value, cache, source="migration-cache")
+                migrated = _fixed_point(
+                    value,
+                    lambda current: enrich_known_identities(
+                        current, cache, source="migration-cache"
+                    ),
+                )
                 if migrated != value:
                     atomic_write_json(filename, migrated)
                     changed += 1
@@ -38,12 +61,18 @@ def migrate_identity_records(data_root: Path, profile: str) -> dict[str, Any]:
                 if value and all(isinstance(item, dict) for item in value) and any(
                     item.get("message_id") for item in value
                 ):
-                    migrated = enrich_message_identities(
-                        value, cache, source="migration-cache"
+                    migrated = _fixed_point(
+                        value,
+                        lambda current: enrich_message_identities(
+                            current, cache, source="migration-cache"
+                        ),
                     )
                 else:
-                    migrated = enrich_known_identities(
-                        value, cache, source="migration-cache"
+                    migrated = _fixed_point(
+                        value,
+                        lambda current: enrich_known_identities(
+                            current, cache, source="migration-cache"
+                        ),
                     )
                 if migrated != value:
                     atomic_write_jsonl(filename, migrated)

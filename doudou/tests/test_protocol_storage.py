@@ -8,7 +8,6 @@ from urllib.parse import parse_qs, urlsplit
 
 from cryptography.exceptions import InvalidTag
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
-
 from doudou.features.chat.service import verify_like_readback, verify_send_readback
 from doudou.protocol.im import (
     extract_messages,

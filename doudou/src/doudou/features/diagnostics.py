@@ -136,7 +136,9 @@ async def page_doctor(
         "adapter_status": "drifted" if drift or component_drift else "compatible",
         "adapter_findings": [*drift, *component_drift],
         "not_exercised": not_exercised,
-        "adapter_error_code": "PAGE_ADAPTER_DRIFTED" if drift else None,
+        "adapter_error_code": "PAGE_ADAPTER_DRIFTED"
+        if drift or component_drift
+        else None,
         "script_count": len(scripts),
         "script_set_sha256": script_set_sha256,
         "previous_script_set_sha256": previous.get("script_set_sha256")

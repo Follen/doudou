@@ -118,14 +118,4 @@ AUTH_ADAPTER = PageAdapter(
 )
 
 
-MENTION_PICKER_BOUNDS_SCRIPT = """({name, minY, maxY}) => {
-  const visible = element => { const style = getComputedStyle(element); const rect = element.getBoundingClientRect();
-    return style.display !== 'none' && style.visibility !== 'hidden' && rect.width > 0 && rect.height > 0 && rect.y >= minY && rect.y < maxY; };
-  const values = [...document.querySelectorAll('div,span,p')].filter(element => visible(element) && (element.textContent || '').trim() === name)
-    .map(element => { const rect = element.getBoundingClientRect(); return {x: rect.x, y: rect.y, width: rect.width, height: rect.height, area: rect.width * rect.height}; })
-    .sort((left, right) => left.area - right.area);
-  return values[0] || null;
-}"""
-
-
 ADAPTERS = (AUTH_ADAPTER, CHAT_ADAPTER, PROFILE_ADAPTER, VIDEO_ADAPTER)

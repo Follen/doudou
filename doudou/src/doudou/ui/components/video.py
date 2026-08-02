@@ -7,7 +7,7 @@ from typing import Any
 from ...common.errors import DoudouError
 from ...runtime.browser.session import BrowserSession
 from ..common import first_visible
-from .base import component_probe, visible_candidates
+from .base import component_probe, require_target, visible_candidates
 
 EMOJI_TOKEN = re.compile(r"\[[^\[\]\r\n]{1,24}\]")
 
@@ -18,7 +18,7 @@ def visible_comment_text(protocol_text: str) -> str:
 
 class VideoCommentsPanelComponent:
     name = "video-comments-panel"
-    version = "2026-08-02.1"
+    version = "2026-08-02.2"
     comment_button_selector = '[data-e2e="feed-comment-icon"], [data-e2e*="comment" i], button[aria-label*="评论"], [title*="评论"]'
 
     def candidates(self, page: Any) -> Any:
@@ -82,18 +82,15 @@ class VideoCommentsPanelComponent:
         )
         if await first_visible(panel_candidates):
             return 0
-        button = await first_visible(page.locator(self.comment_button_selector))
-        if not button or not await button.is_enabled():
-            raise DoudouError(
-                "PAGE_ADAPTER_DRIFTED",
-                "The video comment panel control is unavailable.",
-                {
-                    "component": self.name,
-                    "component_version": self.version,
-                    "capability": "video.comments.open",
-                    "strategy": "semantic comment data-e2e/aria/title",
-                },
-            )
+        button = await require_target(
+            page.locator(self.comment_button_selector),
+            component=self.name,
+            version=self.version,
+            capability="video.comments.open",
+            strategy="semantic comment data-e2e/aria/title",
+            require_enabled=True,
+            scope=page.locator("body"),
+        )
         try:
             await button.click(timeout=15_000)
             for _ in range(200):
@@ -139,7 +136,16 @@ class VideoCommentsPanelComponent:
                     )
                 )
                 if controls:
-                    await controls[0].click(timeout=15_000)
+                    control = await require_target(
+                        controls[0],
+                        component=self.name,
+                        version=self.version,
+                        capability="video.comment.replies.read",
+                        strategy="comment-list-local semantic expansion label",
+                        require_enabled=True,
+                        scope=lists[0],
+                    )
+                    await control.click(timeout=15_000)
                     return attempt + 1
                 await lists[0].hover()
                 await page.mouse.wheel(0, 700)
@@ -171,7 +177,7 @@ class VideoCommentsPanelComponent:
 
 class VideoCommentComposerComponent:
     name = "video-comment-composer"
-    version = "2026-08-02.1"
+    version = "2026-08-02.2"
     container_selector = ".comment-input-container"
     editor_selector = '[contenteditable="true"][role="combobox"], textarea, input'
     controls_selector = ".commentInput-right-ct span"
@@ -193,20 +199,14 @@ class VideoCommentComposerComponent:
         return self.page.locator(self.container_selector)
 
     async def container(self) -> Any:
-        containers = await visible_candidates(self.candidates())
-        if len(containers) != 1:
-            raise DoudouError(
-                "PAGE_ADAPTER_DRIFTED",
-                "The video comment composer is not unique.",
-                {
-                    "component": self.name,
-                    "component_version": self.version,
-                    "capability": "video.comment.compose",
-                    "strategy": "visible comment input container",
-                    "candidate_count": len(containers),
-                },
-            )
-        return containers[0]
+        return await require_target(
+            self.candidates(),
+            component=self.name,
+            version=self.version,
+            capability="video.comment.compose",
+            strategy="visible comment input container",
+            scope=self.page.locator("body"),
+        )
 
     async def editor(self) -> Any:
         if self.focused:
@@ -214,37 +214,23 @@ class VideoCommentComposerComponent:
                 await self.page.locator(self.focused_editor_selector).first.wait_for(
                     state="visible", timeout=3000
                 )
-            editors = await visible_candidates(
-                self.page.locator(self.focused_editor_selector)
+            return await require_target(
+                self.page.locator(self.focused_editor_selector),
+                component=self.name,
+                version=self.version,
+                capability="video.comment.reply",
+                strategy="focused Draft combobox",
+                scope=self.page.locator("body"),
             )
-            if len(editors) != 1:
-                raise DoudouError(
-                    "PAGE_ADAPTER_DRIFTED",
-                    "The focused video comment editor is not unique.",
-                    {
-                        "component": self.name,
-                        "component_version": self.version,
-                        "capability": "video.comment.reply",
-                        "strategy": "focused Draft combobox",
-                        "candidate_count": len(editors),
-                    },
-                )
-            return editors[0]
         container = await self.container()
-        editors = await visible_candidates(container.locator(self.editor_selector))
-        if len(editors) != 1:
-            raise DoudouError(
-                "PAGE_ADAPTER_DRIFTED",
-                "The video comment editor is not unique.",
-                {
-                    "component": self.name,
-                    "component_version": self.version,
-                    "capability": "video.comment.compose",
-                    "strategy": "composer-local Draft combobox",
-                    "candidate_count": len(editors),
-                },
-            )
-        return editors[0]
+        return await require_target(
+            container.locator(self.editor_selector),
+            component=self.name,
+            version=self.version,
+            capability="video.comment.compose",
+            strategy="composer-local Draft combobox",
+            scope=container,
+        )
 
     async def insert_text(self, text: str) -> Any:
         editor = await self.editor()
@@ -261,36 +247,39 @@ class VideoCommentComposerComponent:
 
     async def send_control(self) -> Any:
         container = await self.container()
-        controls = await visible_candidates(container.locator(self.controls_selector))
-        boxes = [(item, await item.bounding_box()) for item in controls]
+        controls = container.locator(self.controls_selector)
+        visible = await visible_candidates(controls)
+        boxes = [(item, await item.bounding_box()) for item in visible]
         boxes = [(item, box) for item, box in boxes if box]
-        if len(boxes) < 2:
-            raise DoudouError(
-                "PAGE_ADAPTER_DRIFTED",
-                "The video comment actions are unavailable.",
-                {
-                    "component": self.name,
-                    "component_version": self.version,
-                    "capability": "video.comment.send",
-                    "strategy": "composer-local direct action spans",
-                    "candidate_count": len(boxes),
-                },
-            )
-        rightmost_x = max(box["x"] for _, box in boxes)
+        rightmost_x = max((box["x"] for _, box in boxes), default=None)
         rightmost = [item for item, box in boxes if box["x"] == rightmost_x]
-        if len(rightmost) != 1 or not await rightmost[0].is_enabled():
+        if len(rightmost) != 1:
             raise DoudouError(
                 "PAGE_ADAPTER_DRIFTED",
-                "The video comment send action is not uniquely enabled.",
+                "The video comment send action is not unique.",
                 {
                     "component": self.name,
                     "component_version": self.version,
                     "capability": "video.comment.send",
                     "strategy": "rightmost composer-local action",
                     "candidate_count": len(rightmost),
+                    "visible_count": len(visible),
+                    "enabled_count": 0,
+                    "geometry_reason": "rightmost_not_unique",
                 },
             )
-        return rightmost[0]
+        return await require_target(
+            rightmost[0],
+            component=self.name,
+            version=self.version,
+            capability="video.comment.send",
+            strategy="rightmost composer-local action",
+            require_enabled=True,
+            scope=container,
+            peers=controls,
+            position="rightmost",
+            minimum_peer_count=2,
+        )
 
     async def probe(self, exercised: bool) -> dict[str, Any]:
         return await component_probe(
@@ -305,7 +294,7 @@ class VideoCommentComposerComponent:
 
 class CommentItemComponent:
     name = "video-comment-item"
-    version = "2026-08-02.1"
+    version = "2026-08-02.2"
     list_selector = '[data-e2e="comment-list"]'
     item_xpath = "xpath=ancestor::div[.//div[contains(@class,'comment-item-stats-container')] and .//span[normalize-space()='回复']][1]"
     stats_selector = ".comment-item-stats-container"
@@ -364,7 +353,14 @@ class CommentItemComponent:
                         continue
                     items.append(item)
             if len(items) == 1:
-                return items[0]
+                return await require_target(
+                    items[0],
+                    component=self.name,
+                    version=self.version,
+                    capability="video.comment.target",
+                    strategy="comment-list exact text plus author -> local item",
+                    scope=root,
+                )
             if len(items) > 1:
                 raise DoudouError(
                     "PAGE_ADAPTER_DRIFTED",
@@ -396,45 +392,33 @@ class CommentItemComponent:
         )
 
     async def reply(self, item: Any) -> int:
-        action = await first_visible(item.get_by_text("回复", exact=True))
-        if not action or not await action.is_enabled():
-            raise DoudouError(
-                "PAGE_ADAPTER_DRIFTED",
-                "The comment reply action is unavailable.",
-                {
-                    "component": self.name,
-                    "component_version": self.version,
-                    "capability": "video.comment.reply",
-                    "strategy": "comment-item-local semantic reply",
-                },
-            )
+        action = await require_target(
+            item.get_by_text("回复", exact=True),
+            component=self.name,
+            version=self.version,
+            capability="video.comment.reply",
+            strategy="comment-item-local semantic reply",
+            require_enabled=True,
+            scope=item,
+        )
         await action.click()
         return 1
 
     async def like_control(self, item: Any, count: int) -> Any:
-        stats = await first_visible(item.locator(self.stats_selector))
-        if not stats:
-            raise DoudouError(
-                "PAGE_ADAPTER_DRIFTED",
-                "The comment stats component is unavailable.",
-                {
-                    "component": self.name,
-                    "component_version": self.version,
-                    "capability": "video.comment.like",
-                    "strategy": "comment-item-local stats container",
-                },
-            )
-        counters = await visible_candidates(stats.get_by_text(str(count), exact=True))
-        if len(counters) != 1:
-            raise DoudouError(
-                "PAGE_ADAPTER_DRIFTED",
-                "The comment like control is not unique.",
-                {
-                    "component": self.name,
-                    "component_version": self.version,
-                    "capability": "video.comment.like",
-                    "strategy": "stats-local exact count",
-                    "candidate_count": len(counters),
-                },
-            )
-        return counters[0]
+        stats = await require_target(
+            item.locator(self.stats_selector),
+            component=self.name,
+            version=self.version,
+            capability="video.comment.like",
+            strategy="comment-item-local stats container",
+            scope=item,
+        )
+        return await require_target(
+            stats.get_by_text(str(count), exact=True),
+            component=self.name,
+            version=self.version,
+            capability="video.comment.like",
+            strategy="stats-local exact count",
+            require_enabled=True,
+            scope=stats,
+        )

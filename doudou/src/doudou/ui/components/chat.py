@@ -5,14 +5,12 @@ from pathlib import Path
 from typing import Any
 
 from ...common.errors import DoudouError
-from ..adapters import MENTION_PICKER_BOUNDS_SCRIPT
-from ..common import first_visible
-from .base import component_probe, unique_visible, visible_candidates
+from .base import component_probe, require_target, unique_visible, visible_candidates
 
 
 class ConversationListComponent:
     name = "conversation-list"
-    version = "2026-08-02.1"
+    version = "2026-08-02.2"
 
     def __init__(self, page: Any) -> None:
         self.page = page
@@ -21,12 +19,13 @@ class ConversationListComponent:
         matches = self.page.get_by_text(display_name, exact=True)
         with contextlib.suppress(Exception):
             await matches.first.wait_for(state="visible", timeout=15_000)
-        target = await unique_visible(
+        target = await require_target(
             matches,
             component=self.name,
             version=self.version,
             capability="chat.conversation.open",
             strategy="exact visible conversation label after bounded render wait",
+            require_enabled=True,
         )
         await target.click(timeout=15_000)
         return 1
@@ -34,7 +33,7 @@ class ConversationListComponent:
 
 class ChatComposerComponent:
     name = "chat-composer"
-    version = "2026-08-02.1"
+    version = "2026-08-02.2"
     composer_selector = '[data-e2e="msg-input"] [contenteditable="true"]'
     container_xpath = (
         "xpath=ancestor::div[contains(@class,'messageMsgInputinputRow')][1]"
@@ -56,54 +55,31 @@ class ChatComposerComponent:
             strategy="data-e2e msg-input -> visible contenteditable",
         )
 
-    async def send_control(self) -> Any:
+    async def container(self) -> Any:
         editor = await self.editor()
-        container = editor.locator(self.container_xpath)
-        if await container.count() != 1:
-            raise DoudouError(
-                "PAGE_ADAPTER_DRIFTED",
-                "The chat composer container is not unique.",
-                {
-                    "component": self.name,
-                    "component_version": self.version,
-                    "capability": "chat.send",
-                    "strategy": "composer ancestor input row",
-                },
-            )
-        controls = await visible_candidates(container.locator(self.send_selector))
-        if len(controls) != 1 or not await controls[0].is_enabled():
-            raise DoudouError(
-                "PAGE_ADAPTER_DRIFTED",
-                "The chat send control is not uniquely enabled.",
-                {
-                    "component": self.name,
-                    "component_version": self.version,
-                    "capability": "chat.send",
-                    "strategy": "composer-local e2e-send-msg-btn",
-                    "candidate_count": len(controls),
-                },
-            )
-        send_box = await controls[0].bounding_box()
-        sibling_svgs = await visible_candidates(container.locator("svg"))
-        sibling_boxes = [
-            box for item in sibling_svgs if (box := await item.bounding_box())
-        ]
-        if (
-            not send_box
-            or len(sibling_boxes) < 2
-            or send_box["x"] != max(box["x"] for box in sibling_boxes)
-        ):
-            raise DoudouError(
-                "PAGE_ADAPTER_DRIFTED",
-                "The chat send control is not the rightmost composer action.",
-                {
-                    "component": self.name,
-                    "component_version": self.version,
-                    "capability": "chat.send",
-                    "strategy": "unique local SVG plus rightmost position",
-                },
-            )
-        return controls[0]
+        return await require_target(
+            editor.locator(self.container_xpath),
+            component=self.name,
+            version=self.version,
+            capability="chat.compose",
+            strategy="contenteditable -> unique local input-row ancestor",
+            scope=self.page.locator("body"),
+        )
+
+    async def send_control(self) -> Any:
+        container = await self.container()
+        return await require_target(
+            container.locator(self.send_selector),
+            component=self.name,
+            version=self.version,
+            capability="chat.send",
+            strategy="composer-local e2e send control -> rightmost local SVG",
+            require_enabled=True,
+            scope=container,
+            peers=container.locator("svg"),
+            position="rightmost",
+            minimum_peer_count=2,
+        )
 
     async def clear(self) -> Any:
         editor = await self.editor()
@@ -119,31 +95,21 @@ class ChatComposerComponent:
 
     async def select_mention(self, name: str) -> int:
         editor = await self.editor()
-        box = await editor.bounding_box()
         await editor.press("@", timeout=10_000)
         await self.page.wait_for_timeout(800)
-        match = await self.page.evaluate(
-            MENTION_PICKER_BOUNDS_SCRIPT,
-            {
-                "name": name,
-                "minY": max(0, (box or {}).get("y", 0) - 300),
-                "maxY": (box or {}).get("y", 0),
-            },
+        match = await require_target(
+            self.page.get_by_text(name, exact=True),
+            component=self.name,
+            version=self.version,
+            capability="chat.mention",
+            strategy="exact member label -> composer-bounded mention candidate",
+            require_enabled=True,
+            anchor=editor,
+            relation="above",
+            max_anchor_distance=450,
+            filter_by_geometry=True,
         )
-        if not match:
-            raise DoudouError(
-                "MENTION_TARGET_NOT_VISIBLE",
-                "The protocol-selected member is not visible in the composer-local mention picker.",
-                {
-                    "component": self.name,
-                    "component_version": self.version,
-                    "capability": "chat.mention",
-                    "strategy": "composer-bounded exact member label",
-                },
-            )
-        await self.page.mouse.click(
-            match["x"] + match["width"] / 2, match["y"] + match["height"] / 2
-        )
+        await match.click(timeout=10_000)
         return 2
 
     async def text(self) -> str:
@@ -170,7 +136,7 @@ class ChatComposerComponent:
 
 class MessageItemComponent:
     name = "chat-message-item"
-    version = "2026-08-02.1"
+    version = "2026-08-02.2"
     item_selector = '[data-e2e="msg-item-content"]'
 
     def __init__(self, page: Any) -> None:
@@ -190,6 +156,13 @@ class MessageItemComponent:
         )
 
     async def target(self, text: str, capability: str) -> Any:
+        root = await require_target(
+            self.page.locator("body"),
+            component=self.name,
+            version=self.version,
+            capability=capability,
+            strategy="page body local scope",
+        )
         candidates = self.page.locator(self.item_selector).filter(has_text=text)
         exact = []
         for item in await visible_candidates(candidates):
@@ -207,36 +180,44 @@ class MessageItemComponent:
                     "candidate_count": len(exact),
                 },
             )
-        return exact[0]
+        return await require_target(
+            exact[0],
+            component=self.name,
+            version=self.version,
+            capability=capability,
+            strategy="data-e2e message item plus exact protocol text",
+            scope=root,
+        )
 
     async def menu_action(self, item: Any, label: str, capability: str) -> int:
         await item.click(button="right", timeout=15_000)
-        action = await first_visible(self.page.get_by_text(label, exact=True))
-        if not action:
-            raise DoudouError(
-                "PAGE_ADAPTER_DRIFTED",
-                "The message component action is unavailable.",
-                {
-                    "component": self.name,
-                    "component_version": self.version,
-                    "capability": capability,
-                    "strategy": "message-local context menu semantic label",
-                },
-            )
+        action = await require_target(
+            self.page.get_by_text(label, exact=True),
+            component=self.name,
+            version=self.version,
+            capability=capability,
+            strategy="message-local context menu semantic label",
+            require_enabled=True,
+            anchor=item,
+            max_anchor_distance=600,
+            filter_by_geometry=True,
+        )
         await action.click(timeout=15_000)
         return 2
 
 
 class ImagePreviewComponent:
     name = "chat-image-preview"
-    version = "2026-08-02.1"
+    version = "2026-08-02.2"
     upload_selector = '[role="button"].semi-upload-add'
 
     def __init__(self, page: Any) -> None:
         self.page = page
 
     def candidates(self) -> Any:
-        return self.page.locator(self.upload_selector)
+        return self.page.locator('[data-e2e="msg-input"]').locator(
+            self.upload_selector
+        )
 
     async def probe(self, exercised: bool) -> dict[str, Any]:
         return await component_probe(
@@ -249,12 +230,28 @@ class ImagePreviewComponent:
         )
 
     async def choose(self, source: Path) -> int:
+        composer_root = await require_target(
+            self.page.locator('[data-e2e="msg-input"]'),
+            component=self.name,
+            version=self.version,
+            capability="chat.image.choose",
+            strategy="unique visible composer root",
+        )
         upload = await unique_visible(
-            self.page.locator(self.upload_selector),
+            composer_root.locator(self.upload_selector),
             component=self.name,
             version=self.version,
             capability="chat.image.choose",
             strategy="composer-local upload role button",
+        )
+        upload = await require_target(
+            upload,
+            component=self.name,
+            version=self.version,
+            capability="chat.image.choose",
+            strategy="composer-local upload role button",
+            require_enabled=True,
+            scope=composer_root,
         )
         async with self.page.expect_file_chooser(timeout=10_000) as chooser_info:
             await upload.click(timeout=10_000)
@@ -262,17 +259,25 @@ class ImagePreviewComponent:
         return 2
 
     async def send(self) -> int:
-        action = await first_visible(self.page.get_by_text("发送", exact=True))
-        if not action or not await action.is_enabled():
-            raise DoudouError(
-                "PAGE_ADAPTER_DRIFTED",
-                "The image preview send control is unavailable.",
-                {
-                    "component": self.name,
-                    "component_version": self.version,
-                    "capability": "chat.image.send",
-                    "strategy": "preview-local semantic send label",
-                },
-            )
+        actions = self.page.get_by_text("发送", exact=True)
+        action = await require_target(
+            actions,
+            component=self.name,
+            version=self.version,
+            capability="chat.image.send",
+            strategy="semantic send label -> unique visible preview action",
+            require_enabled=True,
+        )
+        preview = action.locator(
+            "xpath=ancestor::*[@role='dialog' or contains(@class,'semi-modal') or contains(@class,'preview')][1]"
+        )
+        await require_target(
+            preview,
+            component=self.name,
+            version=self.version,
+            capability="chat.image.send",
+            strategy="send action -> unique preview/dialog ancestor",
+            scope=self.page.locator("body"),
+        )
         await action.click(timeout=10_000)
         return 1

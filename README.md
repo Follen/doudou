@@ -33,7 +33,7 @@ message/profiles/<profile>/
 - 图片下载先校验 AES-GCM，再按平台字段口径校验加密体或明文 MD5、明文大小与实际文件格式。
 - 视频列表从协议响应读取；翻页由版本化 Profile Component 的受控滚动触发，不复用过期签名 URL。
 - 页面读协议统一按 HTTP、Content-Type、Retry-After、响应长度/哈希和 JSON 业务状态分类；评论分页逐页保存检查点，可从失败游标恢复。
-- 接口路径/字段别名集中在版本化 Protocol Adapter，页面 selector 集中在版本化 UI Adapter。接口结构变化返回 `PROTOCOL_SCHEMA_DRIFTED`，页面控件变化返回 `PAGE_ADAPTER_DRIFTED`，不伪装成登录失效。
+- 接口路径/字段别名集中在版本化 Protocol Adapter，页面 selector 集中在版本化 UI Adapter。写控件依次校验稳定语义、局部组件结构、唯一可见/启用状态和几何关系；不唯一时在点击前返回 `PAGE_ADAPTER_DRIFTED`，不会猜测点击。接口结构变化返回 `PROTOCOL_SCHEMA_DRIFTED`，不伪装成登录失效。
 - 写操作先生成计划，确认后只使用 `--confirm --plan-id <id>`。
 
 ## 常用命令

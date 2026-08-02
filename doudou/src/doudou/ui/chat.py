@@ -294,6 +294,8 @@ async def like_message(session: BrowserSession, plan: dict[str, Any]) -> dict[st
             dom_operations += await component.menu_action(
                 target, "点赞", "chat.message.like"
             )
+        except DoudouError:
+            raise
         except Exception as error:
             raise DoudouError(
                 "WRITE_RESULT_UNKNOWN",

@@ -106,7 +106,7 @@ python <skill>/bin/doudou.py protocol capture --profile <name>
 
 `session refresh` 只在同一浏览器中强制刷新会话索引，不是业务前置步骤。`protocol capture` 打开同一 Profile 的有头窗口，等待用户正常发送一次并保存脱敏证据。
 
-`page-doctor` 按 Component Adapter 报告页面版本、路径、是否 exercised、候选数、唯一性、可见/启用状态、定位策略和受影响能力。没有选择会话时聊天组件是 `not_exercised`，不是漂移。`PAGE_ADAPTER_DRIFTED` 表示页面定位契约变化，不等于登录失效；`PROTOCOL_SCHEMA_DRIFTED` 表示接口字段契约变化。两者都应由维护者更新对应 adapter，不要修改业务模型或深遍历 React/Fiber。
+`page-doctor` 按 Component Adapter 报告页面版本、路径、是否 exercised、候选数、唯一性、可见/启用状态、几何状态、定位策略和受影响能力。所有写控件统一按“role/aria/data-e2e/稳定语义 -> 已确认局部组件结构 -> 可见、启用、状态和几何关系”解析；任一层不能得到唯一目标时返回 `PAGE_ADAPTER_DRIFTED`，点击前停止，不猜 selector、不自愈点击。没有选择会话时聊天组件是 `not_exercised`，不是漂移。`PAGE_ADAPTER_DRIFTED` 表示页面定位契约变化，不等于登录失效；`PROTOCOL_SCHEMA_DRIFTED` 表示接口字段契约变化。两者都应由维护者更新对应 adapter，不要修改业务模型或深遍历 React/Fiber。
 
 ## 数据边界
 

@@ -2,7 +2,7 @@
 
 ## 交付与运行时边界
 
-系统必须以 `doudou` 名称交付标准 Codex Skill 和确定性 Python CLI。用户必须通过 `python <skill>/bin/doudou.py ...` 直接运行；不得保留 Node.js 转调入口。分发版生产浏览器运行时必须直接使用 Python `camoufox==0.5.4` 和官方浏览器 `152.0.4-beta.28`，不得把 Node.js Playwright Chromium 或 `camoufox-reverse-mcp` 作为生产浏览器入口或 fallback。
+系统必须以 `doudou` 名称交付标准 Codex Skill 和确定性 Python CLI。用户可通过 npm package `@follenfang/doudou` 安装并运行 `doudou ...`，也可直接运行 `python <skill>/scripts/doudou.py ...`；npm/Node.js 只能作为 Skill 安装、环境 ensure 和 Python 进程启动层。分发版生产浏览器运行时必须直接使用 Python `camoufox==0.5.4` 和官方浏览器 `152.0.4-beta.28`，不得把 Node.js Playwright Chromium 或 `camoufox-reverse-mcp` 作为生产浏览器入口或 fallback。
 
 CLI 必须从调用者当前项目运行。默认 data root 必须是当前工作目录；只有显式 `--data-root` 或 `DOUDOU_HOME` 才能覆盖。用户登录态必须写入 `profile/<profile>/`，生产记录必须写入 `message/profiles/<profile>/`，不得写入已安装 Skill 目录或用户级依赖缓存。
 
@@ -16,7 +16,7 @@ setup 必须为环境升级保存脱敏 rollback 记录，包含旧/新运行时
 
 Skill 安装目录只包含发布清单声明的代码、指令、参考文档、测试和锁文件，不得包含用户 Profile、消息、发送回执、诊断、`analyze/`、虚拟环境、依赖缓存或浏览器二进制。`camoufox-reverse-mcp`、Babel、mitmproxy、WABT 和研发 Skill 只属于维护者工具链，不是普通用户依赖。
 
-分发包必须包含 Python 源码、`pyproject.toml`、带哈希的锁定依赖、Camoufox/官方浏览器版本清单以及 setup/doctor bootstrap，不得包含开发者机器生成的 venv。CLI bootstrap 必须从系统 Python 启动，定位或创建用户级共享 venv，然后用该 venv 的解释器重新执行真实命令。
+可交付 Skill 必须包含 Python 源码、带哈希的锁定依赖、Camoufox/官方浏览器版本清单以及 setup/doctor bootstrap，不得包含开发者机器生成的 venv。npm 包必须使用白名单携带该 Skill 树、启动器和版本 manifest，不携带 Python packages 或浏览器。CLI bootstrap 必须发现合格系统 Python，定位或创建用户级共享 venv，然后用该 venv 的解释器重新执行真实命令。
 
 `docs/comet/archive/`、`analyze/`、旧发送回执、旧诊断和其他历史证据必须保持创建时的内容、名称和哈希，不参与 Python 迁移的机械改写。运行时残留检查必须把不可变历史路径列为明确排除项。
 
@@ -44,7 +44,7 @@ setup 必须使用 Skill 的锁定 Python 依赖定义在用户级 doudou 缓存
 
 锁定依赖必须可重复安装并校验包哈希。首次 setup 必须按“创建临时 venv → 安装锁定依赖 → 下载并校验官方浏览器 → 验证平台默认后台有头模式 → 切换当前环境”的顺序执行；任一步失败时不得把不完整环境标记为当前。
 
-Node.js、npm、Playwright 和 Playwright-managed Chromium 不得继续作为生产 CLI 的必需环境或兼容入口。若仅维护者调研命令需要额外工具，doctor 必须将其放在单独的研发检查中，不得让普通业务任务失败。
+Node.js 和 npm 可作为 `@follenfang/doudou` 的安装/启动环境，但不是 Python CLI 直接运行的必需环境。Playwright-managed Chromium 不得作为生产浏览器或兼容入口。若仅维护者调研命令需要额外工具，doctor 必须将其放在单独的研发检查中，不得让普通业务任务失败。
 
 ### 场景：首次使用缺少环境
 

@@ -1,0 +1,36 @@
+{
+  "schema": "comet.native.transaction.v2",
+  "id": "d0f05492-4e3c-4739-9ffb-ddfd8a87b375",
+  "kind": "archive",
+  "status": "committed",
+  "change": "publish-doudou-cli-to-npm",
+  "createdAt": "2026-08-02T06:41:55.974Z",
+  "preflightHash": "c7394320fb90c9f8581285fabbe5065bdd1e4da84462e0c3cb1e71b941fd238d",
+  "operations": [
+    {
+      "id": "spec-1-doudou",
+      "type": "write",
+      "target": "specs/doudou/spec.md",
+      "staged": "runtime/transactions/d0f05492-4e3c-4739-9ffb-ddfd8a87b375/staged/specs/doudou/spec.md",
+      "backup": "runtime/transactions/d0f05492-4e3c-4739-9ffb-ddfd8a87b375/backups/specs/doudou/spec.md",
+      "expectedTargetHash": "95d9d6a04a97e3fbf1c891eddf3d69ded101d15005db1848a188ee49fe91e27e",
+      "stagedHash": "dcddeae7c2398edac3df709ee83b2b1fcb47a507d5421a65a45bd78ac83b0866"
+    },
+    {
+      "id": "spec-2-npm-distribution",
+      "type": "write",
+      "target": "specs/npm-distribution/spec.md",
+      "staged": "runtime/transactions/d0f05492-4e3c-4739-9ffb-ddfd8a87b375/staged/specs/npm-distribution/spec.md",
+      "expectedTargetHash": null,
+      "stagedHash": "fae6e1ea270ac84512e4b24aa1958569d291efe4904d2518526c7ab4418df2c2"
+    },
+    {
+      "id": "archive-change",
+      "type": "move",
+      "source": "changes/publish-doudou-cli-to-npm",
+      "target": "archive/2026-08-02-publish-doudou-cli-to-npm",
+      "expectedSourceHash": "e0689c125c73c8da02917bf4dbd9bcec320e437a2d29c9c9483f5bd7b0fa43fb",
+      "expectedTargetHash": null
+    }
+  ]
+}

@@ -1,0 +1,339 @@
+{
+  "schema": "comet.native.implementation-scope.v2",
+  "contractHash": "3e243ad3ba686625ff2d03b0e98e185b90970d03760883ea59e42b900f33aff8",
+  "baselineProjectionRef": "runtime/evidence/snapshots/77f119001f4be4fb30725912e37b720e603dd34ac3a2ee96d796f3f6c9a24871.json",
+  "baselineProjectionHash": "77f119001f4be4fb30725912e37b720e603dd34ac3a2ee96d796f3f6c9a24871",
+  "currentProjectionRef": "runtime/evidence/snapshots/9cd368cfba30a71006cbca26afbf33bebd59ca61caf61b03dea0a7adaec2ebe8.json",
+  "currentProjectionHash": "9cd368cfba30a71006cbca26afbf33bebd59ca61caf61b03dea0a7adaec2ebe8",
+  "complete": true,
+  "declaredArtifacts": [
+    {
+      "path": ".github/workflows/publish-npm.yml",
+      "kind": "file"
+    },
+    {
+      "path": ".gitignore",
+      "kind": "file"
+    },
+    {
+      "path": "README.md",
+      "kind": "file"
+    },
+    {
+      "path": "doudou/SKILL.md",
+      "kind": "file"
+    },
+    {
+      "path": "npm",
+      "kind": "directory"
+    },
+    {
+      "path": "package-lock.json",
+      "kind": "file"
+    },
+    {
+      "path": "package.json",
+      "kind": "file"
+    }
+  ],
+  "changes": [
+    {
+      "path": ".github/workflows/publish-npm.yml",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "f56fcc6065ffbc9243d169d6a93646b9bf6422097ef0766ab239ef76824198ba",
+        "size": 2305
+      },
+      "attributedTo": [
+        {
+          "path": ".github/workflows/publish-npm.yml",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": ".gitignore",
+      "kind": "modified",
+      "before": {
+        "hash": "32c3317c1d9471b4e95e1e42868d64c4196c5456a98de12c3bd96aac1da11c73",
+        "size": 129
+      },
+      "after": {
+        "hash": "3304f9e0b3fd02bf36908d87df5a0f615af6ce7698d6c6dd4f7c023dd45c20ee",
+        "size": 198
+      },
+      "attributedTo": [
+        {
+          "path": ".gitignore",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "README.md",
+      "kind": "modified",
+      "before": {
+        "hash": "65270e31deb5f5a7d3efcda91df9da4f3be6e1d0bf5ae547c1eb38dab89dee9d",
+        "size": 3560
+      },
+      "after": {
+        "hash": "e65a295fb89e1e63d18851f3ccdd9abae0c30a8a7e781f00ac51801d3cbdaa1d",
+        "size": 5036
+      },
+      "attributedTo": [
+        {
+          "path": "README.md",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "doudou/SKILL.md",
+      "kind": "modified",
+      "before": {
+        "hash": "69e69e81907f3080b582a37fb697f19a456a59b6a23d17c7fb2134392f029ce1",
+        "size": 3319
+      },
+      "after": {
+        "hash": "1f0c6cfec00a6d93d42353b6725f4d830c34ae5a2be7e4d35fe925c573c2778e",
+        "size": 3692
+      },
+      "attributedTo": [
+        {
+          "path": "doudou/SKILL.md",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "npm/bin/doudou.mjs",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "a823252e0f4db53049bd2e1f52b018958e9db3d84e218624941edceae1f9abce",
+        "size": 2221
+      },
+      "attributedTo": [
+        {
+          "path": "npm",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "npm/lib/options.mjs",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "3381c235ae1c69da6500bf01fc67374f5febcf7b0d601744c0a2ba0549b72ace",
+        "size": 1723
+      },
+      "attributedTo": [
+        {
+          "path": "npm",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "npm/lib/python.mjs",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "f8363bf323b0d96a6dfcf672fa967cab26f77bfb9693cdc227b731b2070d670c",
+        "size": 3090
+      },
+      "attributedTo": [
+        {
+          "path": "npm",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "npm/lib/skill-installer.mjs",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "e188ec4e737fa6ed20e8eb28188e49671827a564aa750fd1fbaab2476fc1ee79",
+        "size": 7231
+      },
+      "attributedTo": [
+        {
+          "path": "npm",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "npm/postinstall.mjs",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "d86e5f177730e6637702986fe12997f87d281f4d890fbcf66faf3bfdaee8cf2f",
+        "size": 591
+      },
+      "attributedTo": [
+        {
+          "path": "npm",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "npm/scripts/build-skill-manifest.mjs",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "efc40041df1616f3f09be4b6d527760576f016d7242b428b30dde8188f83f8d0",
+        "size": 3058
+      },
+      "attributedTo": [
+        {
+          "path": "npm",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "npm/scripts/check-release-version.mjs",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "372bfceeee566c814c9362267488c25b3976abf380b336d26ac5ae32636c51c5",
+        "size": 955
+      },
+      "attributedTo": [
+        {
+          "path": "npm",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "npm/scripts/test-install.mjs",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "28d44e401077bf67774e075189032b3464952e67ee6e4da2bda0a33909e243df",
+        "size": 3627
+      },
+      "attributedTo": [
+        {
+          "path": "npm",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "npm/scripts/verify-package.mjs",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "5637b820abfceedc488708c0dfc7b1d4f0e71f9a1c70215ab00d4723c02458b5",
+        "size": 2405
+      },
+      "attributedTo": [
+        {
+          "path": "npm",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "npm/skill-manifest.json",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "181192e09d88863daba8496939ae6f46a5c8914f6e3f527e92c71bd5894c80bb",
+        "size": 11116
+      },
+      "attributedTo": [
+        {
+          "path": "npm",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "npm/test/options.test.mjs",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "45dd9b9792b824d6e78ccc915a2fddf22be32e8805e3449a4dbab5f4802ccad4",
+        "size": 1608
+      },
+      "attributedTo": [
+        {
+          "path": "npm",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "npm/test/python.test.mjs",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "d51d6a97084bed2e587722882854ab4b6bdad1820bf96bb4c92f99acf1e57b95",
+        "size": 2272
+      },
+      "attributedTo": [
+        {
+          "path": "npm",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "npm/test/skill-installer.test.mjs",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "d4e384fd7007c9048d3eb4aedcfddb512628e53b3baf8d5d1280a8b2db8fcdcd",
+        "size": 2746
+      },
+      "attributedTo": [
+        {
+          "path": "npm",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "package-lock.json",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "55fd2dbc7f467105abfd1344d66324b66c1efa7a767946a818d522b99d046577",
+        "size": 379
+      },
+      "attributedTo": [
+        {
+          "path": "package-lock.json",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "package.json",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "6e6a3c3b2977b2786ffba117c72f8a64b26c5b1f677428d8e5a116ceaabf0726",
+        "size": 1149
+      },
+      "attributedTo": [
+        {
+          "path": "package.json",
+          "kind": "file"
+        }
+      ]
+    }
+  ],
+  "unattributed": [],
+  "unresolvedScopes": [],
+  "noCodeReason": null,
+  "scopeHash": "77f21eb076f90c21e17ff7d5a3837131af460b68cb5517c5d5ad9088caeaeb89"
+}

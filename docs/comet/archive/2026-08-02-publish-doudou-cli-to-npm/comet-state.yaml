@@ -1,0 +1,26 @@
+schema: comet.native.v3
+minimum_runtime_version: 3
+revision: 9
+name: publish-doudou-cli-to-npm
+language: zh-CN
+phase: archive
+brief: brief.md
+approval: confirmed
+approved_contract_hash: beaa088a2760cfe8b647230bd020f82d75a11b8e6e125a8d9d14496945793a45
+spec_changes:
+  - capability: doudou
+    operation: replace
+    source: specs/doudou/spec.md
+    base_hash: 95d9d6a04a97e3fbf1c891eddf3d69ded101d15005db1848a188ee49fe91e27e
+  - capability: npm-distribution
+    operation: create
+    source: specs/npm-distribution/spec.md
+    base_hash: null
+verification_result: pass
+verification_report: verification.md
+implementation_scope: runtime/evidence/scopes/f347b9fed68c0cd12aad540842b02d40c4c4e44e2ec8048fafcfce24fe7377a4.json
+verification_evidence: runtime/evidence/verifications/56483fd369681d3986da6f8706b176740214f83844dfa4ef3e8f4c0dfa0950ae.json
+partial_allowance: null
+archived: true
+created_at: 2026-08-02
+run_id: 6aea26ca-392a-4f40-b262-6c024e38312a

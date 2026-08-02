@@ -2,7 +2,15 @@
 *
 !.gitignore
 !README.md
+!package.json
+!package-lock.json
+!npm/
+!npm/**
+!.github/
+!.github/**
 !docs/
 !docs/**
+docs/**/__pycache__/
+docs/**/*.py[cod]
 !doudou/
 !doudou/**

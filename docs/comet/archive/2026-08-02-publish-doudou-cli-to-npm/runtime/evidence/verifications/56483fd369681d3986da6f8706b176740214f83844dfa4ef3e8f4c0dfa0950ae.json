@@ -1,0 +1,90 @@
+{
+  "schema": "comet.native.verification-evidence.v1",
+  "change": "publish-doudou-cli-to-npm",
+  "sourceRevision": 7,
+  "result": "pass",
+  "freshness": "complete",
+  "contractHash": "beaa088a2760cfe8b647230bd020f82d75a11b8e6e125a8d9d14496945793a45",
+  "acceptanceCriteriaHash": "096f2d51089d0e1e7aca09baa80fd38516952347cb31e955ed88643bc65b2322",
+  "implementationScopeRef": "runtime/evidence/scopes/f347b9fed68c0cd12aad540842b02d40c4c4e44e2ec8048fafcfce24fe7377a4.json",
+  "implementationScopeHash": "f347b9fed68c0cd12aad540842b02d40c4c4e44e2ec8048fafcfce24fe7377a4",
+  "reportRef": "verification.md",
+  "reportHash": "7b7d8665be497c665bcf19af05b3e36d638093d96c3e02b4d3784d1eab36f650",
+  "acceptanceTrace": {
+    "schema": "comet.native.acceptance-trace.v1",
+    "nativeRootRef": "docs/comet",
+    "criteriaHash": "096f2d51089d0e1e7aca09baa80fd38516952347cb31e955ed88643bc65b2322",
+    "total": 6,
+    "evidenced": 6,
+    "skipped": 0,
+    "entries": [
+      {
+        "acceptanceId": "acceptance-04d7f6c12c9eb9d14108963d4b8700c750ddee79f7969c7358c7307b6cf5e1a0",
+        "kind": "brief-example",
+        "source": "brief.md",
+        "evidenceRefs": [
+          ".github/workflows/publish-npm.yml",
+          "package.json"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-39063580f8aba82c22563af428ce1165888ac4b29dcdfba7baf30290960fd8bb",
+        "kind": "brief-example",
+        "source": "brief.md",
+        "evidenceRefs": [
+          "npm/bin/doudou.mjs",
+          "npm/scripts/test-install.mjs"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-4071d9bd8215924256b5b0a0c06ab1109cdf599f598dada5cbc26f20fb94c436",
+        "kind": "brief-example",
+        "source": "brief.md",
+        "evidenceRefs": [
+          "doudou/scripts/doudou/runtime/paths.py",
+          "npm/scripts/verify-package.mjs"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-696bb2ab1445b1862f177b8bcd9eb5b44a9df436781b76ba48b8046232a57fc1",
+        "kind": "brief-example",
+        "source": "brief.md",
+        "evidenceRefs": [
+          "npm/scripts/verify-package.mjs",
+          "npm/skill-manifest.json"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-6d90edce49e421cc359c4ca8fc897f74f7f7b5b4152a3905120473422007f386",
+        "kind": "brief-example",
+        "source": "brief.md",
+        "evidenceRefs": [
+          "npm/lib/skill-installer.mjs",
+          "npm/test/skill-installer.test.mjs"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-b6c8bffbfb16b8e12bb4ed1b059148a3f6172bf1c4b0a3d787826cb38b84e90c",
+        "kind": "brief-example",
+        "source": "brief.md",
+        "evidenceRefs": [
+          "README.md",
+          "npm/bin/doudou.mjs",
+          "npm/lib/python.mjs"
+        ],
+        "skippedReason": null
+      }
+    ],
+    "traceHash": "93aaee868f3e662b656b5eadbbfba7cefae0bc6257d2da4b42a57e1ac4410202"
+  },
+  "partialAllowanceRef": null,
+  "partialAllowanceHash": null,
+  "receiptRef": null,
+  "createdAt": "2026-08-02T06:41:42.488Z",
+  "envelopeHash": "56483fd369681d3986da6f8706b176740214f83844dfa4ef3e8f4c0dfa0950ae"
+}

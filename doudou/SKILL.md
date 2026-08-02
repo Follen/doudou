@@ -9,16 +9,18 @@ description: 使用项目本地 Camoufox Profile 读取抖音群聊、私聊、�
 
 ## 初始化
 
-将 `<cli>` 解释为：
+已通过 npm 安装时，将 `<cli>` 解释为：
 
 ```text
-python <skill-directory>/scripts/doudou.py
+doudou
 ```
+
+只有在维护仓库源码或直接安装 Skill、PATH 中没有 `doudou` 时，才使用 `python <skill-directory>/scripts/doudou.py`。无论使用哪个入口，都保持当前目录为用户项目，不能切换到 Skill 目录。
 
 每次任务开始时执行一次环境门禁：
 
-1. 运行 `<cli> doctor`。该检查默认不启动浏览器；只有诊断 Camoufox 启动本身时才显式使用 `<cli> doctor --launch-probe`。
-2. 若返回 `setup_required`，直接运行 `<cli> setup`，无需再次询问；完成后重跑 `<cli> doctor`。
+1. 运行 `<cli> doctor`。npm 启动器会先轻量校验并按需原子安装/升级当前版本 Skill；该检查默认不启动浏览器。
+2. 若返回 `setup_required`，直接运行 `<cli> setup`，无需再次询问；setup 在用户缓存创建共享 venv、安装锁定 Python 依赖、下载并真实验证 Camoufox，完成后重跑 `<cli> doctor`。首次业务命令也会自动完成这一步。
 3. 只有 doctor 返回 `status=ok` 才运行业务命令。
 4. 运行 `<cli> profile list`，解析用户指定的 Profile；没有 Profile 时创建并登录。
 

@@ -4,18 +4,29 @@
 
 ## 安装
 
-把仓库中的 `doudou/` 复制到 `~/.agents/skills/doudou/`。不要复制项目根的 `profile/`、`message/` 或 `analyze/`。
-
-在实际业务项目中运行：
+需要 Node.js `>=18.18` 和 Python `>=3.10,<4.0`。npm 包只携带启动器和 Skill 源码，不携带 venv、Python 包或浏览器。
 
 ```powershell
-python "$HOME\.agents\skills\doudou\scripts\doudou.py" doctor
-python "$HOME\.agents\skills\doudou\scripts\doudou.py" setup
-python "$HOME\.agents\skills\doudou\scripts\doudou.py" profile create --profile work
-python "$HOME\.agents\skills\doudou\scripts\doudou.py" profile login --profile work
+npm install -g @follenfang/doudou
+doudou doctor
 ```
 
-`setup` 在用户缓存建立共享 venv，锁定 `camoufox==0.5.4` 和官方浏览器 `152.0.4-beta.28`。Profile 与业务记录始终留在当前项目：
+`doudou` 首次运行会把版本匹配的 Skill 原子安装到 `~/.agents/skills/doudou/`。首次业务命令发现运行时缺失时，会自动执行 setup：在用户缓存创建共享 venv、安装锁定依赖、下载并验证 Camoufox `152.0.4-beta.28`，然后继续原命令。也可以提前执行：
+
+```powershell
+doudou setup
+doudou profile create --profile work
+doudou profile login --profile work
+```
+
+不希望全局安装时可使用 npx；即使 npm lifecycle scripts 被禁用，首次命令仍会补齐 Skill：
+
+```powershell
+npx --yes @follenfang/doudou -- doctor
+npx --yes @follenfang/doudou -- profile list
+```
+
+Skill 目录可用 `--skill-dir <完整路径>` 临时覆盖，或用 `DOUDOU_AGENT_HOME` 把默认位置改为 `<home>/skills/doudou`。Profile 与业务记录始终留在运行命令时的当前项目：
 
 ```text
 profile/<profile>/
@@ -39,16 +50,41 @@ message/profiles/<profile>/
 ## 常用命令
 
 ```powershell
-python <skill>\scripts\doudou.py conversations refresh --profile work --kind all
-python <skill>\scripts\doudou.py messages collect --profile work --conversation "会话名称"
-python <skill>\scripts\doudou.py protocol send --profile work --recipient "会话名称" --text "你好"
-python <skill>\scripts\doudou.py protocol send --profile work --confirm --plan-id <id>
-python <skill>\scripts\doudou.py protocol send-batch --profile work --conversation-ids <ID1,ID2> --text "你好"
-python <skill>\scripts\doudou.py videos collect --profile work --douyin-id Rurutia.wow
-python <skill>\scripts\doudou.py video collect --profile work --sec-uid <sec_uid> --aweme-id <视频ID>
+doudou conversations refresh --profile work --kind all
+doudou messages collect --profile work --conversation "会话名称"
+doudou protocol send --profile work --recipient "会话名称" --text "你好"
+doudou protocol send --profile work --confirm --plan-id <id>
+doudou protocol send-batch --profile work --conversation-ids <ID1,ID2> --text "你好"
+doudou videos collect --profile work --douyin-id Rurutia.wow
+doudou video collect --profile work --sec-uid <sec_uid> --aweme-id <视频ID>
 ```
 
 完整 Agent 编排见 [`doudou/SKILL.md`](doudou/SKILL.md)，文件结构见 [`doudou/references/layout.md`](doudou/references/layout.md)。
+
+## 升级与卸载
+
+```powershell
+npm install -g @follenfang/doudou@latest
+npm uninstall -g @follenfang/doudou
+```
+
+npm 卸载不会删除持久化 Skill、共享运行时或项目数据。需要彻底清理时，在确认目录后分别删除 `~/.agents/skills/doudou`、用户缓存中的 `doudou/runtimes`，以及各业务项目自己的 `profile/` 和 `message/`。
+
+## 故障诊断
+
+- `PYTHON_VERSION_UNSUPPORTED`：安装 Python `>=3.10,<4.0` 后重试。
+- `SKILL_INSTALL_FAILED`：目标 Skill 目录存在未知内容；换用 `--skill-dir`，或先人工核对该目录。
+- `RUNTIME_SETUP_FAILED`：运行 `doudou setup` 查看依赖或浏览器下载阶段的原始错误。
+- 登录、短信、滑块或写验证：运行对应命令后，由同一 broker 显示浏览器供人工接管。
+
+## 发布
+
+GitHub Actions 只在 `v*` tag 推送时发布。tag 去掉 `v` 后必须与 `package.json.version` 和 Python Skill 版本完全一致；首个 tag 为 `v2.1.1`。npm Trusted Publisher 需要绑定仓库 `Follen/doudou` 和 workflow `publish-npm.yml`，发布使用 GitHub OIDC，不使用长期 `NPM_TOKEN`。npm 目前不为私有 GitHub 仓库生成 provenance；仓库保持私有时仍使用 OIDC 发布，但发布记录不带 provenance。
+
+```powershell
+git tag v2.1.1
+git push origin v2.1.1
+```
 
 ## 开发验证
 
@@ -57,6 +93,6 @@ $env:PYTHONPATH = "doudou\scripts"
 python -m pytest docs\verification\tests -q
 ```
 
-正式交付树不包含 Node.js、npm、Playwright、浏览器二进制、Profile 或消息数据。
+发布 tarball 包含 npm 启动器和完整 Skill 源码，但不包含 venv、Python packages、浏览器二进制、Profile、消息或 `analyze/` 数据。
 
 批量发送一次确认后复用同一 broker，严格串行，相邻尝试至少间隔 5 秒；首个失败后其余项目标记为 `skipped`，不会继续写入。

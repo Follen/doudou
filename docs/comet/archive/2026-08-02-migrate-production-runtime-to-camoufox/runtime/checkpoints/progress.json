@@ -1,0 +1,15 @@
+{
+  "schema": "comet.native.progress-checkpoint.v1",
+  "id": "99293611-b857-4016-a097-511db63fd99b",
+  "change": "migrate-production-runtime-to-camoufox",
+  "phase": "build",
+  "previousRevision": 2,
+  "stateRevision": 3,
+  "summary": "Windows 后台有头启动已改为窗口创建事件前置隐藏；真实冷启动捕获 2 个事件，1 个主窗口在首次 SHOW 前已置 alpha=0；46 个测试与 Ruff 全部通过。",
+  "nextAction": "继续修复聊天发送按钮 UI adapter，并完成授权群的文字、引用、@、图片及后续全量业务回归。",
+  "inputHash": "eb0732b3c7c1df20dd6016ae1f21d323e23df375be65bd7c7746550d38cbb8aa",
+  "manifestHash": "3bfad6ebd02ed640e92fbcdb2f1078cb009ad20442fd598f02546fc0be2b0b20",
+  "manifestRef": "runtime/checkpoints/manifests/3bfad6ebd02ed640e92fbcdb2f1078cb009ad20442fd598f02546fc0be2b0b20.json",
+  "artifactCount": 5,
+  "createdAt": "2026-08-01T22:51:49.945Z"
+}

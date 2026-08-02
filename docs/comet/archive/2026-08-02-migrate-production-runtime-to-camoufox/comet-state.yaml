@@ -1,0 +1,22 @@
+schema: comet.native.v3
+minimum_runtime_version: 3
+revision: 8
+name: migrate-production-runtime-to-camoufox
+language: zh-CN
+phase: archive
+brief: brief.md
+approval: confirmed
+approved_contract_hash: 0391da861c5b16fb1117d97820954e420eda567bff59b80359a4a65f846c2c7b
+spec_changes:
+  - capability: doudou
+    operation: replace
+    source: specs/doudou/spec.md
+    base_hash: 97fa2b807d6bd8435c918789a79fa9e2afc1cc6edf719522815553b6e2a84796
+verification_result: pass
+verification_report: verification.md
+implementation_scope: runtime/evidence/scopes/487eb4455019786ab9271ee40bdb0d8454f3fbbc8beb6b82787e4965a583c8f6.json
+verification_evidence: runtime/evidence/verifications/4d4cc2d89ed8e25085efe676a4309db61fff375ec7284e59d8d073a1f90e1f6e.json
+partial_allowance: null
+archived: true
+created_at: 2026-08-01
+run_id: 0e6ea6c5-de3d-4ebf-a1c0-46bf309aaf1f

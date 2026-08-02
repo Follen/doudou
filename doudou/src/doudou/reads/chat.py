@@ -1,0 +1,413 @@
+from __future__ import annotations
+
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import Any
+
+from ..common.core import random_id, utc_now
+from ..common.errors import DoudouError
+from ..models.resolver import infer_self_uid, resolve_conversation
+from ..protocol.contracts import WEB_PROTOCOL
+from ..protocol.im import (
+    build_command_request,
+    extract_messages,
+    find_conversations,
+    messages_request,
+    parse_participants_page,
+    participants_request,
+    response_body,
+)
+from ..protocol.protobuf import decode_fields, get_field
+from ..protocol.responses import ResponseCodes
+from ..runtime.browser.session import BrowserSession
+from ..runtime.paths import profile_paths
+from ..storage.media import download_message_images
+from ..storage.repository import (
+    merge_messages,
+    read_conversation_index,
+    read_session_index_snapshot,
+    write_conversation_index,
+    write_session_index_snapshot,
+)
+from .transport import parse_result
+
+INDEX_MAX_AGE_SECONDS = 2 * 60 * 60
+GET_MESSAGES_ENDPOINT = "https://imapi.douyin.com/v1/message/get_by_conversation"
+PARTICIPANTS_ENDPOINT = "https://imapi.douyin.com/v1/conversation/participants_list"
+
+
+async def _resolve_user_names(
+    session: BrowserSession, sec_uids: list[str]
+) -> dict[str, str]:
+    names: dict[str, str] = {}
+    unique = list(dict.fromkeys(value for value in sec_uids if value))
+    for offset in range(0, len(unique), 20):
+        result = await session.page.evaluate(
+            """async ({values, endpoint}) => {
+              const body = new URLSearchParams({sec_user_ids: JSON.stringify(values)});
+              const response = await fetch(endpoint, {method: 'POST', credentials: 'include', headers: {'content-type': 'application/x-www-form-urlencoded'}, body});
+              return {http_status: response.status, content_type: response.headers.get('content-type'), retry_after: response.headers.get('retry-after'), text: await response.text()};
+            }""",
+            {
+                "values": unique[offset : offset + 20],
+                "endpoint": WEB_PROTOCOL.path("user_info"),
+            },
+        )
+        try:
+            value = await parse_result(
+                session,
+                result,
+                codes=ResponseCodes(
+                    "USER_INFO_RESPONSE_EMPTY",
+                    "USER_INFO_RESPONSE_INVALID",
+                    "USER_INFO_LOOKUP_FAILED",
+                ),
+                operation="chat.user_info",
+            )
+        except DoudouError as error:
+            if error.code in {"LOGIN_REQUIRED", "VERIFICATION_REQUIRED"}:
+                raise
+            continue
+        pending = [value]
+        while pending:
+            value = pending.pop()
+            if isinstance(value, dict):
+                sec_uid = value.get("sec_uid") or value.get("secUid")
+                name = (
+                    value.get("remark_name")
+                    or value.get("remarkName")
+                    or value.get("nickname")
+                    or value.get("nick_name")
+                    or value.get("name")
+                )
+                if sec_uid and name:
+                    names[str(sec_uid)] = str(name)
+                pending.extend(value.values())
+            elif isinstance(value, list):
+                pending.extend(value)
+    return names
+
+
+async def _enrich_direct_names(
+    session: BrowserSession, conversations: list[dict[str, Any]]
+) -> None:
+    self_uid = infer_self_uid(conversations)
+    targets = [
+        participant
+        for conversation in conversations
+        if conversation["conversation_type"] == 1
+        for participant in conversation.get("participants", {}).get("participants", [])
+        if participant.get("uid") != self_uid and participant.get("sec_uid")
+    ]
+    names = await _resolve_user_names(session, [item["sec_uid"] for item in targets])
+    for conversation in conversations:
+        if conversation["conversation_type"] != 1:
+            continue
+        candidates = [
+            participant.get("alias") or names.get(participant.get("sec_uid") or "")
+            for participant in conversation.get("participants", {}).get(
+                "participants", []
+            )
+            if participant.get("uid") != self_uid
+        ]
+        candidates = [value for value in candidates if value]
+        if len(set(candidates)) == 1:
+            conversation["display_name"] = candidates[0]
+
+
+def _age_seconds(timestamp: str | None) -> float | None:
+    if not timestamp:
+        return None
+    try:
+        value = datetime.fromisoformat(timestamp.replace("Z", "+00:00"))
+    except ValueError:
+        return None
+    return max(
+        0.0,
+        (datetime.now(timezone.utc) - value.astimezone(timezone.utc)).total_seconds(),
+    )
+
+
+async def refresh_session_index(
+    session: BrowserSession, data_root: Path, profile: str, force: bool = False
+) -> dict[str, Any]:
+    cached = read_session_index_snapshot(data_root, profile)
+    age = _age_seconds(cached.get("completed_at") if isinstance(cached, dict) else None)
+    if not force and cached and age is not None and age <= INDEX_MAX_AGE_SECONDS:
+        await session.ensure_ready()
+        index = read_conversation_index(data_root, profile)
+        if index:
+            return {
+                "source": "cache",
+                "age_seconds": age,
+                "snapshot": cached,
+                "index": index,
+            }
+    ready = await session.ensure_ready()
+    if not session.init_response:
+        raise DoudouError(
+            "VERIFICATION_REQUIRED",
+            "IM initialization did not produce a usable response.",
+        )
+    conversations = find_conversations(session.init_response)
+    if not conversations:
+        raise DoudouError(
+            "IM_INITIALIZATION_EMPTY",
+            "IM initialization returned no structured conversations.",
+        )
+    await _enrich_direct_names(session, conversations)
+    index = write_conversation_index(data_root, profile, conversations)
+    snapshot = {
+        "schema": "doudou.session-index-snapshot.v1",
+        "profile_id": profile_paths(data_root, profile).profile_id,
+        "completed_at": utc_now(),
+        "conversation_count": len(conversations),
+        "direct_count": sum(item["conversation_type"] == 1 for item in conversations),
+        "group_count": sum(item["conversation_type"] == 2 for item in conversations),
+        "browser_initialization_count": ready["initialization_count"],
+    }
+    files = write_session_index_snapshot(data_root, profile, snapshot)
+    return {
+        "source": "live",
+        "age_seconds": 0.0,
+        "snapshot": snapshot,
+        "index": index,
+        "files": files,
+    }
+
+
+async def collect_messages(
+    session: BrowserSession,
+    data_root: Path,
+    profile: str,
+    target: str,
+    from_time: str | None = None,
+    to_time: str | None = None,
+    max_pages: int = 100,
+    download_images: bool = True,
+) -> dict[str, Any]:
+    refreshed = await refresh_session_index(session, data_root, profile)
+    conversation = resolve_conversation(refreshed["index"]["conversations"], target)
+    if not session.init_request:
+        raise DoudouError(
+            "IM_INITIALIZATION_MISSING",
+            "The current broker session has no IM request envelope.",
+        )
+    lower = (
+        datetime.fromisoformat(from_time.replace("Z", "+00:00")).timestamp() * 1000
+        if from_time
+        else None
+    )
+    upper = (
+        datetime.fromisoformat(to_time.replace("Z", "+00:00")).timestamp() * 1000
+        if to_time
+        else None
+    )
+    messages: dict[str, dict[str, Any]] = {}
+    pages: list[dict[str, Any]] = []
+    anchor = 0
+    for page_number in range(1, max_pages + 1):
+        body = messages_request(conversation, anchor_index=anchor)
+        request = build_command_request(session.init_request, 301, body)
+        http_status, raw = await session.post_protobuf(GET_MESSAGES_ENDPOINT, request)
+        status, status_text, payload, gateway = response_body(raw, 301)
+        if gateway is not None:
+            raise DoudouError(
+                "VERIFICATION_REQUIRED",
+                "Message collection reached a JSON verification gateway.",
+                {"gateway_keys": sorted(gateway)},
+            )
+        if http_status != 200 or status != 0 or payload is None:
+            raise DoudouError(
+                "MESSAGE_COLLECT_FAILED",
+                "Message protocol request failed.",
+                {
+                    "http_status": http_status,
+                    "status": status,
+                    "status_text": status_text,
+                },
+            )
+        batch = extract_messages(payload, conversation["conversation_id"])
+        for item in batch:
+            created = int(item["create_time_ms"])
+            if (lower is None or created >= lower) and (
+                upper is None or created <= upper
+            ):
+                messages[item["message_id"]] = item
+        fields = decode_fields(payload)
+        next_field, more_field = get_field(fields, 2, 0), get_field(fields, 3, 0)
+        next_cursor = int(next_field.value) if next_field else 0
+        has_more = bool(int(more_field.value)) if more_field else False
+        pages.append(
+            {
+                "page": page_number,
+                "anchor_in": str(anchor),
+                "next_cursor": str(next_cursor),
+                "received": len(batch),
+                "has_more": has_more,
+            }
+        )
+        oldest = min((int(item["create_time_ms"]) for item in batch), default=None)
+        if (
+            not has_more
+            or next_cursor == anchor
+            or (lower is not None and oldest is not None and oldest < lower)
+        ):
+            break
+        anchor = next_cursor
+    else:
+        raise DoudouError(
+            "MESSAGE_PAGE_LIMIT",
+            "Message collection reached the configured page limit.",
+            {"max_pages": max_pages},
+        )
+
+    ordered = sorted(
+        messages.values(),
+        key=lambda item: (item["create_time_ms"], int(item["message_id"])),
+    )
+    names = await _resolve_user_names(
+        session,
+        [
+            message.get("sender", {}).get("sec_uid")
+            for message in ordered
+            if message.get("sender", {}).get("sec_uid")
+        ],
+    )
+    for message in ordered:
+        sender = message.get("sender") or {}
+        sender["name"] = names.get(sender.get("sec_uid") or "")
+        message["sender"] = sender
+    image_stats = {"attempted": 0, "downloaded": 0, "failed": 0}
+    if download_images:
+        paths = profile_paths(data_root, profile)
+        for message in ordered:
+            if message["message_type"] != 27:
+                continue
+            day = (
+                datetime.fromtimestamp(message["create_time_ms"] / 1000, timezone.utc)
+                .date()
+                .isoformat()
+            )
+            directory = paths.conversations / "media" / day / message["message_id"]
+            results = await __import__("asyncio").to_thread(
+                download_message_images, message, directory
+            )
+            message["images"] = results
+            image_stats["attempted"] += len(results)
+            image_stats["downloaded"] += sum(
+                item["status"] == "downloaded" for item in results
+            )
+            image_stats["failed"] += sum(
+                item["status"] != "downloaded" for item in results
+            )
+    merge = merge_messages(data_root, profile, conversation, ordered)
+    inventory: dict[str, int] = {}
+    for message in ordered:
+        for field in message.get("unknown_fields") or []:
+            key = f"field_{field['field']}_wire_{field['wire']}"
+            inventory[key] = inventory.get(key, 0) + 1
+    run = {
+        "schema": "doudou.message-collect-run.v1",
+        "run_id": random_id("collect"),
+        "completed_at": utc_now(),
+        "conversation": conversation,
+        "pages": pages,
+        "message_count": len(ordered),
+        "unknown_field_inventory": inventory,
+        "images": image_stats,
+        "merge": merge,
+    }
+    return run
+
+
+async def resolve_members(
+    session: BrowserSession, conversation: dict[str, Any], requested: list[str]
+) -> list[dict[str, Any]]:
+    if not requested:
+        return []
+    if conversation["conversation_type"] != 2:
+        raise DoudouError(
+            "MENTION_REQUIRES_GROUP", "Mentions are only valid in group conversations."
+        )
+    if not session.init_request:
+        raise DoudouError(
+            "IM_INITIALIZATION_MISSING",
+            "The current broker session has no IM request envelope.",
+        )
+    initial = conversation.get("participants") or {
+        "participants": [],
+        "has_more": False,
+        "cursor": "0",
+    }
+    members = list(initial.get("participants") or [])
+    cursor, has_more = initial.get("cursor") or "0", bool(initial.get("has_more"))
+    for _ in range(100):
+        if not has_more:
+            break
+        request = build_command_request(
+            session.init_request, 605, participants_request(conversation, cursor)
+        )
+        http_status, raw = await session.post_protobuf(PARTICIPANTS_ENDPOINT, request)
+        status, status_text, payload, gateway = response_body(raw, 605)
+        if gateway is not None:
+            raise DoudouError(
+                "VERIFICATION_REQUIRED",
+                "Member lookup reached a JSON verification gateway.",
+            )
+        if http_status != 200 or status != 0 or payload is None:
+            raise DoudouError(
+                "PARTICIPANT_LIST_FAILED",
+                "Group member protocol request failed.",
+                {
+                    "http_status": http_status,
+                    "status": status,
+                    "status_text": status_text,
+                },
+            )
+        wrapper = decode_fields(payload)
+        page_field = get_field(wrapper, 1, 2)
+        page = parse_participants_page(bytes(page_field.value) if page_field else b"")
+        members.extend(page["participants"])
+        cursor, has_more = page["cursor"], page["has_more"]
+    unique = {item["uid"]: item for item in members}
+    members = list(unique.values())
+    names = await _resolve_user_names(
+        session, [item["sec_uid"] for item in members if item.get("sec_uid")]
+    )
+    for member in members:
+        member["name"] = member.get("alias") or names.get(
+            member.get("sec_uid") or "", ""
+        )
+    resolved: list[dict[str, Any]] = []
+    for query in requested:
+        matches = [
+            member
+            for member in members
+            if query
+            in {
+                member.get("name"),
+                member.get("alias"),
+                member.get("uid"),
+                member.get("sec_uid"),
+            }
+        ]
+        if not matches:
+            raise DoudouError(
+                "MENTION_MEMBER_NOT_FOUND",
+                "Group member was not found.",
+                {"query": query},
+            )
+        if len(matches) > 1:
+            raise DoudouError(
+                "MENTION_MEMBER_AMBIGUOUS",
+                "Group member name is ambiguous.",
+                {
+                    "query": query,
+                    "candidates": [
+                        {"uid": item["uid"], "name": item["name"]} for item in matches
+                    ],
+                },
+            )
+        resolved.append(matches[0])
+    return list({item["uid"]: item for item in resolved}.values())

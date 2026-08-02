@@ -1,4 +1,4 @@
 interface:
   display_name: "Doudou"
-  short_description: "通过本地 Profile 获取与发送抖音群聊和私聊消息"
-  default_prompt: "Use $doudou to inspect my local Profile, collect group or direct messages, and send or quote-reply through the protocol CLI."
+  short_description: "用本地 Camoufox Profile 读取抖音内容并执行受控页面写操作"
+  default_prompt: "Use $doudou from my current project to inspect a local Profile, collect chats or video data through structured protocols, and confirm bounded page writes."

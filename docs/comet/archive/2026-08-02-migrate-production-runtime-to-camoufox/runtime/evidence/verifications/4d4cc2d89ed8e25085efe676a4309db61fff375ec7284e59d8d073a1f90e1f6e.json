@@ -1,0 +1,173 @@
+{
+  "schema": "comet.native.verification-evidence.v1",
+  "change": "migrate-production-runtime-to-camoufox",
+  "sourceRevision": 6,
+  "result": "pass",
+  "freshness": "complete",
+  "contractHash": "0391da861c5b16fb1117d97820954e420eda567bff59b80359a4a65f846c2c7b",
+  "acceptanceCriteriaHash": "dfca0aff7fd75a174e641e4f08348e95d6751068f3e420226e16dba96b70d6cc",
+  "implementationScopeRef": "runtime/evidence/scopes/487eb4455019786ab9271ee40bdb0d8454f3fbbc8beb6b82787e4965a583c8f6.json",
+  "implementationScopeHash": "487eb4455019786ab9271ee40bdb0d8454f3fbbc8beb6b82787e4965a583c8f6",
+  "reportRef": "verification.md",
+  "reportHash": "be9ef30e327dba0abd2b2a4e32adc0b376b6c3305e1868b127867aae5e2226b6",
+  "acceptanceTrace": {
+    "schema": "comet.native.acceptance-trace.v1",
+    "nativeRootRef": "docs/comet",
+    "criteriaHash": "dfca0aff7fd75a174e641e4f08348e95d6751068f3e420226e16dba96b70d6cc",
+    "total": 13,
+    "evidenced": 13,
+    "skipped": 0,
+    "entries": [
+      {
+        "acceptanceId": "acceptance-01be6892e728a3c585f30013b0c3ca37bf5c50f4ad47a62c0a5be015b7917495",
+        "kind": "brief-example",
+        "source": "brief.md",
+        "evidenceRefs": [
+          "docs/verification/camoufox-migration-20260802.md",
+          "doudou/runtime-manifest.json",
+          "doudou/src/doudou/runtime/environment.py"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-04a022259fb773c560c94f36487b4eb7dc66ca1f0414e85e2733e49240deb1d5",
+        "kind": "brief-example",
+        "source": "brief.md",
+        "evidenceRefs": [
+          "docs/verification/camoufox-migration-20260802.md",
+          "doudou/src/doudou/runtime/broker/server.py",
+          "doudou/tests/test_broker.py"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-0661fae1dc656a5330a25ead13aa63f4e80ecbc2d7b15acc77e64798a31f38ea",
+        "kind": "brief-example",
+        "source": "brief.md",
+        "evidenceRefs": [
+          "docs/verification/camoufox-migration-20260802.md",
+          "doudou/src/doudou/runtime/browser/session.py",
+          "doudou/src/doudou/runtime/profile.py"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-52abe96a90f2164dd495e571b0360bfbf26ee687ddec1a0f51b3d5924d3b139d",
+        "kind": "brief-example",
+        "source": "brief.md",
+        "evidenceRefs": [
+          "docs/verification/camoufox-migration-20260802.md",
+          "doudou/src/doudou/features/video/service.py",
+          "doudou/tests/test_video_writes.py"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-530f3f6aa6eec07cf0dd089a96a66f9f28b3b3247b7c65ad4c5099be2352f415",
+        "kind": "brief-example",
+        "source": "brief.md",
+        "evidenceRefs": [
+          "docs/verification/camoufox-migration-20260802.md",
+          "doudou/src/doudou/features/chat/service.py",
+          "doudou/src/doudou/ui/components/chat.py"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-799f625af9c06f7b4242acfbb63b8aeb47fdbcf85ae20840fa6cc64f998c74ad",
+        "kind": "brief-example",
+        "source": "brief.md",
+        "evidenceRefs": [
+          "docs/verification/camoufox-migration-20260802.md",
+          "doudou/src/doudou/runtime/paths.py",
+          "doudou/tests/test_profile.py"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-ac100d3e335b9d4dfc9e08fd9eb7c0c7c488bb463df0d89d42dec9b5fda31d98",
+        "kind": "brief-example",
+        "source": "brief.md",
+        "evidenceRefs": [
+          "docs/verification/camoufox-migration-20260802.md",
+          "doudou/src/doudou/features/chat/service.py",
+          "doudou/tests/test_batch.py"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-ba9da21feb6c122494f56c5de642ede9e2e2ef8d343f6190e4bdc8f741eea586",
+        "kind": "brief-example",
+        "source": "brief.md",
+        "evidenceRefs": [
+          "docs/verification/camoufox-migration-20260802.md",
+          "doudou/src/doudou/reads/video.py",
+          "doudou/src/doudou/ui/adapters.py"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-bbf7228fb96f6afdc32a421b707c71f208ae11d48e828649da4af78571c51c4a",
+        "kind": "brief-example",
+        "source": "brief.md",
+        "evidenceRefs": [
+          "docs/verification/camoufox-migration-20260802.md",
+          "doudou/src/doudou/runtime/platform/windows.py",
+          "doudou/tests/test_windows_process.py"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-c8e019690dfdbacdc50892912860b904a338bda77f5271416dadab8180b2a550",
+        "kind": "brief-example",
+        "source": "brief.md",
+        "evidenceRefs": [
+          "docs/verification/camoufox-migration-20260802.md",
+          "doudou/src/doudou/protocol/im.py",
+          "doudou/tests/test_protocol_storage.py"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-ced90b49dffb60f74c28b62a803ce46316ac52577cc0245998cf6fcc0c6f8778",
+        "kind": "brief-example",
+        "source": "brief.md",
+        "evidenceRefs": [
+          "docs/verification/camoufox-migration-20260802.md",
+          "doudou/src/doudou/reads/chat.py",
+          "doudou/src/doudou/storage/media.py",
+          "doudou/tests/test_protocol_storage.py"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-e01285efec2c532f541e805168b4d2dd594d360fccbec0e7a19a20296da5f63b",
+        "kind": "brief-example",
+        "source": "brief.md",
+        "evidenceRefs": [
+          "docs/verification/camoufox-migration-20260802.md",
+          "doudou/SKILL.md",
+          "doudou/src/doudou/runtime/paths.py"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-e1b7346c74cb284ade9490771403ea9199a2dc6a12b06510563b54e513b8dc93",
+        "kind": "brief-example",
+        "source": "brief.md",
+        "evidenceRefs": [
+          "docs/verification/camoufox-migration-20260802.md",
+          "doudou/src/doudou/runtime/browser/session.py",
+          "doudou/tests/test_broker.py"
+        ],
+        "skippedReason": null
+      }
+    ],
+    "traceHash": "aec63b1a628feb3669742ba83ceb40d130187905acdd41525404f8ee479e6566"
+  },
+  "partialAllowanceRef": null,
+  "partialAllowanceHash": null,
+  "receiptRef": "runtime/evidence/check-receipts/c7c218d048f67b68f715e77e2bf0acf7ad0a29ae5fb611dd43ea26b921ebbddb.json",
+  "createdAt": "2026-08-02T01:22:48.715Z",
+  "envelopeHash": "4d4cc2d89ed8e25085efe676a4309db61fff375ec7284e59d8d073a1f90e1f6e"
+}

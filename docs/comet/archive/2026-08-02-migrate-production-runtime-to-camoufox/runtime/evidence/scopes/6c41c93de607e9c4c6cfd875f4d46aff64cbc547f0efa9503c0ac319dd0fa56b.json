@@ -1,0 +1,1603 @@
+{
+  "schema": "comet.native.implementation-scope.v2",
+  "contractHash": "0391da861c5b16fb1117d97820954e420eda567bff59b80359a4a65f846c2c7b",
+  "baselineProjectionRef": "runtime/evidence/snapshots/6ff5710a58d14af7048d8a87d6b5f8f9312c51718969ba885dee9b1b5a08758e.json",
+  "baselineProjectionHash": "6ff5710a58d14af7048d8a87d6b5f8f9312c51718969ba885dee9b1b5a08758e",
+  "currentProjectionRef": "runtime/evidence/snapshots/ff6e02a01d9120deffd515f61cda771064dd822cde1d575728e7ac1816e4c74c.json",
+  "currentProjectionHash": "ff6e02a01d9120deffd515f61cda771064dd822cde1d575728e7ac1816e4c74c",
+  "complete": true,
+  "declaredArtifacts": [
+    {
+      "path": "README.md",
+      "kind": "file"
+    },
+    {
+      "path": "doudou",
+      "kind": "directory"
+    }
+  ],
+  "changes": [
+    {
+      "path": "README.md",
+      "kind": "modified",
+      "before": {
+        "hash": "ca5d779935af7df29fd3b361f7e7911ed71977043bf37742b120d1ab1f3e7a69",
+        "size": 7100
+      },
+      "after": {
+        "hash": "8f3ec1c34c1bbc806b4c5a48be51864aae7b0f4eef4490f489393bcb2aebab9c",
+        "size": 2830
+      },
+      "attributedTo": [
+        {
+          "path": "README.md",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "doudou/.gitignore",
+      "kind": "modified",
+      "before": {
+        "hash": "76996f411eb571e40adc37ba2b3577c18c3efcc2f69539830131f4031db033be",
+        "size": 117
+      },
+      "after": {
+        "hash": "ef4a9428e189fe5e5729f5cd818ac3f49cc573f0e88891841d82b0d7605b3351",
+        "size": 175
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/SKILL.md",
+      "kind": "modified",
+      "before": {
+        "hash": "0dd55c75df3325697ae836c11e77df8ae307d7668aa490987ae3faefc5f574a3",
+        "size": 9543
+      },
+      "after": {
+        "hash": "22c8eae29386a3e8bdd7f7798215c6ab81d9b308da146f5e60a9dc4d2a98b28e",
+        "size": 7347
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/agents/openai.yaml",
+      "kind": "modified",
+      "before": {
+        "hash": "d4d143a2a6c76d7a3aa134ab3da9b31f0f9286ef2e516f08025f9abc40fcf7c7",
+        "size": 272
+      },
+      "after": {
+        "hash": "27c5f016171fde3d8758e31ab7c35ad3133d53074a49fb68214380d879010706",
+        "size": 312
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/bin/doudou.js",
+      "kind": "removed",
+      "before": {
+        "hash": "2ead0bd37f8f09721067dfe1eaa4be8b10c7a7902ddc4ffb9100e8c2abe92579",
+        "size": 517
+      },
+      "after": null,
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/bin/doudou.py",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "5ea64f6ca629a01d74f9ecb7d239e6946cacf56461045e814666805413a7926f",
+        "size": 915
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/npm-shrinkwrap.json",
+      "kind": "removed",
+      "before": {
+        "hash": "d2fba3b1ac0c1b52f19016c53edc8a4c37e507edbb5a5bd11cae70bb8d5e59e0",
+        "size": 1770
+      },
+      "after": null,
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/package.json",
+      "kind": "removed",
+      "before": {
+        "hash": "e1e99babf30cc45d0dd3fa0f89035775e1424e49d1dcef109ec7a78b6a37c17f",
+        "size": 670
+      },
+      "after": null,
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/pyproject.toml",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "4ba345ebc66f568bf6afb9f9c837bc7c79d349faf115165ebed956cabb102139",
+        "size": 514
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/references/layout.md",
+      "kind": "modified",
+      "before": {
+        "hash": "28844cdb41d2c7696dba5e2bd5d4876539d0119dd7bf6ec2267073d057c4a936",
+        "size": 3302
+      },
+      "after": {
+        "hash": "c1a3cca22bfbb5c268c4279a04b0b1a4feb370c6d872bf04c698cad356f6eb03",
+        "size": 1580
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/references/protobuf-message-fields.md",
+      "kind": "modified",
+      "before": {
+        "hash": "dfa65e3848f1839c48928b3d5a424586e0202aa9870ca3b57ab6e62d517adf40",
+        "size": 5261
+      },
+      "after": {
+        "hash": "733ecb63710e99c8d2b9cdf67257fe6e6a5f7a98d02ff48e7d925d171947e020",
+        "size": 5560
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/requirements.in",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "187c5f79294e3129f8f7f90f561e55b37842fc8969cdd29f811a3c1eb5af3795",
+        "size": 37
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/requirements.lock",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "22d4105ec2a1740dd830a16d8091903a58d3389be8c95325e7c2075c1da1cfc0",
+        "size": 68016
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/runtime-manifest.json",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "084b9dd8b7167bdef476a4cc1ddbdb51b1c1188a3c140ea1cc53820063fd78b4",
+        "size": 357
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/scripts/capture-headed-send.js",
+      "kind": "removed",
+      "before": {
+        "hash": "bc60d19a321f7c2ff5583d8be4c8a8a92602a62231825eea9d4c609f46d055db",
+        "size": 6340
+      },
+      "after": null,
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/src/adapter.js",
+      "kind": "removed",
+      "before": {
+        "hash": "68ce611d85b1b9d44410f76f212524d4aeb5759f0596b2e129b1895295983690",
+        "size": 45249
+      },
+      "after": null,
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/src/cli.js",
+      "kind": "removed",
+      "before": {
+        "hash": "debe8b4dc88e26491dff7c3518987d62f4af019e5a02610f11fe60789426fb9e",
+        "size": 4709
+      },
+      "after": null,
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/src/commands.js",
+      "kind": "removed",
+      "before": {
+        "hash": "4faa6b8071e6140f4039df8fbe6cfe61735cf7c3844f327a2c3326142a966b06",
+        "size": 43364
+      },
+      "after": null,
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/src/core.js",
+      "kind": "removed",
+      "before": {
+        "hash": "cb110db95c0f1843252236ca72212dd1eb708317a068af146e4a7c0899f55cbf",
+        "size": 6005
+      },
+      "after": null,
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/src/doctor.js",
+      "kind": "removed",
+      "before": {
+        "hash": "f80a0749b782b97ba6b719b43fc5eeeecf0dd69c63cba68e1f50337c62f29b49",
+        "size": 5615
+      },
+      "after": null,
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/src/doudou/__init__.py",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "2df67e92074874bedde209f5f02ea81a4fed34a61ddd95ed21acdd370bc531d5",
+        "size": 56
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/src/doudou/cli.py",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "dcc069346f308b74118cdaaa2cafdab1d804ae866fec590e823bcac94d9022a1",
+        "size": 17551
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/src/doudou/common/__init__.py",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "7ada3dd5ecdbb89701ed78aaec1cc423eed68cf5f46b625d4229d8dc13c5a858",
+        "size": 55
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/src/doudou/common/core.py",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "25fd0af670554d6a7ea5653d06dbf682216f55481a302501933d2c6ce357dd78",
+        "size": 4437
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/src/doudou/common/errors.py",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "0eceafcaab5e2f97de3aad74fc1578717a795b29f79f2c7dc04d49c910a060a3",
+        "size": 697
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/src/doudou/features/__init__.py",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "a648bbfd19594efc46fc936c82f05d4f35d187e0874b9dd3e1dd6efad83e620d",
+        "size": 61
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/src/doudou/features/broker.py",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "225f866a3ee4ad701196bf7fd354eec588262151f7d0433bcb13bd8d5279325d",
+        "size": 3479
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/src/doudou/features/chat/__init__.py",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "ef71db2bafe114b519d367856ea80f6561ec000c3a5b1e3ade4978f32ca1db6b",
+        "size": 59
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/src/doudou/features/chat/service.py",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "fa30e422023d67fdd6f0dc2d4d6e264af122f94c51638723f6dc14f0cb8c9a0a",
+        "size": 17095
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/src/doudou/features/diagnostics.py",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "94c629c2c4ecdc3d551a7bf933d091f14bb60f98fa7c365c9c761253e032a65b",
+        "size": 8197
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/src/doudou/features/video/__init__.py",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "4c22ac7342ca65074dc4619def5292b3a805245e2767793279c78ad676c6f7be",
+        "size": 68
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/src/doudou/features/video/service.py",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "85b533ac4fe1161bb5590e427985e59b664361eb3cbe9aa28452c0e3f0111077",
+        "size": 8012
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/src/doudou/models/__init__.py",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "18bcc25569d019b3fa96bba356d363f52359d36431399eb6d0008eae68acc5de",
+        "size": 54
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/src/doudou/models/records.py",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "523a2e0113f5444df6dd2af5750e468d756b70887f23de4cc975844ccbd29688",
+        "size": 875
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/src/doudou/models/resolver.py",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "65ccd9fbb37465befd3103bd23643ef2f67645445b034cbb26bc8c18a94b374d",
+        "size": 4051
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/src/doudou/protocol/__init__.py",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "a119b351dedd5dd5709278ac50eff131ffcf92bbaea994a1144adfe05a95919c",
+        "size": 59
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/src/doudou/protocol/contracts.py",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "5ab00e190ccb168caad587c5c27183ce26696a929bde1eb65f2b3efeac2c127d",
+        "size": 2254
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/src/doudou/protocol/im.py",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "dabc64c9e8cc1df75d91beef15ce0939c8b98d4771158d99beba92c28b762699",
+        "size": 17322
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/src/doudou/protocol/protobuf.py",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "066245b2e2a9f09603ab525c00f432fea7ba2a94c93da718501a6528561ff10e",
+        "size": 3576
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/src/doudou/protocol/responses.py",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "c2602adcb55831733f578a3ed87556d2282ecddea78a0d1141dee10f5da0b633",
+        "size": 3833
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/src/doudou/protocol/web.py",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "a411e7de2ff3721076e79160a657ef5587c4aede0ae73e9abe4f99459ad4b320",
+        "size": 5838
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/src/doudou/protocol/write_responses.py",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "32244cf51974d36484c9f13b2d6c32a317610d2ada4884f26325f1083e990ede",
+        "size": 4226
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/src/doudou/reads/__init__.py",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "56a1f7a9a70fa08813a147303a1f8a401a84c9b1bce4ecf81d19824a888ba1f2",
+        "size": 36
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/src/doudou/reads/chat.py",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "34d4ff71f98dd8f9ca4aafd054546193dcf69a5fdc79a76885f0382d09fa88ef",
+        "size": 15592
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/src/doudou/reads/transport.py",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "8077d8f3b1c8f1e1b53f96688b8e484469e1dbc520d9c56d986b882ad9cadbb7",
+        "size": 2164
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/src/doudou/reads/video.py",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "2ce40fc485d204274a6828006f91bd506b7e24f1452534339d26c1dd7dae4e77",
+        "size": 25261
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/src/doudou/runtime/__init__.py",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "e3381a79138d4645276b6446d9e207bcfda147c973c6ad62cb1779eb8c5f1e0d",
+        "size": 59
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/src/doudou/runtime/broker/__init__.py",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "8f5982c4d18e57d900a7641427cfde85f62b4f8c71d3c19525b53c724d46282e",
+        "size": 64
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/src/doudou/runtime/broker/client.py",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "add4c540b22183e7e9f240d06f135206e1434ec11abd343681178970f71d04e8",
+        "size": 9118
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/src/doudou/runtime/broker/server.py",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "a37357a6f1376e88a8e8f0d1745005252358f3ad3f098639fb8f3c532517de3a",
+        "size": 16951
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/src/doudou/runtime/browser/__init__.py",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "29a0da985768c585fc32a0262be34eb1e2e4eac11f1b5a23b83bcff1de22c4c5",
+        "size": 56
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/src/doudou/runtime/browser/session.py",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "13583e4a4598bab6555daabbc86a41ab81cd14a4c8322321a3fe98e0cadd649c",
+        "size": 27086
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/src/doudou/runtime/environment.py",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "95eded3343c02e8ed6411742040ee33634f017b50648de763fa8c594d17cdd6e",
+        "size": 16143
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/src/doudou/runtime/lock.py",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "3019b94d52dcf60d8bdf8d3b9339e42dd78998eea8c05eb89948b08dfb0feade",
+        "size": 3330
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/src/doudou/runtime/paths.py",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "b658e44cd0ff1fc88224ce481d9e8b83a9938cbab4a380c389bc3d6cfba1f75e",
+        "size": 2195
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/src/doudou/runtime/platform/__init__.py",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "47168cde9252b5c238ed8583f6058a5c40e773e60f79a0de6426d263889008b6",
+        "size": 55
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/src/doudou/runtime/platform/windows.py",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "c94fd750cdb29fabee517ec1a1cac8b28af4a348b1bd2b7cee3f96db9236f817",
+        "size": 13719
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/src/doudou/runtime/process.py",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "9d04e2b3ea4edb97eed8ca082ad2ae35605041e737a60ee512a787d5f1b11119",
+        "size": 1935
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/src/doudou/runtime/profile.py",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "dce72feac27ff04cc2d11ba2feda7c2d7a57d2f5964952ce16724a3730fa42a2",
+        "size": 6921
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/src/doudou/storage/__init__.py",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "52ea032c37e10d36d03eaacc5b18aed5c8e3a865bb56c061ce7bff81df890080",
+        "size": 59
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/src/doudou/storage/content.py",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "7e0bf59f004f19eb87a19822da959f1e37f987aa358d308885b206f79bdc350b",
+        "size": 5712
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/src/doudou/storage/media.py",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "fdfe56fa7e7b80ac63bdbe05d0e9326841810475f0fa8473168e297d2ce30376",
+        "size": 3760
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/src/doudou/storage/repository.py",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "5ce0d8980503c6d9d382e7e2391a7fe8ce44ba4a969476f45e7290a261fd7b1e",
+        "size": 5691
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/src/doudou/ui/__init__.py",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "55da96c6fc11202f59d01b4abfa2b730698b26d38cf9ee2b9636915ab87a05ea",
+        "size": 45
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/src/doudou/ui/adapters.py",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "e1c5d88efa34153d06820e7e7d984f70ba0de088f0fcaaa35a1170905d54661b",
+        "size": 4753
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/src/doudou/ui/chat.py",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "037b64a1881452031eb84f384faaae90eaac9d00b7c02ce2383e59b5586d9d2f",
+        "size": 13135
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/src/doudou/ui/common.py",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "c04fb5e5efa936f89a17330d876f8a51e45fa312495270d36064758be544d57d",
+        "size": 3273
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/src/doudou/ui/components/__init__.py",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "c62d457e1e59c82e0090f8ec686315ac019e03620287a3151c36ece4ee07fba0",
+        "size": 484
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/src/doudou/ui/components/base.py",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "03054c335fd2cf901b7005c58bd053f4a8ed9cd9df1389243c1f550527cdbb82",
+        "size": 1929
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/src/doudou/ui/components/chat.py",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "c73492f356cbf0e77f755451ee3aec6e45263ba76fab6b924a0675e8ccfd9a62",
+        "size": 10046
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/src/doudou/ui/components/video.py",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "d8cc41d0301e1873cf109ff6838af3531784a6e63ca2bc78bafb1ffe4acff1aa",
+        "size": 17777
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/src/doudou/ui/video.py",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "1302f3c17d9de2a6ac80fdb0c2e1115a2d55f9028714082504e8a4e8d4778346",
+        "size": 7131
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/src/doudou/writes/__init__.py",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "50e7ab6749b7a02e12295f7dc813dfef1352f3e8223e1e5a1b1f72a363110391",
+        "size": 56
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/src/doudou/writes/plans.py",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "0b9ccaf8738ff5694d12adbd17f41b0094706efa435fa11d4190710e25689886",
+        "size": 3921
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/src/doudou/writes/receipts.py",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "4cb436355380ec3ec6ae3c0ef0a8326998242ab6b69fe196a128b17a22704c94",
+        "size": 1352
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/src/fingerprint.js",
+      "kind": "removed",
+      "before": {
+        "hash": "e8cb3795dfa110b00113a4cef873c9f36316e698a6bd1509de9fe7319d7d48c3",
+        "size": 25686
+      },
+      "after": null,
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/src/im-client.js",
+      "kind": "removed",
+      "before": {
+        "hash": "bfcae7b9030c9d5cd0d0f3b1207ad2a69e024917bd6b69f746316847a0a8ceb2",
+        "size": 19253
+      },
+      "after": null,
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/src/media.js",
+      "kind": "removed",
+      "before": {
+        "hash": "36604fd0009fc07327197147f7dd7d7f899771842dc10cd2f04bcbb3c60d3287",
+        "size": 14241
+      },
+      "after": null,
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/src/page-doctor.js",
+      "kind": "removed",
+      "before": {
+        "hash": "1a2d74e54c7b34b71606b38b4a3c2b5d71a0e9f878317da8cbc80c3babc8b1e4",
+        "size": 11528
+      },
+      "after": null,
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/src/profile.js",
+      "kind": "removed",
+      "before": {
+        "hash": "4801095ebefffb5575f234228a7af23ebdfcfa8714c2102e6277782299fcb310",
+        "size": 10389
+      },
+      "after": null,
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/src/protocol.js",
+      "kind": "removed",
+      "before": {
+        "hash": "44321c562c2e1d36133ba983ecc8af35830f5afbdf0e14ff558f38070ca8a439",
+        "size": 15767
+      },
+      "after": null,
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/src/resolver.js",
+      "kind": "removed",
+      "before": {
+        "hash": "73a4dbd01687037d100bcae3f4c7d15b73848f057f86a7fb741da3997d0e5035",
+        "size": 3533
+      },
+      "after": null,
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/src/schemas.js",
+      "kind": "removed",
+      "before": {
+        "hash": "b17278c6b4796cd8e1e6f190e049fb32bcdd79e35083d75a45b4976469c16179",
+        "size": 3349
+      },
+      "after": null,
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/src/storage.js",
+      "kind": "removed",
+      "before": {
+        "hash": "8333043b5486d15f50f746a2d151f7f347dc866de1a1b71cd8769bfbdeb4e93a",
+        "size": 21603
+      },
+      "after": null,
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/src/warmup.js",
+      "kind": "removed",
+      "before": {
+        "hash": "37a13c01daf6f5023aa2869f776f0c29700854bfd2ede91e86de40ae0d8e76d4",
+        "size": 5518
+      },
+      "after": null,
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/test/cli.test.js",
+      "kind": "removed",
+      "before": {
+        "hash": "3a88b0bef51f699549ebea03d19ea316c60d2263f4c1c7c6fa06ed67390b0370",
+        "size": 14756
+      },
+      "after": null,
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/test/contract.test.js",
+      "kind": "removed",
+      "before": {
+        "hash": "900d66ff8cbf88996080243be09115adc3003f0bd570af7e21c0cab1aa64dbbd",
+        "size": 25032
+      },
+      "after": null,
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/test/core.test.js",
+      "kind": "removed",
+      "before": {
+        "hash": "727c6e8eef5ae33c2c33a7b06d25cc0dfb6473824ef8ba3c1a45ecc1ec9bf3c0",
+        "size": 1494
+      },
+      "after": null,
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/test/fingerprint.test.js",
+      "kind": "removed",
+      "before": {
+        "hash": "8207a4f77deb5de8339e5c4fe73b706be27a126dc19578302301577a4c5faad4",
+        "size": 6840
+      },
+      "after": null,
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/test/media.test.js",
+      "kind": "removed",
+      "before": {
+        "hash": "d0010ffc17cb05a67f6d6061783b212e46406a25ee19277c9c90389efa0ed19b",
+        "size": 3064
+      },
+      "after": null,
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/test/profile.test.js",
+      "kind": "removed",
+      "before": {
+        "hash": "ffbf5f080ecea5035007d22147e550d6eb824dc64e79a777b6edf343ae2e8bbf",
+        "size": 4583
+      },
+      "after": null,
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/test/resolver.test.js",
+      "kind": "removed",
+      "before": {
+        "hash": "4cbaf13ab6aebe861087dc684f3b99a60e6a2f28102732019cb2b8945eadcef5",
+        "size": 2869
+      },
+      "after": null,
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/test/storage.test.js",
+      "kind": "removed",
+      "before": {
+        "hash": "8e197256c9412b513f8685cfccbc53ef591586d7ab3efdc97ac8def1020a6846",
+        "size": 9067
+      },
+      "after": null,
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/test/warmup.test.js",
+      "kind": "removed",
+      "before": {
+        "hash": "66a4e5ee032ae2466a6bf42f206f70530468d6a93af82eaf3cd99e913e681a96",
+        "size": 2807
+      },
+      "after": null,
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/tests/__init__.py",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+        "size": 1
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/tests/test_architecture.py",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "36376086009225cebb10d46a4f850f5e7b3e327b0a964b9fff132848137579bf",
+        "size": 3650
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/tests/test_broker.py",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "df57b0cbb8100c89a583545ec71e5d62df7c7f550e134fdc873f90735be8b45d",
+        "size": 15417
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/tests/test_core.py",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "253ca1b3a5d7a8432cc07ce51a8aafe04f77dc581800ff3f685802682bcb6b2f",
+        "size": 1102
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/tests/test_profile.py",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "5ef9bc1aa1cff4cbe8f7fbd1164032be378de210248e800a8ab0f74bacf2ecd0",
+        "size": 3308
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/tests/test_protocol_storage.py",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "5c9f5d627b372b99db88a3129eb727002766ed3f0c6e7600585b2c531c80ee6a",
+        "size": 13693
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/tests/test_responses.py",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "b12e29216ab63b81b1e409219cf5f5778f00b4555989393db580dd352e13321a",
+        "size": 5886
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/tests/test_video_writes.py",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "05d984e649e1f2e9a4e2b9703160e7a1db2e4b72d70871b1cac6895c3872dad1",
+        "size": 3107
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/tests/test_web_plans_cli.py",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "e4890554f2ad302695ced57068ec6c27cb1f1aa5a4d16d6bf185aba55a2701a5",
+        "size": 4857
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/tests/test_windows_process.py",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "acfa56377a2c0d86ec12dd8e4987d1dd43415aa1431dac07de96e996a9f822f2",
+        "size": 3632
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    }
+  ],
+  "unattributed": [],
+  "unresolvedScopes": [],
+  "noCodeReason": null,
+  "scopeHash": "6c41c93de607e9c4c6cfd875f4d46aff64cbc547f0efa9503c0ac319dd0fa56b"
+}

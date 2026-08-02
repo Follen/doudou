@@ -1,0 +1,32 @@
+{
+  "schema": "comet.native.checkpoint-manifest.v1",
+  "change": "migrate-production-runtime-to-camoufox",
+  "artifacts": [
+    {
+      "path": "analyze/verification/windows-no-flash-20260802.md",
+      "hash": "dc3ec435757e14e422c9abd79093d7154a6d61d72d26d9feefd48a77f2e8aa1c",
+      "size": 1249
+    },
+    {
+      "path": "doudou/src/doudou/runtime/browser/session.py",
+      "hash": "0e3f03f57cbe2f28552ff47647b63b061525201c65eac2c1272a82bd4d8f10d0",
+      "size": 24213
+    },
+    {
+      "path": "doudou/src/doudou/runtime/environment.py",
+      "hash": "548bacb67ff0fff935bc70bc58d9e65d2f8b6e27e45f391297a55fb5bff71ad8",
+      "size": 14402
+    },
+    {
+      "path": "doudou/src/doudou/runtime/platform/windows.py",
+      "hash": "1558600e9b7f86cc28d807992465caeaa2b2b4012b87cc00606a30c71ed59f87",
+      "size": 8954
+    },
+    {
+      "path": "doudou/tests/test_windows_process.py",
+      "hash": "48d0fe2a54aa93ed0bfa4cc33ee3da6b5a9ee46ace35ce83acf57c60d4a81c4f",
+      "size": 2952
+    }
+  ],
+  "totalBytes": 51770
+}

@@ -1,4 +1,9 @@
 node_modules/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.venv/
 profile/
 # Legacy root is ignored until the CLI migrates it to profile/.
 Profile/

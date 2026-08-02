@@ -6,11 +6,11 @@ Evidence sources:
 - Loaded IM runtime bundle `80030.fbe4ae35.js`, `Message.fromServerMessage` and reference construction.
 - Captured successful `SEND_MESSAGE` request/response and subsequent server message readback.
 
-The `/chat` init request is the transport template, not a send template. Outer field 1 is command, field 2 is sequence, field 8 is `RequestBody`, and the command number is also the nested request-body field number. The implementation preserves authenticated outer metadata, then replaces fields 1, 2 and 8. Confirmed command mappings are:
+The `/chat` init request is the read transport template, not a send template. Outer field 1 is command, field 2 is sequence, field 8 is `RequestBody`, and the command number is also the nested request-body field number. The production reader preserves authenticated outer metadata and replaces fields 1, 2 and 8 only for commands 301 and 605. Command 100 is decoded from a normal page send for receipt verification; production code does not construct or submit it.
 
 | Command | Request body | HTTP path |
 | --- | --- | --- |
-| 100 | `SendMessageRequestBody` | `/v1/message/send` |
+| 100 | `SendMessageRequestBody` captured from page write | `/v1/message/send` |
 | 301 | `MessagesInConversationRequestBody` | `/v1/message/get_by_conversation` |
 | 605 | `ConversationParticipantsListRequestBody` | `/v1/conversation/participants_list` |
 
@@ -18,7 +18,7 @@ The `/chat` init request is the transport template, not a send template. Outer f
 
 Conversation type values used by the loaded IM SDK are `1` for a direct
 conversation and `2` for a group conversation. Discovery retains both values;
-send requests must match the selected index entry exactly.
+read requests and page-write verification must match the selected index entry exactly.
 
 ## Server MessageBody
 
@@ -77,7 +77,9 @@ the referenced message's conversation index and v2 index in captured samples,
 but the loaded SDK does not name them. They remain in
 `reference_info.unknown_fields`.
 
-## SendMessageRequestBody
+## Captured SendMessageRequestBody
+
+This map is used to verify the one request emitted by the page. It is not a production send builder contract.
 
 | Field | SDK name | Type |
 | --- | --- | --- |

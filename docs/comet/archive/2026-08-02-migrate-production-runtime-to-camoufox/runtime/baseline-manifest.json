@@ -1,0 +1,244 @@
+{
+  "schema": "comet.native.content-snapshot.v1",
+  "origin": "change-created",
+  "capture": {
+    "provider": "git"
+  },
+  "createdAt": "2026-08-01T09:37:28.492Z",
+  "complete": true,
+  "limits": {
+    "maxFiles": 10000,
+    "maxFileBytes": 268435456,
+    "maxTotalBytes": 268435456,
+    "maxManifestBytes": 1048576,
+    "maxDurationMs": 60000
+  },
+  "policy": {
+    "schema": "comet.native.snapshot-policy.v1",
+    "include": [
+      "**/*"
+    ],
+    "exclude": [],
+    "hash": "cc34dce5671bc1aefad09b658911a71d0434a26a1fbb4d8ba10de57b316f1f2f"
+  },
+  "entries": [
+    {
+      "path": ".gitignore",
+      "hash": "32c3317c1d9471b4e95e1e42868d64c4196c5456a98de12c3bd96aac1da11c73",
+      "size": 129,
+      "type": "file"
+    },
+    {
+      "path": "docs/protobuf-message-fields.md",
+      "hash": "b41b6808406840c3837244c007bb8ea4033b09af1743519d28ac4ac6ae8207a0",
+      "size": 3287,
+      "type": "file"
+    },
+    {
+      "path": "doudou/.gitignore",
+      "hash": "76996f411eb571e40adc37ba2b3577c18c3efcc2f69539830131f4031db033be",
+      "size": 117,
+      "type": "file"
+    },
+    {
+      "path": "doudou/agents/openai.yaml",
+      "hash": "d4d143a2a6c76d7a3aa134ab3da9b31f0f9286ef2e516f08025f9abc40fcf7c7",
+      "size": 272,
+      "type": "file"
+    },
+    {
+      "path": "doudou/bin/doudou.js",
+      "hash": "2ead0bd37f8f09721067dfe1eaa4be8b10c7a7902ddc4ffb9100e8c2abe92579",
+      "size": 517,
+      "type": "file"
+    },
+    {
+      "path": "doudou/npm-shrinkwrap.json",
+      "hash": "d2fba3b1ac0c1b52f19016c53edc8a4c37e507edbb5a5bd11cae70bb8d5e59e0",
+      "size": 1770,
+      "type": "file"
+    },
+    {
+      "path": "doudou/package.json",
+      "hash": "e1e99babf30cc45d0dd3fa0f89035775e1424e49d1dcef109ec7a78b6a37c17f",
+      "size": 670,
+      "type": "file"
+    },
+    {
+      "path": "doudou/references/layout.md",
+      "hash": "28844cdb41d2c7696dba5e2bd5d4876539d0119dd7bf6ec2267073d057c4a936",
+      "size": 3302,
+      "type": "file"
+    },
+    {
+      "path": "doudou/references/protobuf-message-fields.md",
+      "hash": "dfa65e3848f1839c48928b3d5a424586e0202aa9870ca3b57ab6e62d517adf40",
+      "size": 5261,
+      "type": "file"
+    },
+    {
+      "path": "doudou/scripts/capture-headed-send.js",
+      "hash": "bc60d19a321f7c2ff5583d8be4c8a8a92602a62231825eea9d4c609f46d055db",
+      "size": 6340,
+      "type": "file"
+    },
+    {
+      "path": "doudou/SKILL.md",
+      "hash": "0dd55c75df3325697ae836c11e77df8ae307d7668aa490987ae3faefc5f574a3",
+      "size": 9543,
+      "type": "file"
+    },
+    {
+      "path": "doudou/src/adapter.js",
+      "hash": "68ce611d85b1b9d44410f76f212524d4aeb5759f0596b2e129b1895295983690",
+      "size": 45249,
+      "type": "file"
+    },
+    {
+      "path": "doudou/src/cli.js",
+      "hash": "debe8b4dc88e26491dff7c3518987d62f4af019e5a02610f11fe60789426fb9e",
+      "size": 4709,
+      "type": "file"
+    },
+    {
+      "path": "doudou/src/commands.js",
+      "hash": "4faa6b8071e6140f4039df8fbe6cfe61735cf7c3844f327a2c3326142a966b06",
+      "size": 43364,
+      "type": "file"
+    },
+    {
+      "path": "doudou/src/core.js",
+      "hash": "cb110db95c0f1843252236ca72212dd1eb708317a068af146e4a7c0899f55cbf",
+      "size": 6005,
+      "type": "file"
+    },
+    {
+      "path": "doudou/src/doctor.js",
+      "hash": "f80a0749b782b97ba6b719b43fc5eeeecf0dd69c63cba68e1f50337c62f29b49",
+      "size": 5615,
+      "type": "file"
+    },
+    {
+      "path": "doudou/src/fingerprint.js",
+      "hash": "e8cb3795dfa110b00113a4cef873c9f36316e698a6bd1509de9fe7319d7d48c3",
+      "size": 25686,
+      "type": "file"
+    },
+    {
+      "path": "doudou/src/im-client.js",
+      "hash": "bfcae7b9030c9d5cd0d0f3b1207ad2a69e024917bd6b69f746316847a0a8ceb2",
+      "size": 19253,
+      "type": "file"
+    },
+    {
+      "path": "doudou/src/media.js",
+      "hash": "36604fd0009fc07327197147f7dd7d7f899771842dc10cd2f04bcbb3c60d3287",
+      "size": 14241,
+      "type": "file"
+    },
+    {
+      "path": "doudou/src/page-doctor.js",
+      "hash": "1a2d74e54c7b34b71606b38b4a3c2b5d71a0e9f878317da8cbc80c3babc8b1e4",
+      "size": 11528,
+      "type": "file"
+    },
+    {
+      "path": "doudou/src/profile.js",
+      "hash": "4801095ebefffb5575f234228a7af23ebdfcfa8714c2102e6277782299fcb310",
+      "size": 10389,
+      "type": "file"
+    },
+    {
+      "path": "doudou/src/protocol.js",
+      "hash": "44321c562c2e1d36133ba983ecc8af35830f5afbdf0e14ff558f38070ca8a439",
+      "size": 15767,
+      "type": "file"
+    },
+    {
+      "path": "doudou/src/resolver.js",
+      "hash": "73a4dbd01687037d100bcae3f4c7d15b73848f057f86a7fb741da3997d0e5035",
+      "size": 3533,
+      "type": "file"
+    },
+    {
+      "path": "doudou/src/schemas.js",
+      "hash": "b17278c6b4796cd8e1e6f190e049fb32bcdd79e35083d75a45b4976469c16179",
+      "size": 3349,
+      "type": "file"
+    },
+    {
+      "path": "doudou/src/storage.js",
+      "hash": "8333043b5486d15f50f746a2d151f7f347dc866de1a1b71cd8769bfbdeb4e93a",
+      "size": 21603,
+      "type": "file"
+    },
+    {
+      "path": "doudou/src/warmup.js",
+      "hash": "37a13c01daf6f5023aa2869f776f0c29700854bfd2ede91e86de40ae0d8e76d4",
+      "size": 5518,
+      "type": "file"
+    },
+    {
+      "path": "doudou/test/cli.test.js",
+      "hash": "3a88b0bef51f699549ebea03d19ea316c60d2263f4c1c7c6fa06ed67390b0370",
+      "size": 14756,
+      "type": "file"
+    },
+    {
+      "path": "doudou/test/contract.test.js",
+      "hash": "900d66ff8cbf88996080243be09115adc3003f0bd570af7e21c0cab1aa64dbbd",
+      "size": 25032,
+      "type": "file"
+    },
+    {
+      "path": "doudou/test/core.test.js",
+      "hash": "727c6e8eef5ae33c2c33a7b06d25cc0dfb6473824ef8ba3c1a45ecc1ec9bf3c0",
+      "size": 1494,
+      "type": "file"
+    },
+    {
+      "path": "doudou/test/fingerprint.test.js",
+      "hash": "8207a4f77deb5de8339e5c4fe73b706be27a126dc19578302301577a4c5faad4",
+      "size": 6840,
+      "type": "file"
+    },
+    {
+      "path": "doudou/test/media.test.js",
+      "hash": "d0010ffc17cb05a67f6d6061783b212e46406a25ee19277c9c90389efa0ed19b",
+      "size": 3064,
+      "type": "file"
+    },
+    {
+      "path": "doudou/test/profile.test.js",
+      "hash": "ffbf5f080ecea5035007d22147e550d6eb824dc64e79a777b6edf343ae2e8bbf",
+      "size": 4583,
+      "type": "file"
+    },
+    {
+      "path": "doudou/test/resolver.test.js",
+      "hash": "4cbaf13ab6aebe861087dc684f3b99a60e6a2f28102732019cb2b8945eadcef5",
+      "size": 2869,
+      "type": "file"
+    },
+    {
+      "path": "doudou/test/storage.test.js",
+      "hash": "8e197256c9412b513f8685cfccbc53ef591586d7ab3efdc97ac8def1020a6846",
+      "size": 9067,
+      "type": "file"
+    },
+    {
+      "path": "doudou/test/warmup.test.js",
+      "hash": "66a4e5ee032ae2466a6bf42f206f70530468d6a93af82eaf3cd99e913e681a96",
+      "size": 2807,
+      "type": "file"
+    },
+    {
+      "path": "README.md",
+      "hash": "ca5d779935af7df29fd3b361f7e7911ed71977043bf37742b120d1ab1f3e7a69",
+      "size": 7100,
+      "type": "file"
+    }
+  ],
+  "omitted": [],
+  "omittedCount": 0
+}

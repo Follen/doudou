@@ -1,0 +1,28 @@
+{
+  "schema": "comet.native.transaction.v2",
+  "id": "4dc5593c-3885-47da-b62d-84d28f619363",
+  "kind": "archive",
+  "status": "committed",
+  "change": "migrate-production-runtime-to-camoufox",
+  "createdAt": "2026-08-02T01:23:10.030Z",
+  "preflightHash": "8d9cd39d416be58c6c01ea4030af2c6eceb012439796dc87e2d360a242dc2917",
+  "operations": [
+    {
+      "id": "spec-1-doudou",
+      "type": "write",
+      "target": "specs/doudou/spec.md",
+      "staged": "runtime/transactions/4dc5593c-3885-47da-b62d-84d28f619363/staged/specs/doudou/spec.md",
+      "backup": "runtime/transactions/4dc5593c-3885-47da-b62d-84d28f619363/backups/specs/doudou/spec.md",
+      "expectedTargetHash": "97fa2b807d6bd8435c918789a79fa9e2afc1cc6edf719522815553b6e2a84796",
+      "stagedHash": "95d9d6a04a97e3fbf1c891eddf3d69ded101d15005db1848a188ee49fe91e27e"
+    },
+    {
+      "id": "archive-change",
+      "type": "move",
+      "source": "changes/migrate-production-runtime-to-camoufox",
+      "target": "archive/2026-08-02-migrate-production-runtime-to-camoufox",
+      "expectedSourceHash": "f99cdc89ea53d61487eeadee1a3045a3238163218499022d0e2e785241f074a8",
+      "expectedTargetHash": null
+    }
+  ]
+}

@@ -79,11 +79,11 @@ npm 卸载不会删除持久化 Skill、共享运行时或项目数据。需要�
 
 ## 发布
 
-GitHub Actions 只在 `v*` tag 推送时发布。tag 去掉 `v` 后必须与 `package.json.version` 和 Python Skill 版本完全一致；首个 tag 为 `v2.1.1`。npm Trusted Publisher 需要绑定仓库 `Follen/doudou` 和 workflow `publish-npm.yml`，发布使用 GitHub OIDC，不使用长期 `NPM_TOKEN`。npm 目前不为私有 GitHub 仓库生成 provenance；仓库保持私有时仍使用 OIDC 发布，但发布记录不带 provenance。
+GitHub Actions 只在 `v*` tag 推送时发布。tag 去掉 `v` 后必须与 `package.json.version` 和 Python Skill 版本完全一致；首个正式 tag 为 `v0.0.1`。npm Trusted Publisher 需要绑定仓库 `Follen/doudou` 和 workflow `publish-npm.yml`，发布使用 GitHub OIDC，不使用长期 `NPM_TOKEN`。npm 目前不为私有 GitHub 仓库生成 provenance；仓库保持私有时仍使用 OIDC 发布，但发布记录不带 provenance。
 
 ```powershell
-git tag v2.1.1
-git push origin v2.1.1
+git tag v0.0.1
+git push origin v0.0.1
 ```
 
 ## 开发验证

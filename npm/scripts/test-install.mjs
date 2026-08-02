@@ -5,6 +5,9 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const packageRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
+const expectedVersion = JSON.parse(
+  fs.readFileSync(path.join(packageRoot, "package.json"), "utf8"),
+).version;
 const temporary = fs.mkdtempSync(path.join(os.tmpdir(), "doudou-npm-install-"));
 const npmCli = process.env.npm_execpath;
 if (!npmCli) {
@@ -72,7 +75,7 @@ try {
     normalSkill,
     "--version",
   ]);
-  if (normalVersion.stdout.trim() !== "2.1.1") {
+  if (normalVersion.stdout.trim() !== expectedVersion) {
     throw new Error(`Unexpected global CLI version: ${normalVersion.stdout}`);
   }
 
@@ -92,7 +95,7 @@ try {
     "--version",
   ]);
   if (
-    ignoredVersion.stdout.trim() !== "2.1.1" ||
+    ignoredVersion.stdout.trim() !== expectedVersion ||
     !fs.existsSync(path.join(ignoredSkill, ".doudou-npm-install.json"))
   ) {
     throw new Error("The CLI did not recover from --ignore-scripts installation.");
@@ -112,7 +115,7 @@ try {
     ],
   );
   if (
-    npxVersion.stdout.trim() !== "2.1.1" ||
+    npxVersion.stdout.trim() !== expectedVersion ||
     !fs.existsSync(path.join(npxSkill, ".doudou-npm-install.json"))
   ) {
     throw new Error("npx did not install and run the Skill.");

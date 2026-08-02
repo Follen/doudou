@@ -31,6 +31,15 @@ test("installs, validates, and reuses the current Skill", async (t) => {
   assert.equal(current.status, "current");
 });
 
+test("text validation is stable across LF and CRLF checkouts", async (t) => {
+  const target = path.join(temporaryDirectory(t), "skill");
+  const installed = await ensureSkill({ packageRoot, target });
+  const skillFile = path.join(target, "SKILL.md");
+  const content = fs.readFileSync(skillFile, "utf8").replace(/\r?\n/g, "\r\n");
+  fs.writeFileSync(skillFile, content, "utf8");
+  assert.equal(verifySkill(target, installed.distribution.manifest).valid, true);
+});
+
 test("repairs a changed managed Skill through a transactional upgrade", async (t) => {
   const target = path.join(temporaryDirectory(t), "skill");
   const installed = await ensureSkill({ packageRoot, target });

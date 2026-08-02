@@ -5,9 +5,17 @@ import path from "node:path";
 export const INSTALL_STAMP = ".doudou-npm-install.json";
 const LOCK_STALE_MS = 5 * 60 * 1000;
 const LOCK_WAIT_MS = 15 * 1000;
+const TEXT_EXTENSIONS = new Set([".json", ".lock", ".md", ".py", ".txt", ".yaml", ".yml"]);
 
 function sha256(buffer) {
   return crypto.createHash("sha256").update(buffer).digest("hex");
+}
+
+function canonicalContent(filename, content) {
+  if (!TEXT_EXTENSIONS.has(path.extname(filename).toLowerCase())) {
+    return content;
+  }
+  return Buffer.from(content.toString("utf8").replaceAll("\r\n", "\n"), "utf8");
 }
 
 function sleep(milliseconds) {
@@ -73,7 +81,7 @@ export function verifySkill(root, manifest) {
     const absolute = path.join(root, ...entry.path.split("/"));
     let content;
     try {
-      content = fs.readFileSync(absolute);
+      content = canonicalContent(absolute, fs.readFileSync(absolute));
     } catch {
       return { valid: false, reason: "file_missing", path: entry.path };
     }

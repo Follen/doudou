@@ -7,9 +7,17 @@ const packageRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "
 const skillRoot = path.join(packageRoot, "doudou");
 const output = path.join(packageRoot, "npm", "skill-manifest.json");
 const allowedRoots = ["SKILL.md", "agents", "references", "scripts"];
+const textExtensions = new Set([".json", ".lock", ".md", ".py", ".txt", ".yaml", ".yml"]);
 
 function sha256(value) {
   return crypto.createHash("sha256").update(value).digest("hex");
+}
+
+function canonicalContent(filename, content) {
+  if (!textExtensions.has(path.extname(filename).toLowerCase())) {
+    return content;
+  }
+  return Buffer.from(content.toString("utf8").replaceAll("\r\n", "\n"), "utf8");
 }
 
 function collect(current, root = current) {
@@ -22,7 +30,7 @@ function collect(current, root = current) {
     if (entry.isDirectory()) {
       files.push(...collect(absolute, root));
     } else if (entry.isFile()) {
-      const content = fs.readFileSync(absolute);
+      const content = canonicalContent(absolute, fs.readFileSync(absolute));
       files.push({
         path: path.relative(root, absolute).split(path.sep).join("/"),
         bytes: content.length,
@@ -43,7 +51,7 @@ for (const relative of allowedRoots) {
   if (stat.isDirectory()) {
     files.push(...collect(absolute, skillRoot));
   } else {
-    const content = fs.readFileSync(absolute);
+    const content = canonicalContent(absolute, fs.readFileSync(absolute));
     files.push({ path: relative, bytes: content.length, sha256: sha256(content) });
   }
 }

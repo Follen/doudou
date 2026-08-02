@@ -52,10 +52,10 @@ npm 启动器必须保留用户当前工作目录。Python CLI 仍把该目录�
 
 ## Git tag 发布
 
-私有 GitHub 仓库必须在 `v*` Git tag push 事件上运行 npm 发布 workflow。Workflow 必须使用最小权限 `contents: read` 和 `id-token: write`，先校验去除 `v` 前缀的 tag、`package.json.version` 与 Skill 版本完全一致，再执行 Windows/Linux 测试、npm 测试、pack inventory 和凭据门禁，最后使用 npm Trusted Publishing/OIDC 发布。仓库、workflow 和文档不得要求长期 `NPM_TOKEN`。首个发布 tag 必须是当前 Skill 版本对应的 `v2.1.1`。仓库保持 private 时，workflow 不得强制 npm 仅支持公开仓库的 provenance；将来仓库公开后可恢复自动 provenance。
+私有 GitHub 仓库必须在 `v*` Git tag push 事件上运行 npm 发布 workflow。Workflow 必须使用最小权限 `contents: read` 和 `id-token: write`，先校验去除 `v` 前缀的 tag、`package.json.version` 与 Skill 版本完全一致，再执行 Windows/Linux 测试、npm 测试、pack inventory 和凭据门禁，最后使用 npm Trusted Publishing/OIDC 发布。仓库、workflow 和文档不得要求长期 `NPM_TOKEN`。首个正式发布 tag 必须是初版 Skill 版本对应的 `v0.0.1`。仓库保持 private 时，workflow 不得强制 npm 仅支持公开仓库的 provenance；将来仓库公开后可恢复自动 provenance。
 
 首版发布如果 npm 平台要求先存在 package，可以由维护者在本机完成一次手工发布，随后立即在 npm 绑定该 GitHub 仓库和 workflow 为 Trusted Publisher。工作流在绑定完成前必须明确失败，不得回退读取 token。
 
 ### 场景：tag 发布
 
-给定 npm Trusted Publisher 已绑定，当 `v2.1.1` 被 push 到 GitHub 时，workflow 从该 tag checkout，验证 tag、`package.json.version` 与 Skill 版本一致，全部门禁通过后使用 OIDC 发布；任一门禁失败时不调用 npm publish。仓库为 private 时发布成功不依赖 provenance。
+给定 npm Trusted Publisher 已绑定，当 `v0.0.1` 被 push 到 GitHub 时，workflow 从该 tag checkout，验证 tag、`package.json.version` 与 Skill 版本一致，全部门禁通过后使用 OIDC 发布；任一门禁失败时不调用 npm publish。仓库为 private 时发布成功不依赖 provenance。

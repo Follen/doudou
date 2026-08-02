@@ -1,6 +1,6 @@
 {
   "name": "@follenfang/doudou",
-  "version": "2.1.1",
+  "version": "0.0.1",
   "description": "Install and run the Doudou Codex Skill and Python CLI.",
   "type": "module",
   "bin": {
@@ -17,7 +17,7 @@
   "scripts": {
     "build:manifest": "node npm/scripts/build-skill-manifest.mjs",
     "check:manifest": "node npm/scripts/build-skill-manifest.mjs --check",
-    "test": "node --test npm/test/*.test.mjs",
+    "test": "node npm/scripts/run-node-tests.mjs",
     "test:pack": "node npm/scripts/verify-package.mjs",
     "test:install": "node npm/scripts/test-install.mjs",
     "check:release": "node npm/scripts/check-release-version.mjs",

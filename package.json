@@ -1,6 +1,6 @@
 {
   "name": "@follenfang/doudou",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Install and run the Doudou Codex Skill and Python CLI.",
   "type": "module",
   "bin": {

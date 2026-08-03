@@ -11,6 +11,7 @@ def process_identity(pid: int) -> dict[str, Any] | None:
         return None
     if os.name == "nt":
         script = (
+            "[Console]::OutputEncoding = [System.Text.UTF8Encoding]::new($false); "
             f'$p = Get-CimInstance Win32_Process -Filter "ProcessId = {pid}"; '
             "if ($null -eq $p) { exit 3 }; "
             '$o = [ordered]@{ pid=[int]$p.ProcessId; start=[string]$p.CreationDate.ToUniversalTime().ToString("o"); command=[string]$p.CommandLine }; '
@@ -21,6 +22,8 @@ def process_identity(pid: int) -> dict[str, Any] | None:
             capture_output=True,
             check=False,
             text=True,
+            encoding="utf-8",
+            errors="replace",
             creationflags=subprocess.CREATE_NO_WINDOW,
         )
         if result.returncode:
@@ -28,8 +31,8 @@ def process_identity(pid: int) -> dict[str, Any] | None:
         import json
 
         try:
-            return json.loads(result.stdout)
-        except json.JSONDecodeError:
+            return json.loads(result.stdout or "")
+        except (TypeError, json.JSONDecodeError):
             return None
     try:
         os.kill(pid, 0)

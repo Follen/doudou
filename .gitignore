@@ -5,6 +5,8 @@
 !README.md
 !package.json
 !package-lock.json
+!.comet/
+!.comet/**
 !npm/
 !npm/**
 !.github/

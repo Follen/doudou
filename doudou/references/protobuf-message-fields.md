@@ -106,6 +106,14 @@ Image sends use `message_type=27` and `aweType=2702`. Content includes `resource
 
 `MessagesInConversationRequestBody` fields 1-6 are conversation ID, type, short ID, direction, anchor index and limit. Its response fields are repeated messages, next cursor and has-more.
 
+## Stranger message requests
+
+The IM stranger inbox uses command `1001` for `/v1/stranger/get_conversation_list` and command `1002` for `/v1/stranger/get_messages`. Their nested request/response body fields are offset by one: command `1001` uses field `1000`, and command `1002` uses field `1001`.
+
+`GetStrangerConversationListRequestBody` fields are `cursor`, `count`, and `show_total_unread`. Its response fields are `next_cursor`, `has_more`, `total_unread`, and repeated `conversation_list`. Each `StrangerConversation` has short ID (field 1), unread count (2), last message (3), conversation ID (4), participants (5), and ext map (7).
+
+`GetStrangerMessagesRequestBody` contains conversation short ID (field 1) and `reset_unread_count` (field 2). Collection always sends `reset_unread_count=false`; the response contains repeated `MessageBody` values in field 3.
+
 `ConversationParticipantsListRequestBody` fields 1-5 are conversation ID, short ID, type, cursor and limit. `ParticipantsPage` contains repeated participant field 1, has-more field 2 and cursor field 3. Participant fields 1-5 are UID, sort order, role, alias and sec UID; field 8 is ext.
 
 ## SendMessageResponseBody

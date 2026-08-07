@@ -65,6 +65,9 @@ def parser() -> argparse.ArgumentParser:
     refresh = conversation.add_parser("refresh")
     _profile_argument(refresh)
     refresh.add_argument("--kind", choices=("all", "group", "direct"), default="all")
+    refresh.add_argument(
+        "--inbox", choices=("all", "established", "request"), default="all"
+    )
     refresh.add_argument("--force", action="store_true")
     resolve = conversation.add_parser("resolve")
     _profile_argument(resolve)
@@ -300,6 +303,7 @@ def dispatch(args: argparse.Namespace, skill_root: Path) -> dict[str, Any]:
             {
                 "force": args.conversation_command == "refresh" and args.force,
                 "kind": getattr(args, "kind", "all"),
+                "inbox": getattr(args, "inbox", "all"),
             },
         )["result"]
         if args.conversation_command == "refresh":

@@ -1,0 +1,14 @@
+{
+  "schema": "comet.native.workspace.v3",
+  "capturedAt": "2026-08-07T17:01:25.578Z",
+  "capturedRevision": 1,
+  "nativeRootRef": "docs/comet",
+  "projectRootId": "821e1353343f20061fd24c19d3c1e7675701d81d89adaa0eacf844add9afa010",
+  "nativeRootId": "2e943a9b864e0c60359c3af1e5f7ed0d06d1f3555ad443d5042260170d7e9787",
+  "projectRootPathId": "7ed68204ef96363b8da4bb685d37ba645e5724dccd41edae2a912eb611555950",
+  "nativeRootPathId": "f9597003eceeef93f69d165a97d2f41d4ee9033dc41a92fe7d6b85809fdb0b59",
+  "isolation": "current",
+  "changeBranch": "codex/issue-fix-2",
+  "targetBranch": "codex/issue-fix-2",
+  "finish": null
+}

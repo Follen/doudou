@@ -1,0 +1,39 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "static-inspection",
+  "role": "required-check",
+  "status": "passed",
+  "bindings": {
+    "change": "issue-fix-2",
+    "sourceRevision": 3,
+    "contractHash": "e9aefb0f242800bd8b094026d66b23b0eb023bd1b229c5e8d96f4ffd9ecebf83",
+    "scopeHash": "7b3ab05083f8449a1e1bea66d2c086bed3425c8c148cc63bf713d5179a7e3a3f",
+    "snapshotHash": "f9d716cc454a214a8825f7536c2e8e4142c4e20926ad47a8e2322167d38dd6e5",
+    "artifactHash": "5590580f32fe5c921a5052c7331483d0ab30ea731ad73feee721f5fc0fb1b7f3"
+  },
+  "acceptanceIds": [],
+  "actor": "native-runtime:scoped-text-safety",
+  "issuedAt": "2026-08-07T17:56:29.922Z",
+  "evidence": {
+    "subjects": [
+      "docs/verification/tests/test_broker_frame_limits.py",
+      "docs/verification/tests/test_stranger_chat_integration.py",
+      "docs/verification/tests/test_stranger_protocol.py",
+      "doudou/references/cli.md",
+      "doudou/references/layout.md",
+      "doudou/references/protobuf-message-fields.md",
+      "doudou/scripts/doudou/cli.py",
+      "doudou/scripts/doudou/features/broker.py",
+      "doudou/scripts/doudou/features/chat/service.py",
+      "doudou/scripts/doudou/protocol/im.py",
+      "doudou/scripts/doudou/reads/chat.py",
+      "doudou/scripts/doudou/runtime/broker/client.py",
+      "npm/skill-manifest.json"
+    ],
+    "rule": "scoped-text-safety",
+    "resultSummary": "The built-in scoped inspection passed without skipped or blocking input.",
+    "checkReceiptRef": "runtime/evidence/check-receipts/dbe66e856c1e067266cf1bb508e3f6efa1ec30ba4d69c59ff9f9dffaacc31925.json",
+    "checkReceiptHash": "dbe66e856c1e067266cf1bb508e3f6efa1ec30ba4d69c59ff9f9dffaacc31925"
+  },
+  "receiptHash": "2750c9a3820ac63274d333fbf6008f72e525701621697bcfa8c56fb91bee74a7"
+}

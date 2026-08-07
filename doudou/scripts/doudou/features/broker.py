@@ -31,6 +31,7 @@ async def dispatch(
             profile,
             force=bool(params.get("force")),
             kind=str(params.get("kind") or "all"),
+            inbox=str(params.get("inbox") or "all"),
         )
     if command == "messages.collect":
         return await chat.collect(browser, data_root, profile, params)

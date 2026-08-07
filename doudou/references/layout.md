@@ -46,7 +46,7 @@ message/profiles/<profile>/
   migrations/
 ```
 
-`kind` 为 `group` 或 `direct`。所有 JSON/JSONL 使用原子替换；不完整 JSONL 会停止覆盖。回执与诊断不保存 Cookie、token、动态签名、上传凭证或完整签名 URL。
+`kind` 为 `group` 或 `direct`；会话索引还包含 `inbox=established` 或 `inbox=request`，用于区分普通会话和陌生人消息请求。所有 JSON/JSONL 使用原子替换；不完整 JSONL 会停止覆盖。回执与诊断不保存 Cookie、token、动态签名、上传凭证或完整签名 URL。
 
 用户级安装默认位于 `~/.doudou/`，可由 `DOUDOU_HOME` 覆盖：`runtimes/` 保存专用 Python/venv，`browsers/` 保存专用 Camoufox，`downloads/` 保存受控下载。它们不进入调用项目或 Skill 包。
 

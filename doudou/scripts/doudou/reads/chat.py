@@ -21,8 +21,14 @@ from ..protocol.im import (
     find_conversations,
     messages_request,
     parse_participants_page,
+    parse_stranger_conversations,
+    parse_stranger_messages,
     participants_request,
     response_body,
+    stranger_conversations_request,
+    stranger_messages_request,
+    stranger_request,
+    stranger_response_body,
 )
 from ..protocol.protobuf import decode_fields, get_field
 from ..protocol.responses import ResponseCodes
@@ -42,6 +48,8 @@ from .transport import parse_result
 INDEX_MAX_AGE_SECONDS = 2 * 60 * 60
 GET_MESSAGES_ENDPOINT = "https://imapi.douyin.com/v1/message/get_by_conversation"
 PARTICIPANTS_ENDPOINT = "https://imapi.douyin.com/v1/conversation/participants_list"
+STRANGER_CONVERSATIONS_ENDPOINT = "https://imapi.douyin.com/v1/stranger/get_conversation_list"
+STRANGER_MESSAGES_ENDPOINT = "https://imapi.douyin.com/v1/stranger/get_messages"
 
 
 def _response_identities(value: Any) -> list[dict[str, Any]]:
@@ -143,6 +151,13 @@ async def _enrich_conversation_identities(
         for participant in conversation.get("participants", {}).get("participants", [])
         if participant.get("sec_uid")
     ]
+    targets.extend(
+        (conversation.get("last_message") or {}).get("sender") or {}
+        for conversation in conversations
+        if ((conversation.get("last_message") or {}).get("sender") or {}).get(
+            "sec_uid"
+        )
+    )
     identities = await _resolve_user_identities(
         session, data_root, profile, [item["sec_uid"] for item in targets]
     )
@@ -152,7 +167,16 @@ async def _enrich_conversation_identities(
             resolved = identities.get(participant.get("sec_uid") or "")
             if resolved:
                 participants[index] = {**participant, **resolved}
-        if conversation["conversation_type"] != 1:
+        last_message = conversation.get("last_message")
+        if isinstance(last_message, dict):
+            sender = last_message.get("sender") or {}
+            resolved = identities.get(sender.get("sec_uid") or "")
+            if resolved:
+                last_message["sender"] = {**sender, **resolved}
+            last_message["sender"]["name"] = last_message["sender"].get(
+                "display_name"
+            )
+        if conversation.get("conversation_type", 1) != 1 and conversation.get("kind") != "direct":
             continue
         candidates = [
             participant.get("display_name") or participant.get("alias")
@@ -182,7 +206,13 @@ async def refresh_session_index(
 ) -> dict[str, Any]:
     cached = read_session_index_snapshot(data_root, profile)
     age = _age_seconds(cached.get("completed_at") if isinstance(cached, dict) else None)
-    if not force and cached and age is not None and age <= INDEX_MAX_AGE_SECONDS:
+    if (
+        not force
+        and cached
+        and "inbox_count" in cached
+        and age is not None
+        and age <= INDEX_MAX_AGE_SECONDS
+    ):
         await session.ensure_ready()
         index = read_conversation_index(data_root, profile)
         if index:
@@ -199,22 +229,68 @@ async def refresh_session_index(
             "IM initialization did not produce a usable response.",
         )
     conversations = find_conversations(session.init_response)
+    if conversations:
+        await _enrich_conversation_identities(session, data_root, profile, conversations)
+
+    # Message requests use a separate command and are merged only after every
+    # page succeeds, preserving the previous index on protocol failure.
+    if not session.init_request:
+        raise DoudouError("IM_INITIALIZATION_MISSING", "IM request envelope is missing.")
+    stranger_by_id: dict[str, dict[str, Any]] = {}
+    cursor, seen = 0, set()
+    for _ in range(100):
+        if cursor in seen:
+            raise DoudouError("STRANGER_PAGE_CURSOR_STALLED", "Stranger inbox cursor did not advance.")
+        seen.add(cursor)
+        request = stranger_request(
+            session.init_request, 1001, stranger_conversations_request(cursor, 50, True)
+        )
+        http_status, raw = await session.post_protobuf(STRANGER_CONVERSATIONS_ENDPOINT, request)
+        status, status_text, payload, gateway = stranger_response_body(raw, 1001)
+        if gateway is not None:
+            raise DoudouError("VERIFICATION_REQUIRED", "Stranger conversation request reached a verification gateway.")
+        if http_status != 200 or status != 0 or payload is None:
+            raise DoudouError("STRANGER_CONVERSATIONS_FAILED", "Stranger conversation protocol request failed.", {"http_status": http_status, "status": status, "status_text": status_text})
+        page = parse_stranger_conversations(payload)
+        for item in page["conversations"]:
+            stranger_by_id[str(item["conversation_id"])] = item
+        next_cursor = str(page.get("next_cursor") or "0")
+        if not page.get("has_more"):
+            break
+        if next_cursor == str(cursor):
+            raise DoudouError(
+                "STRANGER_PAGE_CURSOR_STALLED",
+                "Stranger inbox cursor did not advance.",
+                {"cursor": str(cursor)},
+            )
+        try:
+            cursor = int(next_cursor)
+        except ValueError as error:
+            raise DoudouError(
+                "PROTOCOL_SCHEMA_DRIFTED",
+                "Stranger inbox returned a non-numeric cursor.",
+                {"cursor": next_cursor},
+            ) from error
+    else:
+        raise DoudouError("STRANGER_PAGE_LIMIT", "Stranger conversation collection reached the page limit.")
+    stranger = list(stranger_by_id.values())
+    if stranger:
+        await _enrich_conversation_identities(session, data_root, profile, stranger)
+    conversations.extend(stranger)
     if not conversations:
         raise DoudouError(
             "IM_INITIALIZATION_EMPTY",
-            "IM initialization returned no structured conversations.",
+            "IM initialization and stranger inbox returned no conversations.",
         )
-    await _enrich_conversation_identities(
-        session, data_root, profile, conversations
-    )
     index = write_conversation_index(data_root, profile, conversations)
     snapshot = {
         "schema": "doudou.session-index-snapshot.v1",
         "profile_id": profile_paths(data_root, profile).profile_id,
         "completed_at": utc_now(),
         "conversation_count": len(conversations),
-        "direct_count": sum(item["conversation_type"] == 1 for item in conversations),
-        "group_count": sum(item["conversation_type"] == 2 for item in conversations),
+        "direct_count": sum(item.get("kind") == "direct" for item in conversations),
+        "group_count": sum(item.get("kind") == "group" for item in conversations),
+        "inbox_count": sum(item.get("inbox") == "request" for item in conversations),
         "browser_initialization_count": ready["initialization_count"],
     }
     files = write_session_index_snapshot(data_root, profile, snapshot)
@@ -258,10 +334,23 @@ async def collect_messages(
     pages: list[dict[str, Any]] = []
     anchor = 0
     for page_number in range(1, max_pages + 1):
-        body = messages_request(conversation, anchor_index=anchor)
-        request = build_command_request(session.init_request, 301, body)
-        http_status, raw = await session.post_protobuf(GET_MESSAGES_ENDPOINT, request)
-        status, status_text, payload, gateway = response_body(raw, 301)
+        if conversation.get("inbox") == "request":
+            body = stranger_messages_request(
+                conversation.get("conversation_short_id") or conversation["conversation_id"],
+                reset_unread_count=False,
+            )
+            request = stranger_request(session.init_request, 1002, body)
+            endpoint, command = STRANGER_MESSAGES_ENDPOINT, 1002
+        else:
+            body = messages_request(conversation, anchor_index=anchor)
+            request = build_command_request(session.init_request, 301, body)
+            endpoint, command = GET_MESSAGES_ENDPOINT, 301
+        http_status, raw = await session.post_protobuf(endpoint, request)
+        status, status_text, payload, gateway = (
+            stranger_response_body(raw, command)
+            if command == 1002
+            else response_body(raw, command)
+        )
         if gateway is not None:
             raise DoudouError(
                 "VERIFICATION_REQUIRED",
@@ -278,17 +367,26 @@ async def collect_messages(
                     "status_text": status_text,
                 },
             )
-        batch = extract_messages(payload, conversation["conversation_id"])
+        batch = (
+            parse_stranger_messages(payload, conversation["conversation_id"])
+            if command == 1002
+            else extract_messages(payload, conversation["conversation_id"])
+        )
+        if command == 1002 and not batch and conversation.get("last_message"):
+            batch = [conversation["last_message"]]
         for item in batch:
             created = int(item["create_time_ms"])
             if (lower is None or created >= lower) and (
                 upper is None or created <= upper
             ):
                 messages[item["message_id"]] = item
-        fields = decode_fields(payload)
-        next_field, more_field = get_field(fields, 2, 0), get_field(fields, 3, 0)
-        next_cursor = int(next_field.value) if next_field else 0
-        has_more = bool(int(more_field.value)) if more_field else False
+        if command == 1002:
+            next_cursor, has_more = 0, False
+        else:
+            fields = decode_fields(payload)
+            next_field, more_field = get_field(fields, 2, 0), get_field(fields, 3, 0)
+            next_cursor = int(next_field.value) if next_field else 0
+            has_more = bool(int(more_field.value)) if more_field else False
         pages.append(
             {
                 "page": page_number,
@@ -330,6 +428,15 @@ async def collect_messages(
             sender = {**sender, **resolved}
         sender["name"] = sender.get("display_name")
         message["sender"] = sender
+    last_message = conversation.get("last_message")
+    if isinstance(last_message, dict):
+        sender = last_message.get("sender") or {}
+        resolved = identities.get(sender.get("sec_uid") or "")
+        if resolved:
+            conversation["last_message"]["sender"] = {**sender, **resolved}
+        conversation["last_message"]["sender"]["name"] = conversation[
+            "last_message"
+        ]["sender"].get("display_name")
     cache = IdentityCache(data_root, profile)
     ordered = enrich_message_identities(
         ordered,

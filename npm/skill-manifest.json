@@ -3,7 +3,7 @@
   "package_name": "@follenfang/doudou",
   "package_version": "0.0.4",
   "skill_version": "0.0.4",
-  "tree_sha256": "04e20f7bcb27f8eed0f472d859a35d825eeb258c8a8e1a68230ad58686772f84",
+  "tree_sha256": "cb67e3e0378ce1a77b416e18d033ee073119fd9ac645c82b2f266af85753c32a",
   "files": [
     {
       "path": "agents/openai.yaml",
@@ -12,18 +12,18 @@
     },
     {
       "path": "references/cli.md",
-      "bytes": 3438,
-      "sha256": "deac8c770f7041d3982508fd6233bc4c3d3477edc5f9b39c640d4865218f189f"
+      "bytes": 3769,
+      "sha256": "61a5a43263620e27520a0fc90a7fbd37765dc81b666f9fae4a7f13254f568703"
     },
     {
       "path": "references/layout.md",
-      "bytes": 1879,
-      "sha256": "e858ecf18bdfd1955d21ca257c1ea739214b0a4a0dcd243cdc7e21e3f7ac7eeb"
+      "bytes": 1994,
+      "sha256": "920b4f1c949b36986d47721ce819812780f5f4dd8ce9c55f8d1cae538396a96c"
     },
     {
       "path": "references/protobuf-message-fields.md",
-      "bytes": 5560,
-      "sha256": "733ecb63710e99c8d2b9cdf67257fe6e6a5f7a98d02ff48e7d925d171947e020"
+      "bytes": 6428,
+      "sha256": "54e88f65439c103a6480eadec7657cc68657d6e4f0ca45c576a96dd74a3f32a8"
     },
     {
       "path": "references/runtime.md",
@@ -42,8 +42,8 @@
     },
     {
       "path": "scripts/doudou/cli.py",
-      "bytes": 18655,
-      "sha256": "7c3984b863b189d8d382d5295a290b3e191c34a80bb2b916764eea022e889350"
+      "bytes": 18819,
+      "sha256": "bbec5b9f1a6307b31da739ffd648929efaba57f0a25ec96e691c3d94e2b9c028"
     },
     {
       "path": "scripts/doudou/common/__init__.py",
@@ -67,8 +67,8 @@
     },
     {
       "path": "scripts/doudou/features/broker.py",
-      "bytes": 3487,
-      "sha256": "a0bd3436fe67780968dff40c5b79d85beb00106d91b2b85c6912b88a2d45185a"
+      "bytes": 3540,
+      "sha256": "48a5170ffb298d52f63520b460b7d72b635ddc1c41702f4c12dbfe72a857f960"
     },
     {
       "path": "scripts/doudou/features/chat/__init__.py",
@@ -77,8 +77,8 @@
     },
     {
       "path": "scripts/doudou/features/chat/service.py",
-      "bytes": 16901,
-      "sha256": "d53ae96c47d0872ad304cdfaef0003e33cfa64fe4a875ae2b8c38421458a8291"
+      "bytes": 17688,
+      "sha256": "a4703038ca3e656ce163e2d1c1fee3268522da59ad69067de7b8743ef67a54bf"
     },
     {
       "path": "scripts/doudou/features/diagnostics.py",
@@ -127,8 +127,8 @@
     },
     {
       "path": "scripts/doudou/protocol/im.py",
-      "bytes": 17789,
-      "sha256": "a336af0d8070ab6b7e8f80eb36dbcbe667beef0c7aba8235cf1d816d0bd7c2c7"
+      "bytes": 22750,
+      "sha256": "f96e800c68a65a98ab52406884b66922f93c3dba1334cff780950536c7711eaf"
     },
     {
       "path": "scripts/doudou/protocol/protobuf.py",
@@ -157,8 +157,8 @@
     },
     {
       "path": "scripts/doudou/reads/chat.py",
-      "bytes": 17934,
-      "sha256": "df6658732fcf6e0ef8f3d15abaf9cd7d958bfefb5466450d7e2bb598026efb1f"
+      "bytes": 22917,
+      "sha256": "8d932800e13d8d9da8f99e33e8e71755b58274651d5a4eb880f2b00d9357df0e"
     },
     {
       "path": "scripts/doudou/reads/transport.py",
@@ -182,8 +182,8 @@
     },
     {
       "path": "scripts/doudou/runtime/broker/client.py",
-      "bytes": 12129,
-      "sha256": "49b4aaaf6c8aeb9214dcce9711aefa297a7583ec9da732e6231b94b360295424"
+      "bytes": 13213,
+      "sha256": "50d754e964ec5f0ff3d0d1618bec7e4005ceaa3abcfaddbb92d0911526e750ff"
     },
     {
       "path": "scripts/doudou/runtime/broker/registration.py",

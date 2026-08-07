@@ -18,6 +18,157 @@ from .protobuf import (
     varint_field,
 )
 
+# Stranger inbox uses a different body field than its command id.
+STRANGER_COMMAND_BODY_FIELDS = {1001: 1000, 1002: 1001}
+
+
+def stranger_body_field(command: int) -> int:
+    """Return the protobuf body field used by a stranger-inbox command."""
+    try:
+        return STRANGER_COMMAND_BODY_FIELDS[command]
+    except KeyError as exc:
+        raise ValueError(f"unsupported stranger command: {command}") from exc
+
+
+def stranger_request(
+    init_request: bytes, command: int, body: bytes, sequence: int | None = None
+) -> bytes:
+    """Build a command envelope using the stranger command/body mapping."""
+    outer = decode_fields(init_request)
+    outer = replace_field(outer, 1, varint_field(1, command))
+    outer = replace_field(
+        outer, 2, varint_field(2, sequence or int(time.time() * 1_000_000))
+    )
+    outer = replace_field(
+        outer,
+        8,
+        Field(8, 2, encode_fields([Field(stranger_body_field(command), 2, body)])),
+    )
+    return encode_fields(outer)
+
+
+def stranger_conversations_request(
+    cursor: int | str = 0, count: int = 50, show_total_unread: bool = True
+) -> bytes:
+    return encode_fields(
+        [
+            varint_field(1, int(cursor)),
+            varint_field(2, max(1, int(count))),
+            varint_field(3, int(bool(show_total_unread))),
+        ]
+    )
+
+
+def stranger_messages_request(
+    conversation_short_id: str | int, reset_unread_count: bool = False
+) -> bytes:
+    return encode_fields(
+        [
+            varint_field(1, int(conversation_short_id)),
+            varint_field(2, int(bool(reset_unread_count))),
+        ]
+    )
+
+
+def stranger_response_body(
+    data: bytes, command: int
+) -> tuple[int, str, bytes | None, dict[str, Any] | None]:
+    """Parse a stranger response using its mapped body field."""
+    return response_body(data, stranger_body_field(command))
+
+
+def _stranger_record(fields: list[Field]) -> dict[str, Any] | None:
+    short = get_field(fields, 1, 0)
+    identity = text_value(get_field(fields, 4, 2))
+    if not short or not identity:
+        return None
+    participants: list[dict[str, Any]] = []
+    for item in get_fields(fields, 5, 2):
+        page = parse_participants_page(
+            encode_fields([Field(1, 2, bytes(item.value))])
+        )
+        participants.extend(page["participants"])
+    last = get_field(fields, 3, 2)
+    last_message = (
+        normalize_message(bytes(last.value), identity) if last is not None else None
+    )
+    unread = get_field(fields, 2, 0)
+    names = {
+        str(item.get("display_name") or item.get("alias") or "").strip()
+        for item in participants
+    }
+    names.discard("")
+    return {
+        "conversation_id": identity,
+        "conversation_short_id": str(short.value),
+        "conversation_type": 1,
+        "kind": "direct",
+        "inbox": "request",
+        "display_name": next(iter(names)) if len(names) == 1 else identity,
+        "unread_count": int(unread.value) if unread else 0,
+        "participants": {
+            "participants": participants,
+            "has_more": False,
+            "cursor": "0",
+        },
+        "last_message": last_message,
+        "ext": parse_map_entries(fields, 7),
+    }
+
+
+def parse_stranger_conversations(body: bytes) -> dict[str, Any]:
+    """Normalize 1001 response body and its nested conversation records."""
+    try:
+        fields = decode_fields(body)
+    except ValueError:
+        return {
+            "conversations": [],
+            "next_cursor": "0",
+            "has_more": False,
+            "total_unread": 0,
+        }
+    conversations: list[dict[str, Any]] = []
+    for item in get_fields(fields, 4, 2):
+        try:
+            record = _stranger_record(decode_fields(bytes(item.value)))
+        except ValueError:
+            continue
+        if record:
+            conversations.append(record)
+    return {
+        "conversations": conversations,
+        "next_cursor": str(get_field(fields, 1, 0).value)
+        if get_field(fields, 1, 0)
+        else "0",
+        "has_more": bool(get_field(fields, 2, 0).value)
+        if get_field(fields, 2, 0)
+        else False,
+        "total_unread": int(get_field(fields, 3, 0).value)
+        if get_field(fields, 3, 0)
+        else 0,
+    }
+
+
+def parse_stranger_messages(
+    body: bytes, conversation_id: str | None = None
+) -> list[dict[str, Any]]:
+    """Extract standard message records from a 1002 response."""
+    try:
+        fields = decode_fields(body)
+    except ValueError:
+        return []
+    output: list[dict[str, Any]] = []
+    for item in (
+        get_fields(fields, 3, 2) + get_fields(fields, 1, 2) + get_fields(fields, 2, 2)
+    ):
+        value = bytes(item.value)
+        message = normalize_message(value, conversation_id) if conversation_id else None
+        if message:
+            output.append(message)
+        else:
+            output.extend(parse_stranger_messages(value, conversation_id))
+    return output
+
 
 def parse_map_entries(fields: list[Field], number: int) -> dict[str, str]:
     output: dict[str, str] = {}
@@ -132,6 +283,7 @@ def find_conversations(data: bytes) -> list[dict[str, Any]]:
                 "conversation_short_id": str(short.value),
                 "conversation_type": int(kind.value),
                 "kind": conversation_kind(int(kind.value)),
+                "inbox": "established",
                 "display_name": display_name or identity,
                 "participants": parse_participants_page(
                     bytes(get_field(fields, 6, 2).value)

@@ -15,6 +15,7 @@ from ..process import process_identity, same_process
 from ..profile import load_profile
 
 DEFAULT_COMMAND_TIMEOUT_SECONDS = 90.0
+BROKER_RESPONSE_LIMIT_BYTES = 16 * 1024 * 1024
 LONG_RUNNING_COMMANDS = {"login.wait", "protocol.capture"}
 COLLECTION_COMMAND_TIMEOUTS = {
     "videos.collect": 600.0,
@@ -206,7 +207,9 @@ class BrokerClient:
             command, payload["params"]
         )
         reader, writer = await asyncio.open_connection(
-            endpoint["host"], int(endpoint["port"])
+            endpoint["host"],
+            int(endpoint["port"]),
+            limit=BROKER_RESPONSE_LIMIT_BYTES,
         )
         writer.write(
             json.dumps(payload, ensure_ascii=False, separators=(",", ":")).encode(
@@ -216,10 +219,31 @@ class BrokerClient:
         )
         await writer.drain()
         try:
-            line = await asyncio.wait_for(
-                reader.readline(),
-                timeout=float(payload["command_timeout_seconds"]) + 5,
-            )
+            try:
+                line = await asyncio.wait_for(
+                    reader.readuntil(b"\n"),
+                    timeout=float(payload["command_timeout_seconds"]) + 5,
+                )
+            except asyncio.IncompleteReadError as error:
+                line = error.partial
+            except asyncio.LimitOverrunError as error:
+                details = {
+                    "request_id": payload["request_id"],
+                    "response_limit_bytes": BROKER_RESPONSE_LIMIT_BYTES,
+                    "write_started": True,
+                }
+                if semantics == "write":
+                    raise DoudouError(
+                        "WRITE_RESULT_UNKNOWN",
+                        "The broker response exceeded the client limit after the write started; it was not replayed.",
+                        details,
+                    ) from error
+                details.pop("write_started")
+                raise DoudouError(
+                    "BROKER_RESPONSE_TOO_LARGE",
+                    "The broker response exceeded the client limit.",
+                    details,
+                ) from error
         except TimeoutError as error:
             if semantics == "write":
                 raise DoudouError(

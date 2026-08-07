@@ -107,11 +107,14 @@ async def conversations(
     profile: str,
     force: bool = False,
     kind: str = "all",
+    inbox: str = "all",
 ) -> dict[str, Any]:
     refreshed = await refresh_session_index(session, data_root, profile, force=force)
     values = refreshed["index"]["conversations"]
     if kind != "all":
         values = [item for item in values if item["kind"] == kind]
+    if inbox != "all":
+        values = [item for item in values if item.get("inbox", "established") == inbox]
     return {
         "status": "ok",
         "source": refreshed["source"],
@@ -153,6 +156,11 @@ async def preview_send(
     conversation = resolve_conversation(
         refreshed["index"]["conversations"], params["target"]
     )
+    if conversation.get("inbox") == "request":
+        raise DoudouError(
+            "STRANGER_WRITE_UNSUPPORTED",
+            "Message requests are read-only and cannot be used for send plans.",
+        )
     text, image = params.get("text"), params.get("image")
     if bool(text) == bool(image):
         raise DoudouError(
@@ -280,6 +288,11 @@ async def preview_batch(
         }
         for target in targets
     ]
+    if any(task["conversation"].get("inbox") == "request" for task in tasks):
+        raise DoudouError(
+            "STRANGER_WRITE_UNSUPPORTED",
+            "Message requests are read-only and cannot be used for send plans.",
+        )
     plan = create_plan(
         data_root, profile, "chat.send.batch", {"tasks": tasks, "interval_seconds": 5.0}
     )
@@ -386,6 +399,11 @@ async def preview_like(
     conversation = resolve_conversation(
         refreshed["index"]["conversations"], params["target"]
     )
+    if conversation.get("inbox") == "request":
+        raise DoudouError(
+            "STRANGER_WRITE_UNSUPPORTED",
+            "Message requests are read-only and cannot be used for like plans.",
+        )
     message = resolve_message(
         read_messages(data_root, profile, conversation), params["message"]
     )

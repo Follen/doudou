@@ -1,0 +1,11 @@
+{
+  "schema": "comet.native.archive-cas.v1",
+  "operationId": "spec-1-broker-framing",
+  "role": "post",
+  "hash": "ebaf906185fe526dc99af13bb58f32bd8812d025e7e800de99ea5fab9ccc66b2",
+  "identity": {
+    "dev": 2421791372,
+    "ino": 3659174697940372,
+    "birthtimeMs": 1786129200297.769
+  }
+}

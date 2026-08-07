@@ -1,0 +1,10 @@
+{"sequence":1,"timestamp":"2026-08-07T18:59:59.211Z","type":"prepared"}
+{"sequence":2,"timestamp":"2026-08-07T19:00:00.256Z","type":"operation-started","operationId":"spec-1-broker-framing"}
+{"sequence":3,"timestamp":"2026-08-07T19:00:00.386Z","type":"operation-completed","operationId":"spec-1-broker-framing"}
+{"sequence":4,"timestamp":"2026-08-07T19:00:00.406Z","type":"operation-started","operationId":"spec-2-stranger-message-requests"}
+{"sequence":5,"timestamp":"2026-08-07T19:00:00.526Z","type":"operation-completed","operationId":"spec-2-stranger-message-requests"}
+{"sequence":6,"timestamp":"2026-08-07T19:00:01.524Z","type":"operation-started","operationId":"archive-change"}
+{"sequence":7,"timestamp":"2026-08-07T19:00:02.012Z","type":"operation-completed","operationId":"archive-change"}
+{"sequence":8,"timestamp":"2026-08-07T19:00:02.323Z","type":"archive-finalization-started"}
+{"sequence":9,"timestamp":"2026-08-07T19:00:02.394Z","type":"archive-finalized"}
+{"sequence":10,"timestamp":"2026-08-07T19:00:02.466Z","type":"commit"}

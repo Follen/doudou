@@ -1,0 +1,27 @@
+schema: comet.native.v3
+minimum_runtime_version: 3
+revision: 7
+verification_protocol: legacy-v1
+name: issue-fix-2
+language: zh-CN
+phase: archive
+brief: brief.md
+approval: confirmed
+approved_contract_hash: e9aefb0f242800bd8b094026d66b23b0eb023bd1b229c5e8d96f4ffd9ecebf83
+spec_changes:
+  - capability: broker-framing
+    operation: create
+    source: specs/broker-framing/spec.md
+    base_hash: null
+  - capability: stranger-message-requests
+    operation: create
+    source: specs/stranger-message-requests/spec.md
+    base_hash: null
+verification_result: pass
+verification_report: verification.md
+implementation_scope: runtime/evidence/scopes/9715f9711bf60f7bef5cfdf83e39c4c4919d753bffeb285405dc91730d115b73.json
+verification_evidence: runtime/evidence/verifications/a14c1364ff4679c95a37b6b8c7187f8510841072699ba1a48abc990fa19e5122.json
+partial_allowance: null
+archived: true
+created_at: 2026-08-07
+run_id: 786a0ad3-1469-4d03-9cf3-865191355f68

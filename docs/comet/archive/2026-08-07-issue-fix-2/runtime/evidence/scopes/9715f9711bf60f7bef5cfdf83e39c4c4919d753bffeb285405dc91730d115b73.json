@@ -1,0 +1,294 @@
+{
+  "schema": "comet.native.implementation-scope.v2",
+  "contractHash": "e9aefb0f242800bd8b094026d66b23b0eb023bd1b229c5e8d96f4ffd9ecebf83",
+  "baselineProjectionRef": "runtime/evidence/snapshots/eff0d35caf6f87ac9e7735a89214f0838248174874fb429db72c56261df566a2.json",
+  "baselineProjectionHash": "eff0d35caf6f87ac9e7735a89214f0838248174874fb429db72c56261df566a2",
+  "currentProjectionRef": "runtime/evidence/snapshots/473b6b8eb5441d631e9443f972cb901756afbb8f369a57a56383b059a494bc42.json",
+  "currentProjectionHash": "473b6b8eb5441d631e9443f972cb901756afbb8f369a57a56383b059a494bc42",
+  "complete": true,
+  "declaredArtifacts": [
+    {
+      "path": "docs/verification/tests/test_broker_frame_limits.py",
+      "kind": "file"
+    },
+    {
+      "path": "docs/verification/tests/test_stranger_chat_integration.py",
+      "kind": "file"
+    },
+    {
+      "path": "docs/verification/tests/test_stranger_protocol.py",
+      "kind": "file"
+    },
+    {
+      "path": "doudou/references/cli.md",
+      "kind": "file"
+    },
+    {
+      "path": "doudou/references/layout.md",
+      "kind": "file"
+    },
+    {
+      "path": "doudou/references/protobuf-message-fields.md",
+      "kind": "file"
+    },
+    {
+      "path": "doudou/scripts/doudou/cli.py",
+      "kind": "file"
+    },
+    {
+      "path": "doudou/scripts/doudou/features/broker.py",
+      "kind": "file"
+    },
+    {
+      "path": "doudou/scripts/doudou/features/chat/service.py",
+      "kind": "file"
+    },
+    {
+      "path": "doudou/scripts/doudou/protocol/im.py",
+      "kind": "file"
+    },
+    {
+      "path": "doudou/scripts/doudou/reads/chat.py",
+      "kind": "file"
+    },
+    {
+      "path": "doudou/scripts/doudou/runtime/broker/client.py",
+      "kind": "file"
+    },
+    {
+      "path": "npm/skill-manifest.json",
+      "kind": "file"
+    }
+  ],
+  "changes": [
+    {
+      "path": "docs/verification/tests/test_broker_frame_limits.py",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "6849801d081e12ee1d72b2e3bd3e707f0d629ba1d7680e6a44f3d7f1ce47ff0b",
+        "size": 4942
+      },
+      "attributedTo": [
+        {
+          "path": "docs/verification/tests/test_broker_frame_limits.py",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "docs/verification/tests/test_stranger_chat_integration.py",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "f763acfd334c1d780530fa035046c3feb69a7d2b4812ca49315a27393d31e671",
+        "size": 8328
+      },
+      "attributedTo": [
+        {
+          "path": "docs/verification/tests/test_stranger_chat_integration.py",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "docs/verification/tests/test_stranger_protocol.py",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "663e3063e817c304f159f841cac1e31dfeecb1d2e3bcecd7a630e93fe2a1ebc8",
+        "size": 3072
+      },
+      "attributedTo": [
+        {
+          "path": "docs/verification/tests/test_stranger_protocol.py",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "doudou/references/cli.md",
+      "kind": "modified",
+      "before": {
+        "hash": "70c1d5ef4b7a778166ab17e311dddd00b959e807ad3d92aebe5b703285709249",
+        "size": 3528
+      },
+      "after": {
+        "hash": "3c67855e14f04b9aaa64ade070cd8c6bb9fbbe0bee1e62e408220445a7bba7d7",
+        "size": 3853
+      },
+      "attributedTo": [
+        {
+          "path": "doudou/references/cli.md",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "doudou/references/layout.md",
+      "kind": "modified",
+      "before": {
+        "hash": "e3a09dd34a4ca6409cf97013d38f2340d50bd2436024fd5558f059fb3ae8201b",
+        "size": 1932
+      },
+      "after": {
+        "hash": "e1991743ee171b6d6073c0aa0ae863ab991c7000ed554d16cc0aa94a88d34f8c",
+        "size": 2046
+      },
+      "attributedTo": [
+        {
+          "path": "doudou/references/layout.md",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "doudou/references/protobuf-message-fields.md",
+      "kind": "modified",
+      "before": {
+        "hash": "efe275914ff924ff956017d243fe8070487a66d800a24119771bb561b86e249a",
+        "size": 5680
+      },
+      "after": {
+        "hash": "439a30ca4ed5f8dfb6d3de8474d149f466c6fa7974c5a7d2836988272e045e9b",
+        "size": 6547
+      },
+      "attributedTo": [
+        {
+          "path": "doudou/references/protobuf-message-fields.md",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "doudou/scripts/doudou/cli.py",
+      "kind": "modified",
+      "before": {
+        "hash": "0282d556c156dd83cb06fc79d602c4763f17052e56556a20c82a3fefd6c89d70",
+        "size": 19130
+      },
+      "after": {
+        "hash": "ad45e5bb991298026fb6fa5695948178f9f0df83306b9c28ec54e9031a472707",
+        "size": 19288
+      },
+      "attributedTo": [
+        {
+          "path": "doudou/scripts/doudou/cli.py",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "doudou/scripts/doudou/features/broker.py",
+      "kind": "modified",
+      "before": {
+        "hash": "4903c1c33e76580bf704068dd9469175bffbb15f7fbc6f01c729f229487e9fe2",
+        "size": 3579
+      },
+      "after": {
+        "hash": "d654ccb0c8acdbf6d423da811a953e5f6009d43bd1d88c0429a4adf238001fda",
+        "size": 3629
+      },
+      "attributedTo": [
+        {
+          "path": "doudou/scripts/doudou/features/broker.py",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "doudou/scripts/doudou/features/chat/service.py",
+      "kind": "modified",
+      "before": {
+        "hash": "3711c5092b0b4395ecd90e4b4194adcac6ccf18ce68d5cb34be5266832def4b7",
+        "size": 17378
+      },
+      "after": {
+        "hash": "50cdd7858d8f0ecdd4ae288dba52981a030b1115549917db181ddd7ec3d1d825",
+        "size": 18148
+      },
+      "attributedTo": [
+        {
+          "path": "doudou/scripts/doudou/features/chat/service.py",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "doudou/scripts/doudou/protocol/im.py",
+      "kind": "modified",
+      "before": {
+        "hash": "034c8ff2aea8759f7fa83252e816d7fb161993d07020188b76d5a1463fb4cd9c",
+        "size": 18306
+      },
+      "after": {
+        "hash": "ea23a3276f89d5276f1e6b750408ae9ba6f02f0f6fbeccd6841f3c5a18285610",
+        "size": 23365
+      },
+      "attributedTo": [
+        {
+          "path": "doudou/scripts/doudou/protocol/im.py",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "doudou/scripts/doudou/reads/chat.py",
+      "kind": "modified",
+      "before": {
+        "hash": "2ed02d5459c6b4e7a5904539060c428d46bd6897773d5d46ff722274c99008a3",
+        "size": 18415
+      },
+      "after": {
+        "hash": "b7b38d241de6b6d3ba966769abea0b5f2e7c61f4b6c226eccd299c2a5c78c892",
+        "size": 23351
+      },
+      "attributedTo": [
+        {
+          "path": "doudou/scripts/doudou/reads/chat.py",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "doudou/scripts/doudou/runtime/broker/client.py",
+      "kind": "modified",
+      "before": {
+        "hash": "3ece79856c7a4689a8b5ae8c86b2b9a8ca57e24463526b3680c5c2a7c4578d2d",
+        "size": 12456
+      },
+      "after": {
+        "hash": "152f111ac242774f3631979c8e4ff177e2affdbdbf0ffe6e4d8003bc275c3a0f",
+        "size": 13529
+      },
+      "attributedTo": [
+        {
+          "path": "doudou/scripts/doudou/runtime/broker/client.py",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "npm/skill-manifest.json",
+      "kind": "modified",
+      "before": {
+        "hash": "0ffafa3ff8e9f19741f212a9a59f112ddd03d71c35fad761d152a2853d84d987",
+        "size": 12325
+      },
+      "after": {
+        "hash": "39f154d1fbf9b0977bd85db856091122cc809deb064aa265dc78d45bf9c7a3d6",
+        "size": 11966
+      },
+      "attributedTo": [
+        {
+          "path": "npm/skill-manifest.json",
+          "kind": "file"
+        }
+      ]
+    }
+  ],
+  "unattributed": [],
+  "unresolvedScopes": [],
+  "noCodeReason": null,
+  "scopeHash": "9715f9711bf60f7bef5cfdf83e39c4c4919d753bffeb285405dc91730d115b73"
+}

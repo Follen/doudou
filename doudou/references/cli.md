@@ -22,11 +22,12 @@
 
 ```text
 <cli> conversations refresh --profile <name> --kind all
+<cli> conversations refresh --profile <name> --kind all --inbox all
 <cli> conversations resolve --profile <name> --target <ID-or-name>
 <cli> messages collect --profile <name> --conversation <ID-or-name>
 ```
 
-消息默认采集本地当天零点到当前时间；需要指定窗口时传 `--from` 和 `--to`。`conversation_type=1` 是私聊，`conversation_type=2` 是群聊；不要根据标题判断。
+`conversations refresh --kind all` 默认合并已建立会话和陌生人消息请求。每条记录通过 `inbox=established|request` 区分来源；`--inbox established|request|all` 可筛选来源。消息默认采集本地当天零点到当前时间；需要指定窗口时传 `--from` 和 `--to`。`conversation_type=1` 是私聊，`conversation_type=2` 是群聊；不要根据标题判断。消息请求只读，不能用于发送、回复或点赞。
 
 ## Chat writes
 

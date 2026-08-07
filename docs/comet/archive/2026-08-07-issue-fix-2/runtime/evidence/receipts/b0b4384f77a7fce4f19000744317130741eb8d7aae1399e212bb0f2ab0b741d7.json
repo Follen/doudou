@@ -1,0 +1,50 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "automated-check",
+  "role": "acceptance-evidence",
+  "status": "failed",
+  "bindings": {
+    "change": "issue-fix-2",
+    "sourceRevision": 3,
+    "contractHash": "e9aefb0f242800bd8b094026d66b23b0eb023bd1b229c5e8d96f4ffd9ecebf83",
+    "scopeHash": "7b3ab05083f8449a1e1bea66d2c086bed3425c8c148cc63bf713d5179a7e3a3f",
+    "snapshotHash": "f9d716cc454a214a8825f7536c2e8e4142c4e20926ad47a8e2322167d38dd6e5",
+    "artifactHash": "5590580f32fe5c921a5052c7331483d0ab30ea731ad73feee721f5fc0fb1b7f3"
+  },
+  "acceptanceIds": [
+    "acceptance-bf4f82f93a0c8cbcef2afd2baa79de5838798747fa2e7858c7876e6546ba450f"
+  ],
+  "actor": "native-runtime:command:python",
+  "issuedAt": "2026-08-07T17:54:46.101Z",
+  "evidence": {
+    "executable": "python",
+    "args": [
+      "-m",
+      "pytest",
+      "docs\\verification\\tests\\test_stranger_protocol.py",
+      "-q"
+    ],
+    "cwd": ".",
+    "exitCode": 2,
+    "signal": null,
+    "timedOut": false,
+    "timeoutMs": 120000,
+    "startedAt": "2026-08-07T17:54:45.746Z",
+    "endedAt": "2026-08-07T17:54:46.101Z",
+    "worktree": {
+      "provider": "git",
+      "root": ".",
+      "beforeCommit": "b1f51cce0d1f1c4f5ad787695a0bfc8a259c142f",
+      "afterCommit": "b1f51cce0d1f1c4f5ad787695a0bfc8a259c142f"
+    },
+    "afterFence": {
+      "snapshotHash": "f9d716cc454a214a8825f7536c2e8e4142c4e20926ad47a8e2322167d38dd6e5",
+      "scopeHash": "7b3ab05083f8449a1e1bea66d2c086bed3425c8c148cc63bf713d5179a7e3a3f",
+      "matched": true
+    },
+    "outputHash": "be69b516e8a4c464c8bf40271a9347e2b05d77b6957a2cc02d21a4452bdac6f6",
+    "outputSummary": "=================================== ERRORS ====================================\r\n_____ ERROR collecting docs/verification/tests/test_stranger_protocol.py ______\r\nImportError while importing test module 'D:\\Code\\issue-fix-2\\docs\\verification\\tests\\test_stranger_protocol.py'.\r\nHint: make sure your test modules/packages have valid Python names.\r\nTraceback:\r\nC:\\Users\\follen\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\importlib\\__init__.py:90: in import_module\r\n    return _bootstrap._gcd_import(name[level:], package, level)\r\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\ndocs\\verification\\tests\\test_stranger_protocol.py:1: in <module>\r\n    from doudou.protocol.im import (\r\nE   ModuleNotFoundError: No module named 'doudou.protocol'\r\n=========================== short test summary info ===========================\r\nERROR docs/verification/tests/test_stranger_protocol.py\r\n!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!\r\n1 error in 0.11s",
+    "outputTruncated": false
+  },
+  "receiptHash": "b0b4384f77a7fce4f19000744317130741eb8d7aae1399e212bb0f2ab0b741d7"
+}

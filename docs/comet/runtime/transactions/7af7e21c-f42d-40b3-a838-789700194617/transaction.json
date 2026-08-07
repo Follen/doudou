@@ -1,0 +1,35 @@
+{
+  "schema": "comet.native.transaction.v2",
+  "id": "7af7e21c-f42d-40b3-a838-789700194617",
+  "kind": "archive",
+  "status": "committed",
+  "change": "issue-fix-2",
+  "createdAt": "2026-08-07T18:59:57.686Z",
+  "preflightHash": "d00d23665da7ac5a231d929eba73396b6042532e4d09a96448766a3e75aa3345",
+  "operations": [
+    {
+      "id": "spec-1-broker-framing",
+      "type": "write",
+      "target": "specs/broker-framing/spec.md",
+      "staged": "runtime/transactions/7af7e21c-f42d-40b3-a838-789700194617/staged/specs/broker-framing/spec.md",
+      "expectedTargetHash": null,
+      "stagedHash": "ebaf906185fe526dc99af13bb58f32bd8812d025e7e800de99ea5fab9ccc66b2"
+    },
+    {
+      "id": "spec-2-stranger-message-requests",
+      "type": "write",
+      "target": "specs/stranger-message-requests/spec.md",
+      "staged": "runtime/transactions/7af7e21c-f42d-40b3-a838-789700194617/staged/specs/stranger-message-requests/spec.md",
+      "expectedTargetHash": null,
+      "stagedHash": "83517d07494b589b3a771e2d76e8a0816de35513a9eb225da9dd666b6201cdd9"
+    },
+    {
+      "id": "archive-change",
+      "type": "move",
+      "source": "changes/issue-fix-2",
+      "target": "archive/2026-08-07-issue-fix-2",
+      "expectedSourceHash": "15c09cf4d30765a473e48ad02851b5e904f6ac953f4af46718f911c169587f8e",
+      "expectedTargetHash": null
+    }
+  ]
+}

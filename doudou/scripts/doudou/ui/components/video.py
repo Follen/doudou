@@ -338,7 +338,7 @@ class VideoCommentsPanelComponent:
             ) from error
         return 1
 
-    async def trigger_reply_template(self, page: Any) -> int:
+    async def trigger_reply_template(self, page: Any, max_attempts: int = 2) -> int:
         panel = await self._panel(page, required=True)
         visible = await visible_candidates(panel.locator(self.reply_expand_selector))
         if not visible:
@@ -388,8 +388,29 @@ class VideoCommentsPanelComponent:
                     "geometry_reason": "state_mismatch",
                 },
             )
-        await trigger.click(timeout=10_000)
-        return 1
+        attempts = max(1, min(int(max_attempts), 3))
+        last_error: Exception | None = None
+        for attempt in range(1, attempts + 1):
+            try:
+                await trigger.click(timeout=10_000)
+                return 1
+            except Exception as error:  # noqa: BLE001 - browser drivers vary by backend
+                last_error = error
+                if attempt < attempts:
+                    await page.wait_for_timeout(150 * attempt)
+        raise DoudouError(
+            "PAGE_ADAPTER_DRIFTED",
+            "The reply expansion trigger did not complete after bounded attempts.",
+            {
+                "component": self.name,
+                "component_version": self.version,
+                "capability": "video.comments.reply-template",
+                "strategy": "comment panel -> unique topmost reply trigger -> bounded retry",
+                "geometry_reason": "reply_trigger_action_failed",
+                "attempts": attempts,
+                "cause_type": type(last_error).__name__ if last_error else None,
+            },
+        ) from last_error
 
 
 class VideoCommentComposerComponent:
@@ -630,7 +651,23 @@ class CommentItemComponent:
                 return node.scrollHeight > node.clientHeight + 20
                   && ['auto', 'scroll'].includes(style.overflowY);
               };
-              const local = [element, ...element.querySelectorAll('div')]
+              const preferredNodes = [
+                ...(element.matches('.comment-mainContent') ? [element] : []),
+                ...element.querySelectorAll('.comment-mainContent')
+              ];
+              for (let node = element.parentElement; node; node = node.parentElement) {
+                if (node.matches('.comment-mainContent')) preferredNodes.push(node);
+              }
+              const preferred = preferredNodes.filter(scrollable);
+              if (preferredNodes.length && preferred.length !== 1) {
+                return {
+                  resolved: false,
+                  reason: 'comment_main_content_not_unique_or_scrollable',
+                  preferred_count: preferredNodes.length,
+                  preferred_scrollable_count: preferred.length,
+                };
+              }
+              const local = preferred.length ? preferred : [element, ...element.querySelectorAll('div')]
                 .filter(scrollable);
               const ancestors = [];
               for (let node = element.parentElement; node; node = node.parentElement) {
@@ -653,7 +690,7 @@ class CommentItemComponent:
               );
               return {
                 resolved: true,
-                source: local.length ? 'local' : 'ancestor',
+                source: preferred.length ? 'comment-mainContent' : (local.length ? 'local' : 'ancestor'),
                 before,
                 after: scroller.scrollTop,
                 moved: scroller.scrollTop !== before,
@@ -716,6 +753,10 @@ class CommentItemComponent:
                         "geometry_reason": scroll.get("reason"),
                         "local_count": scroll.get("local_count"),
                         "ancestor_count": scroll.get("ancestor_count"),
+                        "preferred_count": scroll.get("preferred_count"),
+                        "preferred_scrollable_count": scroll.get(
+                            "preferred_scrollable_count"
+                        ),
                     },
                 )
             if not scroll.get("moved"):

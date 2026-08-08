@@ -1,0 +1,209 @@
+{
+  "schema": "comet.native.implementation-scope.v2",
+  "contractHash": "bd9666a3d74d90d7ca199a1d2dd6ff25f7dadb9ec68a8297cc8276b58e7d2bdb",
+  "baselineProjectionRef": "runtime/evidence/snapshots/6af59a1d4816c09215bbe9ffa932d648155d334ce3173639fdec75d0d9a7d4f1.json",
+  "baselineProjectionHash": "6af59a1d4816c09215bbe9ffa932d648155d334ce3173639fdec75d0d9a7d4f1",
+  "currentProjectionRef": "runtime/evidence/snapshots/1215a510904f5e2e0bec954b9c794388834a5b82a8057868e7370978afa41a38.json",
+  "currentProjectionHash": "1215a510904f5e2e0bec954b9c794388834a5b82a8057868e7370978afa41a38",
+  "complete": true,
+  "declaredArtifacts": [
+    {
+      "path": "docs/verification/incremental-video-comments-implementation.md",
+      "kind": "file"
+    },
+    {
+      "path": "docs/verification/tests/test_component_geometry.py",
+      "kind": "file"
+    },
+    {
+      "path": "docs/verification/tests/test_protocol_storage.py",
+      "kind": "file"
+    },
+    {
+      "path": "docs/verification/tests/test_video_comment_pagination.py",
+      "kind": "file"
+    },
+    {
+      "path": "doudou/references/runtime.md",
+      "kind": "file"
+    },
+    {
+      "path": "doudou/scripts/doudou/reads/video.py",
+      "kind": "file"
+    },
+    {
+      "path": "doudou/scripts/doudou/storage/content.py",
+      "kind": "file"
+    },
+    {
+      "path": "doudou/scripts/doudou/ui/components/video.py",
+      "kind": "file"
+    },
+    {
+      "path": "npm/skill-manifest.json",
+      "kind": "file"
+    }
+  ],
+  "changes": [
+    {
+      "path": "docs/verification/incremental-video-comments-implementation.md",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "b974710858702cb0be71478c692fb6b7dfc42cce60ceb32956588128abbea83d",
+        "size": 2015
+      },
+      "attributedTo": [
+        {
+          "path": "docs/verification/incremental-video-comments-implementation.md",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "docs/verification/tests/test_component_geometry.py",
+      "kind": "modified",
+      "before": {
+        "hash": "d602b9bf9f6d114b61e73214c7b8f2fa4875ff7f939a81ec2a3956a940b7deab",
+        "size": 16310
+      },
+      "after": {
+        "hash": "096e16a6124f043954091e834db837cb0be3e1c4a0c86dda406ed6c74a472342",
+        "size": 19409
+      },
+      "attributedTo": [
+        {
+          "path": "docs/verification/tests/test_component_geometry.py",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "docs/verification/tests/test_protocol_storage.py",
+      "kind": "modified",
+      "before": {
+        "hash": "b7006b0f762cf4603b341bd752da3dabb4ebed3b8e794bba9022bb1d7066cb2e",
+        "size": 21132
+      },
+      "after": {
+        "hash": "f7d545c47d874a9cf54c04a1cb68d59a79fba89e6c83b9a6f7174b4b0ae6e58a",
+        "size": 23747
+      },
+      "attributedTo": [
+        {
+          "path": "docs/verification/tests/test_protocol_storage.py",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "docs/verification/tests/test_video_comment_pagination.py",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "afa8be9e11ad8db2f61cbb38bfdd729bf36ced5d58e190cfa7333504b90d0bbd",
+        "size": 3679
+      },
+      "attributedTo": [
+        {
+          "path": "docs/verification/tests/test_video_comment_pagination.py",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "doudou/references/runtime.md",
+      "kind": "modified",
+      "before": {
+        "hash": "9202cd4024209a2c421df8d86980bde9c0e19367c784c57091de0b855a8fcd75",
+        "size": 5684
+      },
+      "after": {
+        "hash": "c4773dbff49859c9febfac3c4c2e4bac290d8e29a3e69e52b3a944481dd6de42",
+        "size": 6180
+      },
+      "attributedTo": [
+        {
+          "path": "doudou/references/runtime.md",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "doudou/scripts/doudou/reads/video.py",
+      "kind": "modified",
+      "before": {
+        "hash": "69cb48f027442cd220836cdc73be926e02c13fd97758bbe2e4ba2e495320c0a3",
+        "size": 26406
+      },
+      "after": {
+        "hash": "28f4037f5b4fb394ed69e8c4a8f8d08e84d6e4dc48f290ec43e45233370dd962",
+        "size": 27536
+      },
+      "attributedTo": [
+        {
+          "path": "doudou/scripts/doudou/reads/video.py",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "doudou/scripts/doudou/storage/content.py",
+      "kind": "modified",
+      "before": {
+        "hash": "7e0bf59f004f19eb87a19822da959f1e37f987aa358d308885b206f79bdc350b",
+        "size": 5712
+      },
+      "after": {
+        "hash": "4b0277279438160c2ea7739145f8c9c2c6edf0b264a46213dbb734c404ad9d3e",
+        "size": 6935
+      },
+      "attributedTo": [
+        {
+          "path": "doudou/scripts/doudou/storage/content.py",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "doudou/scripts/doudou/ui/components/video.py",
+      "kind": "modified",
+      "before": {
+        "hash": "c3a30b682332b55f559002bd09c27a45aba61dd50c37f92056ab4cb0aa093172",
+        "size": 32494
+      },
+      "after": {
+        "hash": "980a556aa1236bb431f800736fc28237aa880a894a1e0a5f060d337c01d2e5d0",
+        "size": 34675
+      },
+      "attributedTo": [
+        {
+          "path": "doudou/scripts/doudou/ui/components/video.py",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "npm/skill-manifest.json",
+      "kind": "modified",
+      "before": {
+        "hash": "41988df21d448ad5723bf88fa6e4a96223b91298b95a5167d3337a4d553e82fe",
+        "size": 11966
+      },
+      "after": {
+        "hash": "fccc4b480c24379af599805cbb6cf00df8673b267180dbcfa64de63dc46df1f3",
+        "size": 11966
+      },
+      "attributedTo": [
+        {
+          "path": "npm/skill-manifest.json",
+          "kind": "file"
+        }
+      ]
+    }
+  ],
+  "unattributed": [],
+  "unresolvedScopes": [],
+  "noCodeReason": null,
+  "scopeHash": "c27727713a66b1b4425bc1be5d4e7039db6110bd48826960b7a7c7529cb8cb10"
+}

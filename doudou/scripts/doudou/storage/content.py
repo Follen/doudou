@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+from copy import deepcopy
 from pathlib import Path
 from typing import Any
 
@@ -13,6 +14,41 @@ from ..common.core import (
     utc_now,
 )
 from ..runtime.paths import profile_paths
+
+
+def _merge_comment_value(existing: Any, incoming: Any) -> Any:
+    if incoming is None or incoming == "":
+        return deepcopy(existing)
+    if isinstance(existing, dict) and isinstance(incoming, dict):
+        merged = deepcopy(existing)
+        for key, value in incoming.items():
+            merged[key] = (
+                _merge_comment_value(merged[key], value)
+                if key in merged
+                else deepcopy(value)
+            )
+        return merged
+    return deepcopy(incoming)
+
+
+def merge_video_comments(
+    existing: list[dict[str, Any]], current: list[dict[str, Any]]
+) -> list[dict[str, Any]]:
+    """Merge normalized comments by cid while preserving stable input order."""
+    merged: list[dict[str, Any]] = []
+    positions: dict[str, int] = {}
+    for comment in [*existing, *current]:
+        cid = comment.get("cid")
+        if cid is None or cid == "":
+            continue
+        key = str(cid)
+        if key not in positions:
+            positions[key] = len(merged)
+            merged.append(deepcopy(comment))
+            continue
+        index = positions[key]
+        merged[index] = _merge_comment_value(merged[index], comment)
+    return merged
 
 
 def user_directory(data_root: Path, profile: str, identity: dict[str, Any]) -> Path:

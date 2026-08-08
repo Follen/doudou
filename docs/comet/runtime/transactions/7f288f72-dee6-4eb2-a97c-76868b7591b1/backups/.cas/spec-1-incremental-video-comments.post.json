@@ -1,0 +1,11 @@
+{
+  "schema": "comet.native.archive-cas.v1",
+  "operationId": "spec-1-incremental-video-comments",
+  "role": "post",
+  "hash": "e266b2da56c2cb082f92b082b143661e1c1397bb44a70c0762fcf5f8d0da33fb",
+  "identity": {
+    "dev": 2421791372,
+    "ino": 2251799814390425,
+    "birthtimeMs": 1786147260888.3103
+  }
+}

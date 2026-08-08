@@ -20,7 +20,9 @@ from ..protocol.web import (
 )
 from ..runtime.browser.session import BrowserSession
 from ..storage.content import (
+    merge_video_comments,
     read_comment_checkpoint,
+    read_video_comments,
     write_comment_checkpoint,
     write_identity,
     write_video,
@@ -164,6 +166,36 @@ async def _collect_reply_thread(
         "Reply comment collection reached the configured page limit.",
         {"root_cid": target["cid"], "max_pages": max_pages},
     )
+
+
+async def _resolve_reply_template(
+    session: BrowserSession,
+    root_template: str,
+    reply_urls: asyncio.Queue[str],
+    *,
+    max_attempts: int = 2,
+    timeout_seconds: float = 20,
+) -> str:
+    attempts = max(1, min(int(max_attempts), 3))
+    for attempt in range(1, attempts + 1):
+        try:
+            triggered = await VideoCommentsPanelComponent().trigger_reply_template(
+                session.page
+            )
+        except DoudouError as error:
+            if error.code != "PAGE_ADAPTER_DRIFTED":
+                raise
+            triggered = 1
+        if not triggered:
+            return root_template
+        try:
+            return await asyncio.wait_for(
+                reply_urls.get(), timeout=timeout_seconds
+            )
+        except TimeoutError:
+            if attempt < attempts:
+                await session.page.wait_for_timeout(150 * attempt)
+    return root_template
 
 
 async def resolve_identity(
@@ -538,6 +570,7 @@ async def collect_video(
             *,
             next_reply_root_id: str | None = None,
             error: DoudouError | None = None,
+            records: list[dict[str, Any]] | None = None,
         ) -> None:
             record: dict[str, Any] = {
                 "status": status,
@@ -551,7 +584,13 @@ async def collect_video(
             }
             if error is not None:
                 record["last_error"] = {"code": error.code, "details": error.details}
-            write_comment_checkpoint(data_root, profile, aweme_id, record, comments)
+            write_comment_checkpoint(
+                data_root,
+                profile,
+                aweme_id,
+                record,
+                comments if records is None else records,
+            )
 
         try:
             if not root_complete:
@@ -620,13 +659,9 @@ async def collect_video(
             ]
             reply_template = root_template
             if reply_targets:
-                triggered = await VideoCommentsPanelComponent().trigger_reply_template(
-                    session.page
+                reply_template = await _resolve_reply_template(
+                    session, root_template, reply_urls
                 )
-                if triggered:
-                    reply_template = await asyncio.wait_for(
-                        reply_urls.get(), timeout=20
-                    )
             for target in reply_targets:
                 try:
                     thread = await _collect_reply_thread(
@@ -660,8 +695,7 @@ async def collect_video(
         except DoudouError as error:
             persist("failed", error=error)
             raise
-        deduplicated = {item["cid"]: item for item in comments if item.get("cid")}
-        comments = resolve_comment_parents(list(deduplicated.values()))
+        current_comments = merge_video_comments([], comments)
         cover = None
         if normalized.get("cover_url"):
             response = await session.context.request.get(
@@ -674,15 +708,21 @@ async def collect_video(
                 cover = candidate
         cache = IdentityCache(data_root, profile)
         normalized = enrich_known_identities(normalized, cache, source="video-detail")
-        comments = [
-            enrich_known_identities(item, cache, source="comment") for item in comments
+        current_comments = [
+            enrich_known_identities(item, cache, source="comment")
+            for item in current_comments
         ]
+        comments = resolve_comment_parents(
+            merge_video_comments(
+                read_video_comments(data_root, profile, aweme_id), current_comments
+            )
+        )
         cache.merge(normalized["author"], source="video-detail")
         for comment in comments:
             cache.merge(comment["user"], source="comment")
         cache.save()
         files = write_video(data_root, profile, normalized, cover, comments, pages)
-        persist("completed")
+        persist("completed", records=current_comments)
         return {
             "status": "collected",
             "video": normalized,

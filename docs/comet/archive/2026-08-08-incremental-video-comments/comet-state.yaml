@@ -1,0 +1,23 @@
+schema: comet.native.v3
+minimum_runtime_version: 3
+revision: 5
+verification_protocol: legacy-v1
+name: incremental-video-comments
+language: zh-CN
+phase: archive
+brief: brief.md
+approval: confirmed
+approved_contract_hash: bd9666a3d74d90d7ca199a1d2dd6ff25f7dadb9ec68a8297cc8276b58e7d2bdb
+spec_changes:
+  - capability: incremental-video-comments
+    operation: create
+    source: specs/incremental-video-comments/spec.md
+    base_hash: null
+verification_result: pass
+verification_report: verification.md
+implementation_scope: runtime/evidence/scopes/c27727713a66b1b4425bc1be5d4e7039db6110bd48826960b7a7c7529cb8cb10.json
+verification_evidence: runtime/evidence/verifications/4d37dd258f420b30c7214165dddcdca1190c3212faec5d56eca59abe24a32356.json
+partial_allowance: null
+archived: true
+created_at: 2026-08-07
+run_id: 26ec51e1-7c85-4821-ad67-eddd40fa59a3

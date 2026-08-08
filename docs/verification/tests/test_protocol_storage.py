@@ -29,7 +29,11 @@ from doudou.protocol.protobuf import (
 from doudou.protocol.web import normalize_comment
 from doudou.reads.video import _reply_url, _url_matches_aweme
 from doudou.runtime.profile import create_profile
-from doudou.storage.content import read_comment_checkpoint, write_comment_checkpoint
+from doudou.storage.content import (
+    merge_video_comments,
+    read_comment_checkpoint,
+    write_comment_checkpoint,
+)
 from doudou.storage.media import decrypt_image, exact_md5, match_image_md5
 from doudou.storage.repository import merge_messages, read_messages
 from doudou.ui.adapters import CHAT_ADAPTER
@@ -41,6 +45,71 @@ def embedded(number: int, fields: list[Field]) -> Field:
 
 
 class ProtocolStorageTests(unittest.TestCase):
+    def test_comment_merge_is_incremental_and_cid_unique(self) -> None:
+        historical = [{"cid": f"c{index}", "text": "old"} for index in range(600)]
+        overlap = [{"cid": f"c{index}", "text": "new"} for index in range(200, 600)]
+        merged = merge_video_comments(historical, overlap)
+        self.assertEqual(len(merged), 600)
+        self.assertEqual([item["cid"] for item in merged[:3]], ["c0", "c1", "c2"])
+        self.assertEqual(merged[200]["text"], "new")
+
+        extended = merge_video_comments(
+            merged, [{"cid": f"c{index}"} for index in range(600, 620)]
+        )
+        self.assertEqual(len(extended), 620)
+        self.assertEqual(extended[-1]["cid"], "c619")
+
+    def test_comment_merge_recurses_and_preserves_meaningful_falsy_values(self) -> None:
+        merged = merge_video_comments(
+            [
+                {
+                    "cid": "c1",
+                    "text": "historical",
+                    "digg_count": 9,
+                    "is_author_digged": True,
+                    "user": {
+                        "uid": "7",
+                        "nickname": "Historical Name",
+                        "sec_uid": "sec-7",
+                    },
+                }
+            ],
+            [
+                {
+                    "cid": "c1",
+                    "text": "",
+                    "digg_count": 0,
+                    "is_author_digged": False,
+                    "user": {"nickname": None, "unique_id": "new-id"},
+                }
+            ],
+        )
+        self.assertEqual(merged[0]["text"], "historical")
+        self.assertEqual(merged[0]["digg_count"], 0)
+        self.assertFalse(merged[0]["is_author_digged"])
+        self.assertEqual(
+            merged[0]["user"],
+            {
+                "uid": "7",
+                "nickname": "Historical Name",
+                "sec_uid": "sec-7",
+                "unique_id": "new-id",
+            },
+        )
+
+    def test_comment_merge_handles_duplicate_cids_within_one_batch(self) -> None:
+        merged = merge_video_comments(
+            [{"cid": "old-only"}],
+            [
+                {"cid": "new", "text": "first", "user": {"uid": "8"}},
+                {"cid": "new", "text": None, "user": {"nickname": "Name"}},
+                {"cid": "new", "text": "latest", "user": {"uid": ""}},
+            ],
+        )
+        self.assertEqual([item["cid"] for item in merged], ["old-only", "new"])
+        self.assertEqual(merged[1]["text"], "latest")
+        self.assertEqual(merged[1]["user"], {"uid": "8", "nickname": "Name"})
+
     def test_comment_template_must_match_the_current_video(self) -> None:
         self.assertTrue(
             _url_matches_aweme(

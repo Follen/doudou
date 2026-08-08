@@ -1,0 +1,35 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "static-inspection",
+  "role": "required-check",
+  "status": "passed",
+  "bindings": {
+    "change": "incremental-video-comments",
+    "sourceRevision": 3,
+    "contractHash": "bd9666a3d74d90d7ca199a1d2dd6ff25f7dadb9ec68a8297cc8276b58e7d2bdb",
+    "scopeHash": "c27727713a66b1b4425bc1be5d4e7039db6110bd48826960b7a7c7529cb8cb10",
+    "snapshotHash": "1215a510904f5e2e0bec954b9c794388834a5b82a8057868e7370978afa41a38",
+    "artifactHash": "f188b9d7810415a71c3c5cc7c3614c4b2c7badd7b3ec69a35e5a9acd4b50e67c"
+  },
+  "acceptanceIds": [],
+  "actor": "native-runtime:scoped-text-safety",
+  "issuedAt": "2026-08-07T21:01:31.139Z",
+  "evidence": {
+    "subjects": [
+      "docs/verification/incremental-video-comments-implementation.md",
+      "docs/verification/tests/test_component_geometry.py",
+      "docs/verification/tests/test_protocol_storage.py",
+      "docs/verification/tests/test_video_comment_pagination.py",
+      "doudou/references/runtime.md",
+      "doudou/scripts/doudou/reads/video.py",
+      "doudou/scripts/doudou/storage/content.py",
+      "doudou/scripts/doudou/ui/components/video.py",
+      "npm/skill-manifest.json"
+    ],
+    "rule": "scoped-text-safety",
+    "resultSummary": "The built-in scoped inspection passed without skipped or blocking input.",
+    "checkReceiptRef": "runtime/evidence/check-receipts/240fcc0a8fc3fd15505117009869a50c68d89c855c98683398fb19ba833e89cd.json",
+    "checkReceiptHash": "240fcc0a8fc3fd15505117009869a50c68d89c855c98683398fb19ba833e89cd"
+  },
+  "receiptHash": "fb9ecbc390fffe3beba854dde67cf9fa6acee035f3ac702fa1cf777825d74921"
+}

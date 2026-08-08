@@ -1,0 +1,72 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "automated-check",
+  "role": "acceptance-evidence",
+  "status": "passed",
+  "bindings": {
+    "change": "incremental-video-comments",
+    "sourceRevision": 3,
+    "contractHash": "bd9666a3d74d90d7ca199a1d2dd6ff25f7dadb9ec68a8297cc8276b58e7d2bdb",
+    "scopeHash": "c27727713a66b1b4425bc1be5d4e7039db6110bd48826960b7a7c7529cb8cb10",
+    "snapshotHash": "1215a510904f5e2e0bec954b9c794388834a5b82a8057868e7370978afa41a38",
+    "artifactHash": "f188b9d7810415a71c3c5cc7c3614c4b2c7badd7b3ec69a35e5a9acd4b50e67c"
+  },
+  "acceptanceIds": [
+    "acceptance-1348dca7bf109dc992bfe9d75525ba6d8bd5a85e3415341749f4a4a5e61ba806",
+    "acceptance-177b11f635e72bbc3470ff432f06c505e5f618e242f536a1602ed80c6db63961",
+    "acceptance-1f9af64d419ca0ea3763a83d592ba3693f321c64f128339fa64cc2378f8e9b76",
+    "acceptance-2bc10dd7deea6c8cbdd21eac6572855b6f532700351fe29867d49aa1d9020d16",
+    "acceptance-2e279529f59d2c522ef791f8bacbee8cab04ee6a1781a1b038594c5c3aa15b77",
+    "acceptance-329d519ae24802ffe5e42b0b40522d7829bb5575908b9c832b859f85ef13fc93",
+    "acceptance-4b8a657892ba49e3e10c766d8bed5bf51b0898b30b6162f334797bc0913e0622",
+    "acceptance-4d1ea18fa21e3d418fb9b6ad10dbef527354f71595ccc16477e50dfacb3df41f",
+    "acceptance-5f63e5e28eb99824c4c1b163ed09d8384e809c68a6aad02da5ca3f7652cefca8",
+    "acceptance-60478f1e927e9155d6b25ea60d6060e56978215c06abf38ec6b46f9bbf53694b",
+    "acceptance-643427752a8477b62ae6a23af53407e4bd9cfd118a5ec70e355afd43e3249db6",
+    "acceptance-72c2f74bb758061ea08c50b6f5d1183dab211a3d7d8f71a4a279b9dad0aaf466",
+    "acceptance-7d378466c946d78ca0136986f00a4e67f67d82d5852c72ff5e09684f64b022a2",
+    "acceptance-823cc688373d6d00ae0504b4a2c1a9be11e7177bbb5dd5dfa88958095bb6b456",
+    "acceptance-82d5245b2f73beb630bb88508cae32260b91abc13f31b8d3b19d57896549416b",
+    "acceptance-85d36165703f4be4f54aaf49ddcb71417bb10f70780639bc9a6747e7628c2ea0",
+    "acceptance-90bb50d6c6680c86c03bfd6ed44be5ac9be30b8ecffe9efe6253ae0a8edb5833",
+    "acceptance-94b8aad4a4fe3fa8b6fe3bc66de542d38df98145ff73dc5d056da23b50870fb9",
+    "acceptance-a2e5beb73681a06fc6fc0c882c66da72d8b3a66f3d85acc8725c19f4e1291837",
+    "acceptance-b730b11e97958677302e983cb656b495a4f48237a7132f0e2bc53d257157153e",
+    "acceptance-be9cb06eac74e80b02504ad01fbc3a3f1ec21fcb56acbc7e7e5372e4ff9b5adc",
+    "acceptance-d19c4c842f5cde22944a99c9edd454d354da189cf5bf86328300a684381d3f1c",
+    "acceptance-d5539ee195c5995500f202f8b9d906f649e0aa08e0b78b4bc6249f8a3de77f54",
+    "acceptance-ef0783ad9073207b7465a79032c3bc19a94f4f6cc41bde625fb3f3224286ea69",
+    "acceptance-f95c352d936087b249161c316ae30efd82fd64921410ceb22edd241ea632c12a"
+  ],
+  "actor": "native-runtime:command:python",
+  "issuedAt": "2026-08-07T21:08:43.841Z",
+  "evidence": {
+    "executable": "python",
+    "args": [
+      "-c",
+      "import sys; sys.path.insert(0, 'doudou/scripts'); import pytest; raise SystemExit(pytest.main(['docs/verification/tests', '-q']))"
+    ],
+    "cwd": ".",
+    "exitCode": 0,
+    "signal": null,
+    "timedOut": false,
+    "timeoutMs": 120000,
+    "startedAt": "2026-08-07T21:08:16.354Z",
+    "endedAt": "2026-08-07T21:08:43.841Z",
+    "worktree": {
+      "provider": "git",
+      "root": ".",
+      "beforeCommit": "782f34e28bb8d9b5c19438b30cddf50659203178",
+      "afterCommit": "782f34e28bb8d9b5c19438b30cddf50659203178"
+    },
+    "afterFence": {
+      "snapshotHash": "1215a510904f5e2e0bec954b9c794388834a5b82a8057868e7370978afa41a38",
+      "scopeHash": "c27727713a66b1b4425bc1be5d4e7039db6110bd48826960b7a7c7529cb8cb10",
+      "matched": true
+    },
+    "outputHash": "1a0f2b5822b3efa58d99cfb796d9df4f49eecf9088495727bc6ca3146e83fe56",
+    "outputSummary": ".................................................................. [ 42%]\r\n........................................................................ [ 89%]\r\n................                                                         [100%]\r\n154 passed, 6 subtests passed in 27.25s",
+    "outputTruncated": false
+  },
+  "receiptHash": "720a8151db830bf7b897869143a928adf569bd672cea3db223b489232a762768"
+}

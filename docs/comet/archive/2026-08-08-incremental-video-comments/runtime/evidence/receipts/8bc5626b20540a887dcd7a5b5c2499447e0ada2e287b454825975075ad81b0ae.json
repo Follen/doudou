@@ -1,0 +1,38 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "manual-evidence",
+  "role": "acceptance-evidence",
+  "status": "passed",
+  "bindings": {
+    "change": "incremental-video-comments",
+    "sourceRevision": 3,
+    "contractHash": "bd9666a3d74d90d7ca199a1d2dd6ff25f7dadb9ec68a8297cc8276b58e7d2bdb",
+    "scopeHash": "c27727713a66b1b4425bc1be5d4e7039db6110bd48826960b7a7c7529cb8cb10",
+    "snapshotHash": "1215a510904f5e2e0bec954b9c794388834a5b82a8057868e7370978afa41a38",
+    "artifactHash": "f188b9d7810415a71c3c5cc7c3614c4b2c7badd7b3ec69a35e5a9acd4b50e67c"
+  },
+  "acceptanceIds": [
+    "acceptance-1f9af64d419ca0ea3763a83d592ba3693f321c64f128339fa64cc2378f8e9b76",
+    "acceptance-4d1ea18fa21e3d418fb9b6ad10dbef527354f71595ccc16477e50dfacb3df41f",
+    "acceptance-823cc688373d6d00ae0504b4a2c1a9be11e7177bbb5dd5dfa88958095bb6b456",
+    "acceptance-94b8aad4a4fe3fa8b6fe3bc66de542d38df98145ff73dc5d056da23b50870fb9",
+    "acceptance-b730b11e97958677302e983cb656b495a4f48237a7132f0e2bc53d257157153e",
+    "acceptance-d19c4c842f5cde22944a99c9edd454d354da189cf5bf86328300a684381d3f1c"
+  ],
+  "actor": "native-runtime:manual-evidence",
+  "issuedAt": "2026-08-07T21:09:07.978Z",
+  "evidence": {
+    "steps": [
+      "Backed up the existing formal video artifacts and recorded the baseline comments.jsonl SHA-256 and unique CID set before collection.",
+      "Ran the modified formal video collect CLI with the existing signed-in browser profile against the real multi-page video and waited for process completion.",
+      "Re-read formal comments, pagination records, checkpoint, and DOM scroll-root state after collection."
+    ],
+    "observations": [
+      "CLI exited 0. Baseline had 462 unique CID, 305 root comments, 157 replies, 32 root pages, 48 reply pages, and 2 multi-page reply threads.",
+      "Final formal comments contained 479 rows and 479 unique CID, duplicate count 0, historical CID missing count 0, and 17 new CID. All 32 root pages reached has_more=false; all 49 reply threads reached protocol termination.",
+      "Baseline SHA-256 was f37eaffcbd49f3187f2b2f2fef26d3bbd30c2ce016bf62e8ac318f388d804870 and final SHA-256 was 2dc9ce30e8069b89842d2488eec1d988fd6b23befc06905d0c95d5ef239d1a0d. The completed checkpoint and partial file contained only the current-run collection.",
+      "The real page had two .comment-mainContent nodes; exactly one was visible and scrollable. The component selected source=comment-mainContent and changed scrollTop from 0 to 718."
+    ]
+  },
+  "receiptHash": "8bc5626b20540a887dcd7a5b5c2499447e0ada2e287b454825975075ad81b0ae"
+}

@@ -12,7 +12,11 @@ from doudou.ui.components.base import (
     require_target,
 )
 from doudou.ui.components.chat import ChatComposerComponent, message_semantics_match
-from doudou.ui.components.video import VideoCommentComposerComponent
+from doudou.ui.components.video import (
+    CommentItemComponent,
+    VideoCommentComposerComponent,
+    VideoCommentsPanelComponent,
+)
 
 
 class FakeElement:
@@ -95,6 +99,83 @@ def box(
 
 
 class ComponentGeometryTests(unittest.IsolatedAsyncioTestCase):
+    async def test_comment_scroll_prefers_unique_main_content(self) -> None:
+        page = MagicMock()
+        root = MagicMock()
+        root.evaluate = AsyncMock(
+            return_value={
+                "resolved": True,
+                "source": "comment-mainContent",
+                "moved": True,
+            }
+        )
+
+        result = await CommentItemComponent(page)._scroll_toward_end(root)
+
+        self.assertEqual(result["source"], "comment-mainContent")
+        script = root.evaluate.await_args.args[0]
+        self.assertIn(".comment-mainContent", script)
+        self.assertIn("node.matches('.comment-mainContent')", script)
+        self.assertIn("preferred.length !== 1", script)
+
+    async def test_reply_template_retries_once_after_click_failure(self) -> None:
+        page = MagicMock()
+        page.wait_for_timeout = AsyncMock()
+        panel = MagicMock()
+        trigger = MagicMock()
+        trigger.bounding_box = AsyncMock(return_value=box(10, 20))
+        trigger.inner_text = AsyncMock(return_value="展开 2 条回复")
+        trigger.click = AsyncMock(side_effect=[TimeoutError("first"), None])
+        component = VideoCommentsPanelComponent()
+        component._panel = AsyncMock(return_value=panel)
+
+        with (
+            patch(
+                "doudou.ui.components.video.visible_candidates",
+                new=AsyncMock(return_value=[trigger]),
+            ),
+            patch(
+                "doudou.ui.components.video.require_target",
+                new=AsyncMock(return_value=trigger),
+            ),
+        ):
+            result = await component.trigger_reply_template(page)
+
+        self.assertEqual(result, 1)
+        self.assertEqual(trigger.click.await_count, 2)
+        page.wait_for_timeout.assert_awaited_once_with(150)
+
+    async def test_reply_template_stops_at_retry_limit(self) -> None:
+        page = MagicMock()
+        page.wait_for_timeout = AsyncMock()
+        panel = MagicMock()
+        trigger = MagicMock()
+        trigger.bounding_box = AsyncMock(return_value=box(10, 20))
+        trigger.inner_text = AsyncMock(return_value="查看 2 条回复")
+        trigger.click = AsyncMock(side_effect=TimeoutError("still blocked"))
+        component = VideoCommentsPanelComponent()
+        component._panel = AsyncMock(return_value=panel)
+
+        with (
+            patch(
+                "doudou.ui.components.video.visible_candidates",
+                new=AsyncMock(return_value=[trigger]),
+            ),
+            patch(
+                "doudou.ui.components.video.require_target",
+                new=AsyncMock(return_value=trigger),
+            ),
+            self.assertRaises(DoudouError) as context,
+        ):
+            await component.trigger_reply_template(page, max_attempts=2)
+
+        self.assertEqual(trigger.click.await_count, 2)
+        self.assertEqual(context.exception.details["attempts"], 2)
+        self.assertEqual(
+            context.exception.details["geometry_reason"],
+            "reply_trigger_action_failed",
+        )
+
     async def test_message_semantics_matches_rendered_emoji_titles(self) -> None:
         self.assertTrue(
             message_semantics_match(

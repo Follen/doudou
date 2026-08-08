@@ -1,9 +1,9 @@
 {
   "schema": "doudou.npm-skill-manifest.v1",
   "package_name": "@follenfang/doudou",
-  "package_version": "0.0.5",
-  "skill_version": "0.0.5",
-  "tree_sha256": "64fbe5ba734dc47c2fcae2d315a534dd525f785cadf7a2e3b3d2a4e46ed3678c",
+  "package_version": "0.0.6",
+  "skill_version": "0.0.6",
+  "tree_sha256": "54e2430fa78e045fd8d44d3e4faf7d63b986ef4889294be538c7036a04d71a9d",
   "files": [
     {
       "path": "agents/openai.yaml",
@@ -27,8 +27,8 @@
     },
     {
       "path": "references/runtime.md",
-      "bytes": 5684,
-      "sha256": "9202cd4024209a2c421df8d86980bde9c0e19367c784c57091de0b855a8fcd75"
+      "bytes": 6180,
+      "sha256": "c4773dbff49859c9febfac3c4c2e4bac290d8e29a3e69e52b3a944481dd6de42"
     },
     {
       "path": "scripts/doudou.py",
@@ -38,7 +38,7 @@
     {
       "path": "scripts/doudou/__init__.py",
       "bytes": 56,
-      "sha256": "c2f829108bf186cceea0d1e823a690e33c89b196482e2617afca394b4082a3d3"
+      "sha256": "2824f9b182315b2e1f31c5b292eb786fcbdc2d5824d67674634d881082ab75a6"
     },
     {
       "path": "scripts/doudou/cli.py",
@@ -167,8 +167,8 @@
     },
     {
       "path": "scripts/doudou/reads/video.py",
-      "bytes": 26406,
-      "sha256": "69cb48f027442cd220836cdc73be926e02c13fd97758bbe2e4ba2e495320c0a3"
+      "bytes": 27536,
+      "sha256": "28f4037f5b4fb394ed69e8c4a8f8d08e84d6e4dc48f290ec43e45233370dd962"
     },
     {
       "path": "scripts/doudou/runtime/__init__.py",
@@ -257,8 +257,8 @@
     },
     {
       "path": "scripts/doudou/storage/content.py",
-      "bytes": 5712,
-      "sha256": "7e0bf59f004f19eb87a19822da959f1e37f987aa358d308885b206f79bdc350b"
+      "bytes": 6935,
+      "sha256": "4b0277279438160c2ea7739145f8c9c2c6edf0b264a46213dbb734c404ad9d3e"
     },
     {
       "path": "scripts/doudou/storage/identity_migration.py",
@@ -317,8 +317,8 @@
     },
     {
       "path": "scripts/doudou/ui/components/video.py",
-      "bytes": 32494,
-      "sha256": "c3a30b682332b55f559002bd09c27a45aba61dd50c37f92056ab4cb0aa093172"
+      "bytes": 34675,
+      "sha256": "980a556aa1236bb431f800736fc28237aa880a894a1e0a5f060d337c01d2e5d0"
     },
     {
       "path": "scripts/doudou/ui/video.py",

@@ -1,0 +1,27 @@
+{
+  "schema": "comet.native.transaction.v2",
+  "id": "7f288f72-dee6-4eb2-a97c-76868b7591b1",
+  "kind": "archive",
+  "status": "committed",
+  "change": "incremental-video-comments",
+  "createdAt": "2026-08-08T00:00:58.348Z",
+  "preflightHash": "ee61fa52df23826bb312798b1ecd6c7d69667b0004a61d953470bdee198d7f86",
+  "operations": [
+    {
+      "id": "spec-1-incremental-video-comments",
+      "type": "write",
+      "target": "specs/incremental-video-comments/spec.md",
+      "staged": "runtime/transactions/7f288f72-dee6-4eb2-a97c-76868b7591b1/staged/specs/incremental-video-comments/spec.md",
+      "expectedTargetHash": null,
+      "stagedHash": "e266b2da56c2cb082f92b082b143661e1c1397bb44a70c0762fcf5f8d0da33fb"
+    },
+    {
+      "id": "archive-change",
+      "type": "move",
+      "source": "changes/incremental-video-comments",
+      "target": "archive/2026-08-08-incremental-video-comments",
+      "expectedSourceHash": "6a09af61b42adb0a717c7096431142f691524eef467c19caa2a60de37412601d",
+      "expectedTargetHash": null
+    }
+  ]
+}

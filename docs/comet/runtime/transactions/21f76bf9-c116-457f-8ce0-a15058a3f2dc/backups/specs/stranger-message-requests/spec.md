@@ -2,7 +2,7 @@
 
 ## Purpose
 
-通过抖音网页 IM 的 stranger 协议稳定发现并只读采集消息请求，同时保持普通会话、身份补齐、存储和写入边界可预测，并明确区分 1001 会话摘要与 1002 协议历史。
+通过抖音网页 IM 的 stranger 协议发现并只读采集消息请求，同时保持普通会话、身份补齐、存储和写入边界可预测。
 
 ## Requirements
 
@@ -23,33 +23,6 @@
 - Given HTTP 200 且 protobuf status 0 的 1002 响应
 - When 系统提取 ResponseBody
 - Then 从 field 1001 取得 stranger messages body
-
-### 瞬态网络恢复
-
-1001 与 1002 页面上下文 protobuf POST 必须对可识别的瞬态 NetworkError 进行有界重试，并保持非瞬态失败的既有分类。
-
-#### Scenario: 首次 NetworkError 后恢复
-
-- Given 第一次页面 fetch 抛出 NetworkError
-- And 页面会话和初始化 envelope 仍有效
-- When 后续有界重试成功
-- Then 原业务命令返回成功
-- And 只发布完整会话索引或真实消息结果
-
-#### Scenario: NetworkError 达到上限
-
-- Given 每次有界尝试都抛出 NetworkError
-- When 重试预算耗尽
-- Then 命令返回稳定的协议网络错误
-- And 不发布部分会话索引
-- And 不用会话摘要伪造消息结果
-
-#### Scenario: 非瞬态失败
-
-- Given HTTP 错误、Protobuf status 非零、验证网关或 schema 漂移
-- When 系统处理响应
-- Then 不把该失败当作瞬态 NetworkError 重试
-- And 保留对应的明确错误分类
 
 ### 列表分页
 
@@ -99,28 +72,9 @@
 - And the previous conversation index remains unchanged
 - And no partial combined index is published
 
-### 会话昵称
-
-request 直接会话完成身份补齐后，必须以非本账号参与者的 remark name、nickname 或 display name 作为会话 `display_name`；上游没有任何名称时保持 conversation ID 作为会话标识。
-
-#### Scenario: 对方昵称可用
-
-- Given request 会话包含本账号和一名对方参与者
-- And 对方身份补齐得到可用名称
-- When 系统保存会话索引
-- Then `display_name` 使用对方名称
-- And resolve/collect 可按该名称命中会话
-
-#### Scenario: 对方昵称缺失
-
-- Given 无法从非本账号参与者得到任何可用名称
-- When 系统保存会话索引
-- Then `display_name` 保持 conversation ID
-- And 不使用本账号昵称冒充对方名称
-
 ### 只读消息采集
 
-对 message-request inbox 会话，系统必须调用 `/v1/stranger/get_messages`，使用 command 1002/field 1001，并固定 `reset_unread_count=false`。消息存储和 `message_count` 只能包含 1002 实际返回并成功标准化的消息。
+对 message-request inbox 会话，系统必须调用 `/v1/stranger/get_messages`，使用 command 1002/field 1001，并固定 `reset_unread_count=false`。
 
 #### Scenario: 采集陌生人消息
 
@@ -129,21 +83,10 @@ request 直接会话完成身份补齐后，必须以非本账号参与者的 re
 - Then 系统按 short ID 请求 1002
 - And 不重置未读数
 - And 复用现有 MessageBody 标准化、去重、冲突和媒体存储契约
-- And 页摘要报告协议返回数量
 
-#### Scenario: 1002 空响应但 1001 有最后消息
+### 发送者昵称补齐
 
-- Given 1002 HTTP 200/status 0 但没有可解析消息
-- And 1001 会话记录包含 `last_message`
-- When 用户运行消息采集
-- Then 协议返回数量和 `message_count` 为 0
-- And fallback 标志明确为 false
-- And `last_message` 仍保留在会话摘要
-- And 不把该摘要写入 messages.jsonl
-
-### 身份补齐
-
-陌生人 participants 和真实 1002 消息发送者必须进入现有身份缓存与用户信息补齐链，输出统一身份字段；上游缺失值保持 null。多个 sec_uid 必须使用固定上限的批次补齐，不得逐人发起请求。
+陌生人 participants 和消息发送者必须进入现有身份缓存与用户信息补齐链，输出统一身份字段；上游缺失值保持 null。
 
 #### Scenario: 用户信息返回昵称
 
@@ -160,14 +103,6 @@ request 直接会话完成身份补齐后，必须以非本账号参与者的 re
 - Then nickname 和 display_name 按现有身份规则保持 null
 - And 不使用会话 ID、uid 或其他标签伪造昵称
 
-#### Scenario: 七十个陌生会话批量补齐
-
-- Given 70 个陌生会话含待补齐 sec_uid
-- When 系统刷新 request inbox
-- Then 用户信息请求按固定批量执行
-- And 请求次数等于批次数而不是参与者人数
-- And 命令在 broker 命令预算内完成
-
 ### 写入边界
 
 陌生人会话不得进入现有发送、回复、点赞或批量写入计划。
@@ -181,4 +116,4 @@ request 直接会话完成身份补齐后，必须以非本账号参与者的 re
 
 ### 真实验证
 
-实现必须以真实 Camoufox Profile 验证非空 1001、昵称 resolve、1002 协议计数、发送者昵称补齐和本地存储；还必须重复刷新验证瞬态恢复。可提交证据不得保存凭据、sec_uid、消息正文、Profile 或 message 数据。
+实现必须以真实 Camoufox Profile 验证 1001；非空条件下还必须验证 1002、发送者昵称补齐和本地存储，不保存凭据或消息正文到可提交证据。

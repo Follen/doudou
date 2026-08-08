@@ -114,6 +114,8 @@ The IM stranger inbox uses command `1001` for `/v1/stranger/get_conversation_lis
 
 `GetStrangerMessagesRequestBody` contains conversation short ID (field 1) and `reset_unread_count` (field 2). Collection always sends `reset_unread_count=false`; the response contains repeated `MessageBody` values in field 3.
 
+The current web chat does not issue command `1002` when a user opens a message request. It refreshes command `1001`, renders that conversation's `last_message`, and uses command `1006` to mark the conversation read. Doudou still probes `1002` for protocol messages; when its body is empty, the CLI may collect the non-empty `1001` `last_message` as a separately labelled `stranger-conversation-summary`. Page results report `protocol_received`, `summary_received`, and `collection_source`, so the summary is never represented as `1002` history.
+
 `ConversationParticipantsListRequestBody` fields 1-5 are conversation ID, short ID, type, cursor and limit. `ParticipantsPage` contains repeated participant field 1, has-more field 2 and cursor field 3. Participant fields 1-5 are UID, sort order, role, alias and sec UID; field 8 is ext.
 
 ## SendMessageResponseBody

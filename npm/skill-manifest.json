@@ -3,7 +3,7 @@
   "package_name": "@follenfang/doudou",
   "package_version": "0.0.7",
   "skill_version": "0.0.7",
-  "tree_sha256": "0bfa4d9265e8ba6120aa2a9ae41112d91f3dc7cb185fad74d14144faaa2c6025",
+  "tree_sha256": "efd7ad7406ec11040271a1146300f17e475fe0bc2b10066b7db0a4e295825079",
   "files": [
     {
       "path": "agents/openai.yaml",
@@ -22,8 +22,8 @@
     },
     {
       "path": "references/protobuf-message-fields.md",
-      "bytes": 6428,
-      "sha256": "54e88f65439c103a6480eadec7657cc68657d6e4f0ca45c576a96dd74a3f32a8"
+      "bytes": 6974,
+      "sha256": "cdfac7d35daea1e4187e3cba612ebf9f640b8e6d55a57200769cd9816b41b52e"
     },
     {
       "path": "references/runtime.md",
@@ -157,8 +157,8 @@
     },
     {
       "path": "scripts/doudou/reads/chat.py",
-      "bytes": 23944,
-      "sha256": "ce2b3e3eb03db75ff4f3631bff0126355ef91fdcfced1d538b1420ea57e05b26"
+      "bytes": 24200,
+      "sha256": "87dd3ebde5098a2b518ba7ffed3f22b7c4c85a87a2d3beeb5016fae4bf0209cd"
     },
     {
       "path": "scripts/doudou/reads/transport.py",

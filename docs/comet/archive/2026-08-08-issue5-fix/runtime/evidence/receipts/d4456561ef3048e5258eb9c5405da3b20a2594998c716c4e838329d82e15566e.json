@@ -1,0 +1,63 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "manual-evidence",
+  "role": "acceptance-evidence",
+  "status": "passed",
+  "bindings": {
+    "change": "issue5-fix",
+    "sourceRevision": 6,
+    "contractHash": "feeed74fb27dcb0f0ba285a1b8a70fcc25b1d069d397eb2d33b104fc0a701456",
+    "scopeHash": "aded7f94bf3147dc4d2af961c58a7db9a6695827f2aa4dd098345b10917cf54d",
+    "snapshotHash": "e999d357b814a81aa70325ffd34d2611856171d87679e9081cb0643dc495e9cb",
+    "artifactHash": "175a35cd77dee6eaeef9d45c91d2abc5027c1d206c91f55e8b7318a7508e02e5"
+  },
+  "acceptanceIds": [
+    "acceptance-04369a11ad9e11b1607a0c5debc1a4abe90d0f026c1f6fec22224f1ed695722e",
+    "acceptance-0a2f4e71fce75dd192f9f7e8fc6429c18911c91c0356f7ac47b1277424649937",
+    "acceptance-0cc1be9022330bd00f157dd582f072fa7ac296e37f7f1092b039cc3db95ff05b",
+    "acceptance-17dbcb31d6d1d3a527f9454651d7fdd47f01570e46659cbb3128f98d873f7870",
+    "acceptance-1d96333c3f2951ebd887b70627fe50f7bd339491f59cb0e860341633a34e5378",
+    "acceptance-33aeb8211ce06ea0b924f811587ea25669c366dfbd8c4d341400550c3b908721",
+    "acceptance-36c5372801afb0aaa68aae8b8fc547f0ed82c5741b75d725cc50a7b51c83fefe",
+    "acceptance-3791bb2c13a80609ef0020cb67b8370cafb2995533b8e8e2741cd3d2886fa7ab",
+    "acceptance-3fae0f057f57681008a3fa38eee5080e124843e8f393519c256aa57bccdd1f13",
+    "acceptance-4694aa734626ec07b1e2e818ddc58010e9af073c1c2936eabe2ffd52c6e67fbf",
+    "acceptance-4e48721119bcedcea38cd22b1209305d99567aa9295815852de332c7031eebd7",
+    "acceptance-54a4949b0de486b4160694a37bd82b63708446b3169efe3b9e881d0136036542",
+    "acceptance-616efa19d1e229036055c0854476f5f6c2e66b618afa77b66465cf1fe19fb52d",
+    "acceptance-6e09c9405870dec8afd7198f4b494c82f2762ce9e9ebb96a60fac2c8a39d75b1",
+    "acceptance-6f0c731a864fe9ecdbd52045e6edb2ea05fd3eb4295a0af3809b47456731d8c6",
+    "acceptance-73965be53a70cfd45c13265cd0e7387c56c7d6e018c7c66fee18217fa7a330c2",
+    "acceptance-74a6967ab009e11d6c987cc8d0ccf9f58affff62f8c7270928ed0a36f79c8708",
+    "acceptance-77ba2b57b5c5bb36ad71256338ee37acbdf678dab2d1c801574755b3a0a37d0b",
+    "acceptance-7bc86b9ca5ce88cb7798f7dc054213a60a833d617e9abeee0690b6b8cc5ab61e",
+    "acceptance-8069bf87734b3a31f2fdb2b66c7b50dfef807c658670ab8b4d53cdf1fd53b1fd",
+    "acceptance-86a4fad58231cd84baf7169c72f2dbd5509b0c7dc6be0e24ac4ed8a7a020b3ec",
+    "acceptance-87d0abea56cfe091425fb803fe55da7136f815adfd4ce5cfb99a441ccc8aaf9c",
+    "acceptance-8bd497a8d5b5c4b8a467790185186f90e9ae5ca3c853eeaf3f3116fce75edd23",
+    "acceptance-8d7d232e1075500b3a67f8c93dfed7e54f7b04738770b178e0143a23176aafe2",
+    "acceptance-8dbcc6c7bcaec4b625b7793024ddc6b220ca8450757c0876ee3af519c594ffef",
+    "acceptance-8f30729d730893adb9e7e945c9a9317410ed3aa1c28220c727bff55e5ca99926",
+    "acceptance-9115ae29b6788798506d3bb6f3312a422046759063385c964879a0be94e056ab",
+    "acceptance-92e0e5a43d0e9406a525872a4f1d4ac8b26c3ae58965e866f4e75a7052fd9be3",
+    "acceptance-9ea0a66cd29744036b322110057a72e6c21e31aef23055a306d96efde521c3a8",
+    "acceptance-b921351f79dd54d93f99fd3d7090827bb6b169d3171a8ff94c5b92445f48c885",
+    "acceptance-d8bb5f307ed300cf51ba3e76151e398aa971169b1ecceb8f7151db0fdf6cff8c",
+    "acceptance-e4fe91afaebf5bfe1609cb5701a641f8edb8088cdd3ab1106b4ed805610b1b97",
+    "acceptance-eb50e9c09c337a03da2e7318e17e79a1698f21874565e977af63b7125617568c",
+    "acceptance-ff0cc12c8d92a8f566339084e88e9a588258c62286625c8d3634e8e869ff4197"
+  ],
+  "actor": "native-runtime:manual-evidence",
+  "issuedAt": "2026-08-08T07:01:16.635Z",
+  "evidence": {
+    "steps": [
+      "Opened the logged-in project Camoufox Profile and clicked the stranger inbox conversation.",
+      "Ran the modified CLI collection twice against the same request conversation."
+    ],
+    "observations": [
+      "The page emitted native 1001 and 1006 requests, no native 1002 request, and rendered the 1001 last_message.",
+      "Run 1 added one summary; run 2 kept total one and reported one duplicate."
+    ]
+  },
+  "receiptHash": "d4456561ef3048e5258eb9c5405da3b20a2594998c716c4e838329d82e15566e"
+}

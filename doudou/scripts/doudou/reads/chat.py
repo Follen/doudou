@@ -180,25 +180,13 @@ async def _enrich_conversation_identities(
             continue
         # Direct conversations should be addressable by the other participant,
         # while never replacing the title with the current account's identity.
+        # If self cannot be inferred, keep the protocol title instead of
+        # guessing from the last sender, which may be the current account.
         others = [
             participant
             for participant in participants
-            if not self_uid or str(participant.get("uid") or "") != self_uid
+            if self_uid and str(participant.get("uid") or "") != self_uid
         ]
-        if not self_uid and len(others) > 1:
-            sender_sec_uid = str(
-                ((conversation.get("last_message") or {}).get("sender") or {}).get(
-                    "sec_uid"
-                )
-                or ""
-            )
-            matching = [
-                participant
-                for participant in others
-                if sender_sec_uid
-                and str(participant.get("sec_uid") or "") == sender_sec_uid
-            ]
-            others = matching
         names = [
             participant.get("remark_name")
             or participant.get("nickname")
@@ -252,8 +240,6 @@ async def refresh_session_index(
             "IM initialization did not produce a usable response.",
         )
     conversations = find_conversations(session.init_response)
-    if conversations:
-        await _enrich_conversation_identities(session, data_root, profile, conversations)
 
     # Message requests use a separate command and are merged only after every
     # page succeeds, preserving the previous index on protocol failure.
@@ -297,14 +283,13 @@ async def refresh_session_index(
     else:
         raise DoudouError("STRANGER_PAGE_LIMIT", "Stranger conversation collection reached the page limit.")
     stranger = list(stranger_by_id.values())
-    if stranger:
-        await _enrich_conversation_identities(session, data_root, profile, stranger)
     conversations.extend(stranger)
     if not conversations:
         raise DoudouError(
             "IM_INITIALIZATION_EMPTY",
             "IM initialization and stranger inbox returned no conversations.",
         )
+    await _enrich_conversation_identities(session, data_root, profile, conversations)
     index = write_conversation_index(data_root, profile, conversations)
     snapshot = {
         "schema": "doudou.session-index-snapshot.v1",
@@ -396,6 +381,20 @@ async def collect_messages(
             else extract_messages(payload, conversation["conversation_id"])
         )
         protocol_received = len(batch)
+        summary_received = 0
+        collection_source = "protocol" if batch else "empty"
+        if command == 1002 and not batch:
+            summary = conversation.get("last_message")
+            if isinstance(summary, dict) and summary.get("message_id"):
+                batch = [
+                    {
+                        **summary,
+                        "sender": dict(summary.get("sender") or {}),
+                        "collection_source": "stranger-conversation-summary",
+                    }
+                ]
+                summary_received = 1
+                collection_source = "conversation_summary"
         for item in batch:
             created = int(item["create_time_ms"])
             if (lower is None or created >= lower) and (
@@ -416,6 +415,8 @@ async def collect_messages(
                 "next_cursor": str(next_cursor),
                 "received": len(batch),
                 "protocol_received": protocol_received,
+                "summary_received": summary_received,
+                "collection_source": collection_source,
                 "fallback_used": False,
                 "protocol_http_status": http_status,
                 "protocol_status": status,

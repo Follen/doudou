@@ -34,6 +34,7 @@ def stranger():
     return {
         "conversation_id": "request",
         "conversation_short_id": "20",
+        "conversation_type": 1,
         "kind": "direct",
         "inbox": "request",
         "display_name": "Request",
@@ -212,6 +213,9 @@ def test_collect_routes_request_and_enriches_sender(tmp_path, monkeypatch):
     assert calls[0][0] == chat.STRANGER_MESSAGES_ENDPOINT
     assert calls[0][1] == (1002, ("20", False))
     assert result["message_count"] == 1
+    assert result["pages"][0]["protocol_received"] == 1
+    assert result["pages"][0]["summary_received"] == 0
+    assert result["pages"][0]["collection_source"] == "protocol"
     assert result["conversation"]["inbox"] == "request"
     assert result["conversation"]["last_message"]["sender"]["display_name"] == "Nickname"
     messages = json.loads(
@@ -231,6 +235,15 @@ def test_request_display_name_uses_counterparty_nickname(tmp_path, monkeypatch):
         "has_more": False,
         "cursor": "0",
     }
+    known = established()
+    known["participants"] = {
+        "participants": [
+            {"uid": "self", "sec_uid": "sec-self", "display_name": "My Account"},
+            {"uid": "known-other", "sec_uid": "sec-known", "display_name": "Known"},
+        ],
+        "has_more": False,
+        "cursor": "0",
+    }
 
     async def resolve(*args, **kwargs):
         return {
@@ -239,18 +252,65 @@ def test_request_display_name_uses_counterparty_nickname(tmp_path, monkeypatch):
         }
 
     monkeypatch.setattr(chat, "_resolve_user_identities", resolve)
-    asyncio.run(chat._enrich_conversation_identities(session, tmp_path, "work", [request]))
+    asyncio.run(
+        chat._enrich_conversation_identities(
+            session, tmp_path, "work", [known, request]
+        )
+    )
 
     assert request["display_name"] == "Counterparty Nickname"
     assert request["display_name"] != "My Account"
     assert request["display_name"] != request["conversation_id"]
 
 
-def test_collect_empty_1002_payload_does_not_fallback_to_last_message(tmp_path, monkeypatch):
+def test_request_display_name_does_not_use_self_sender_when_self_uid_is_unknown(
+    tmp_path, monkeypatch
+):
     session = Session()
+    request = stranger()
+    request["participants"] = {
+        "participants": [
+            {"uid": "self", "sec_uid": "sec-self", "display_name": None},
+            {"uid": "other", "sec_uid": "sec-request", "display_name": None},
+        ],
+        "has_more": False,
+        "cursor": "0",
+    }
+    request["last_message"]["sender"] = {"sec_uid": "sec-self"}
+
+    async def resolve(*args, **kwargs):
+        return {
+            "sec-self": {
+                "uid": "self",
+                "sec_uid": "sec-self",
+                "display_name": "My Account",
+            },
+            "sec-request": {
+                "uid": "other",
+                "sec_uid": "sec-request",
+                "display_name": "Counterparty Nickname",
+            },
+        }
+
+    monkeypatch.setattr(chat, "_resolve_user_identities", resolve)
+    asyncio.run(
+        chat._enrich_conversation_identities(session, tmp_path, "work", [request])
+    )
+
+    assert request["display_name"] == "Request"
+    assert request["display_name"] != "My Account"
+
+
+def test_collect_empty_1002_payload_uses_visible_conversation_summary(
+    tmp_path, monkeypatch
+):
+    session = Session()
+    request = stranger()
+    request["last_message"]["message_id"] = "2"
+    request["last_message"]["text"] = "Visible request message"
 
     async def refreshed(*args, **kwargs):
-        return {"index": {"conversations": [stranger()]}}
+        return {"index": {"conversations": [request]}}
 
     async def post_protobuf(endpoint, request):
         return 200, b"response"
@@ -272,12 +332,65 @@ def test_collect_empty_1002_payload_does_not_fallback_to_last_message(tmp_path, 
         chat.collect_messages(session, tmp_path, "work", "request", download_images=False)
     )
 
-    assert result["message_count"] == 0
+    assert result["message_count"] == 1
     assert result["pages"][0]["protocol_received"] == 0
+    assert result["pages"][0]["summary_received"] == 1
+    assert result["pages"][0]["collection_source"] == "conversation_summary"
     assert result["pages"][0]["fallback_used"] is False
     assert result["pages"][0]["protocol_http_status"] == 200
     assert result["pages"][0]["protocol_status"] == 0
     assert result["pages"][0]["payload_bytes"] == 0
+    stored = json.loads(
+        (tmp_path / result["merge"]["messages_file"]).read_text().splitlines()[0]
+    )
+    assert stored["message_id"] == "2"
+    assert stored["collection_source"] == "stranger-conversation-summary"
+
+
+def test_collect_empty_1002_without_summary_stays_empty(tmp_path, monkeypatch):
+    session = Session()
+    request = stranger()
+    request["last_message"] = None
+
+    async def refreshed(*args, **kwargs):
+        return {"index": {"conversations": [request]}}
+
+    async def post_protobuf(endpoint, request):
+        return 200, b"response"
+
+    session.post_protobuf = post_protobuf
+    monkeypatch.setattr(chat, "refresh_session_index", refreshed)
+    monkeypatch.setattr(
+        chat,
+        "stranger_messages_request",
+        lambda short, reset_unread_count: (short, reset_unread_count),
+    )
+    monkeypatch.setattr(
+        chat, "stranger_request", lambda init, command, body: (command, body)
+    )
+    monkeypatch.setattr(
+        chat,
+        "stranger_response_body",
+        lambda raw, command: (0, "OK", b"", None),
+    )
+    monkeypatch.setattr(
+        chat, "parse_stranger_messages", lambda payload, conversation_id: []
+    )
+
+    async def no_identities(*args, **kwargs):
+        return {}
+
+    monkeypatch.setattr(chat, "_resolve_user_identities", no_identities)
+    result = asyncio.run(
+        chat.collect_messages(
+            session, tmp_path, "work", "request", download_images=False
+        )
+    )
+
+    assert result["message_count"] == 0
+    assert result["pages"][0]["protocol_received"] == 0
+    assert result["pages"][0]["summary_received"] == 0
+    assert result["pages"][0]["collection_source"] == "empty"
 
 
 def test_1002_request_uses_body_field_1001_and_does_not_reset_unread():

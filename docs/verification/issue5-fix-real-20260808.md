@@ -47,7 +47,23 @@ RUN=5 EXIT=0 ELAPSED_MS=2384 count=1;title_is_id=False;participants=2
 
 The live request conversation resolved successfully by the redacted counterparty nickname; the returned title was not the conversation ID.
 
-## Modified 1002 Collection
+## Browser Network Capture
+
+The current logged-in web client was opened with the project Camoufox Profile. After clicking the visible stranger inbox and the request conversation, sanitized network capture showed:
+
+```text
+clicked_request_portal=true
+clicked_conversation=true
+native_1002_requests=0
+native_1001_requests>0
+native_1006_mark_read_requests>0
+last_message_nonempty=true
+last_message_visible_in_dom=true
+```
+
+The web page renders the non-empty 1001 `last_message`; it does not request 1002 for this interaction. No captured request body, response body, account value, conversation ID, sec_uid, nickname, or message text is stored in this report.
+
+## Modified Collection And Persistence
 
 Command:
 
@@ -55,22 +71,23 @@ Command:
 python doudou\scripts\doudou.py --data-root D:\Code\doudou messages collect --profile PROFILE_REDACTED --conversation COUNTERPARTY_NICKNAME --from 2000-01-01T00:00:00Z --to 2100-01-01T00:00:00Z
 ```
 
-Sanitized result:
+Two consecutive sanitized results:
 
 ```text
-EXIT=0 message_count=0 page_protocol_received=0 page_received=0 fallback_used=False http_status=200 protocol_status=0 payload_bytes=0 stored_total=0 added=0 duplicates=0
+RUN=1 EXIT=0 message_count=1 protocol_received=0 summary_received=1 collection_source=conversation_summary fallback_used=False http_status=200 protocol_status=0 payload_bytes=0 total=1 added=1 duplicates=0 stored_source=stranger-conversation-summary
+RUN=2 EXIT=0 message_count=1 protocol_received=0 summary_received=1 collection_source=conversation_summary fallback_used=False http_status=200 protocol_status=0 payload_bytes=0 total=1 added=0 duplicates=1 stored_source=stranger-conversation-summary
 ```
 
-This is a real non-empty request conversation whose 1002 response carried an empty body. The result no longer copies 1001 `last_message` into `messages.jsonl`.
+The stored message text hash matched the visible 1001 `last_message` hash on both runs. The second run kept the total at one and reported one duplicate, proving incremental deduplication instead of overwrite. The summary is explicitly labelled and is not counted as a 1002 protocol message.
 
 ## Automated Verification
 
 ```text
 PYTHONPATH=doudou\scripts python -m pytest docs\verification\tests -q
-164 passed, 6 subtests passed in 39.90s
+166 passed, 6 subtests passed in 32.49s
 
 PYTHONPATH=doudou\scripts python -m pytest docs\verification\tests\test_stranger_chat_integration.py docs\verification\tests\test_identity.py docs\verification\tests\test_broker.py -q
-57 passed, 6 subtests passed in 29.03s
+59 passed, 6 subtests passed in 30.77s
 
 python -m ruff check doudou\scripts docs\verification\tests
 All checks passed!

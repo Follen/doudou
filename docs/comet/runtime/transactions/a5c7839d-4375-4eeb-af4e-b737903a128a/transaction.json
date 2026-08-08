@@ -1,0 +1,28 @@
+{
+  "schema": "comet.native.transaction.v2",
+  "id": "a5c7839d-4375-4eeb-af4e-b737903a128a",
+  "kind": "archive",
+  "status": "committed",
+  "change": "issue3-fix",
+  "createdAt": "2026-08-08T01:30:08.684Z",
+  "preflightHash": "c9eb462783b5db09850899c245574a527806594eebe95e61e8c38f80108a6c27",
+  "operations": [
+    {
+      "id": "spec-1-incremental-video-comments",
+      "type": "write",
+      "target": "specs/incremental-video-comments/spec.md",
+      "staged": "runtime/transactions/a5c7839d-4375-4eeb-af4e-b737903a128a/staged/specs/incremental-video-comments/spec.md",
+      "backup": "runtime/transactions/a5c7839d-4375-4eeb-af4e-b737903a128a/backups/specs/incremental-video-comments/spec.md",
+      "expectedTargetHash": "7a5076b6c250d4ffed5418f372b785e85880fdf635328f27cdd63e0b52a897a7",
+      "stagedHash": "6b62c61afac4c78b0de6ddd80df61304f8d8ba2ef4a2b6ec900d7428214203a4"
+    },
+    {
+      "id": "archive-change",
+      "type": "move",
+      "source": "changes/issue3-fix",
+      "target": "archive/2026-08-08-issue3-fix",
+      "expectedSourceHash": "29eaa03710b8910859a7a4d776496bc61121eddb199a5870a4ec1aca1f2a0419",
+      "expectedTargetHash": null
+    }
+  ]
+}

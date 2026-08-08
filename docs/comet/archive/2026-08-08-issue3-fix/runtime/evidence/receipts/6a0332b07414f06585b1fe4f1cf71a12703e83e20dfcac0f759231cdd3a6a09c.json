@@ -1,0 +1,29 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "static-inspection",
+  "role": "required-check",
+  "status": "passed",
+  "bindings": {
+    "change": "issue3-fix",
+    "sourceRevision": 3,
+    "contractHash": "a995b2593432f1df805d2eb356400455e9fad3e781327a63d29d85552ace24ed",
+    "scopeHash": "e1d5e446079619437a0e75d5ad371c6e102d7eea66cecacd5f88187af9edc34a",
+    "snapshotHash": "fe0660d9e24a88ba82e15c4b69fde4ef10260b04fe045fc22c240b691c98e506",
+    "artifactHash": "8dddb2fbf67a051e1f7b98cd00608a5404542557a47904aafc8ac484df0f3d1c"
+  },
+  "acceptanceIds": [],
+  "actor": "native-runtime:scoped-text-safety",
+  "issuedAt": "2026-08-08T01:11:37.919Z",
+  "evidence": {
+    "subjects": [
+      "docs/verification/tests/test_component_geometry.py",
+      "doudou/scripts/doudou/ui/components/video.py",
+      "npm/skill-manifest.json"
+    ],
+    "rule": "scoped-text-safety",
+    "resultSummary": "The built-in scoped inspection passed without skipped or blocking input.",
+    "checkReceiptRef": "runtime/evidence/check-receipts/77a904b901cefcf9b0d66028c705f0a46920f690a39d1570038a4ecdf68a40ca.json",
+    "checkReceiptHash": "77a904b901cefcf9b0d66028c705f0a46920f690a39d1570038a4ecdf68a40ca"
+  },
+  "receiptHash": "6a0332b07414f06585b1fe4f1cf71a12703e83e20dfcac0f759231cdd3a6a09c"
+}

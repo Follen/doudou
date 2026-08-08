@@ -366,6 +366,9 @@ class VideoCommentsPanelComponent:
                     "geometry_reason": "topmost_not_unique",
                 },
             )
+        scroll_result = topmost[0].scroll_into_view_if_needed(timeout=10_000)
+        if hasattr(scroll_result, "__await__"):
+            await scroll_result
         trigger = await require_target(
             topmost[0],
             component=self.name,
@@ -374,6 +377,7 @@ class VideoCommentsPanelComponent:
             strategy="comment panel -> local reply buttons -> unique topmost",
             require_enabled=True,
             scope=panel,
+            scope_tolerance=4,
         )
         label = (await trigger.inner_text()).strip()
         if not re.search(r"(展开|查看).*回复", label):

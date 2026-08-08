@@ -1,0 +1,71 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "automated-check",
+  "role": "acceptance-evidence",
+  "status": "passed",
+  "bindings": {
+    "change": "issue3-fix",
+    "sourceRevision": 3,
+    "contractHash": "a995b2593432f1df805d2eb356400455e9fad3e781327a63d29d85552ace24ed",
+    "scopeHash": "e1d5e446079619437a0e75d5ad371c6e102d7eea66cecacd5f88187af9edc34a",
+    "snapshotHash": "fe0660d9e24a88ba82e15c4b69fde4ef10260b04fe045fc22c240b691c98e506",
+    "artifactHash": "8dddb2fbf67a051e1f7b98cd00608a5404542557a47904aafc8ac484df0f3d1c"
+  },
+  "acceptanceIds": [
+    "acceptance-1348dca7bf109dc992bfe9d75525ba6d8bd5a85e3415341749f4a4a5e61ba806",
+    "acceptance-18a9bdbece0b6f3bb7ade7426d2e18271f57f8daced11174f1e941b3be71aca8",
+    "acceptance-1f9af64d419ca0ea3763a83d592ba3693f321c64f128339fa64cc2378f8e9b76",
+    "acceptance-21304fdae20dc1a975cec9203ea5b1fa44bbea92a0a1e6c0da016272396fe8dc",
+    "acceptance-2bc10dd7deea6c8cbdd21eac6572855b6f532700351fe29867d49aa1d9020d16",
+    "acceptance-2e279529f59d2c522ef791f8bacbee8cab04ee6a1781a1b038594c5c3aa15b77",
+    "acceptance-329d519ae24802ffe5e42b0b40522d7829bb5575908b9c832b859f85ef13fc93",
+    "acceptance-4b8a657892ba49e3e10c766d8bed5bf51b0898b30b6162f334797bc0913e0622",
+    "acceptance-5c19628d292ecd9d95f4360d6ca7ad7468c0c80aee159047257263563c06cd0b",
+    "acceptance-60478f1e927e9155d6b25ea60d6060e56978215c06abf38ec6b46f9bbf53694b",
+    "acceptance-7d378466c946d78ca0136986f00a4e67f67d82d5852c72ff5e09684f64b022a2",
+    "acceptance-85d36165703f4be4f54aaf49ddcb71417bb10f70780639bc9a6747e7628c2ea0",
+    "acceptance-8f1d860c29cb6eef37251ced39fa413677d721ca041e93683ca220f5c44c9856",
+    "acceptance-90bb50d6c6680c86c03bfd6ed44be5ac9be30b8ecffe9efe6253ae0a8edb5833",
+    "acceptance-94b8aad4a4fe3fa8b6fe3bc66de542d38df98145ff73dc5d056da23b50870fb9",
+    "acceptance-95c5dc1ebb264ed4dce14efbb5cff76d4c23092e6876671cd5821b760ee50a68",
+    "acceptance-a2e5beb73681a06fc6fc0c882c66da72d8b3a66f3d85acc8725c19f4e1291837",
+    "acceptance-acab64cd1c6002e08266307ec344f277097202ed38ccf2ba2ecace8dc954e845",
+    "acceptance-b730b11e97958677302e983cb656b495a4f48237a7132f0e2bc53d257157153e",
+    "acceptance-bd506bc44bb79ca9f13374549a18653a0e860598742f73774765d7a411593e78",
+    "acceptance-be9cb06eac74e80b02504ad01fbc3a3f1ec21fcb56acbc7e7e5372e4ff9b5adc",
+    "acceptance-de3e146a0bbe43907627d860e2dc6339539e495bfa0fdea5ae10a32b5ec28572",
+    "acceptance-e0836a6e50aa56deee9970c41604ffd693467ae39b4579706028a0dca818c5d4",
+    "acceptance-ef0783ad9073207b7465a79032c3bc19a94f4f6cc41bde625fb3f3224286ea69",
+    "acceptance-f95c352d936087b249161c316ae30efd82fd64921410ceb22edd241ea632c12a"
+  ],
+  "actor": "native-runtime:command:npm.cmd",
+  "issuedAt": "2026-08-08T01:26:39.074Z",
+  "evidence": {
+    "executable": "npm.cmd",
+    "args": [
+      "test"
+    ],
+    "cwd": ".",
+    "exitCode": 0,
+    "signal": null,
+    "timedOut": false,
+    "timeoutMs": 120000,
+    "startedAt": "2026-08-08T01:26:34.829Z",
+    "endedAt": "2026-08-08T01:26:39.074Z",
+    "worktree": {
+      "provider": "git",
+      "root": ".",
+      "beforeCommit": "2021ec099d45d7e251c71b4a4128a38939b7ad18",
+      "afterCommit": "2021ec099d45d7e251c71b4a4128a38939b7ad18"
+    },
+    "afterFence": {
+      "snapshotHash": "fe0660d9e24a88ba82e15c4b69fde4ef10260b04fe045fc22c240b691c98e506",
+      "scopeHash": "e1d5e446079619437a0e75d5ad371c6e102d7eea66cecacd5f88187af9edc34a",
+      "matched": true
+    },
+    "outputHash": "94b5b4fa376901f56f160373ed0bd97a27243d2baf052643f869cc613a16ee73",
+    "outputSummary": "> @follenfang/doudou@0.0.6 test\n> node npm/scripts/run-node-tests.mjs\n\n✔ downloads and verifies an asset (29.1713ms)\n✔ reuses a complete verified asset without a network request (1.9703ms)\n✔ resumes a matching partial with Range (15.6455ms)\n✔ restarts safely when Range is ignored (14.7763ms)\n✔ classifies HTTP and checksum failures (17.015ms)\n✔ classifies a stalled response (120.8156ms)\n✔ classifies an unreachable explicit proxy without exposing credentials (3.1416ms)\n✔ classifies disk and TLS failures with stable codes (0.1329ms)\n✔ records every managed Skill target without duplicates (16.2315ms)\n✔ rejects a filesystem root as a managed Skill (1.4731ms)\n✔ launcher options are removed before Python forwarding (1.1024ms)\n✔ explicit Skill directory wins over the Agent home (0.1519ms)\n✔ Agent home resolves to skills/doudou (0.1284ms)\n✔ missing --skill-dir value is rejected (0.208ms)\n✔ top-level command detection skips the data root value (0.1065ms)\n✔ unknown first positional argument is not mistaken for a later command (0.0598ms)\n✔ managed runtime never probes system Python (5.0969ms)\n✔ runtime readiness requires a verified pointer and nested venv (8.827ms)\n✔ Windows readiness checks Scripts/python.exe instead of the Linux path (7.0526ms)\n✔ DOUDOU_HOME defaults to the user home and supports an override (0.1966ms)\n✔ concurrent setup callers share one owner (95.7481ms)\n✔ a stale setup lock is reclaimed (6.281ms)\n✔ stage changes clear completed download state (6.9886ms)\n✔ doctor reports setup-required and a live owner (4.8612ms)\n✔ browser download failures use the public browser error namespace (0.1752ms)\n✔ Camoufox assets only use the dedicated DOUDOU_HOME browser root (0.1347ms)\n✔ a verified DOUDOU_HOME removes only a recognized legacy runtime root (10.4472ms)\n✔ interrupted runtime staging is removed and the previous runtime restored (4.3547ms)\n﹣ relocates Linux venv symlinks after the runtime directory is renamed (0.0756ms) # SKIP\n✔ setup cancellation terminates its managed process tree (398.2841ms)\n✔ derives Windows and Linux global npm prefixes (0.5624ms)\n✔ self-removal invokes npm-cli without a shell and with the current prefix (0.5026ms)\n✔ self-removal reports npm failure (0.8113ms)\n✔ installs, validates, and reuses the current Skill (308.6346ms)\n✔ text validation is stable across LF and CRLF checkouts (229.618ms)\n✔ repairs a changed managed Skill through a transactional upgrade (434.2749ms)\n✔ adopts an exact manually installed Skill (188.9874ms)\n✔ fails closed for an unrelated existing target (8.9215ms)\n✔ distribution manifest matches package metadata (0.2648ms)\n✔ removes all managed Skills and DOUDOU_HOME while preserving project data (516.5553ms)\n✔ preserves a registered directory whose ownership marker is missing (8.4159ms)\n✔ fails without clearing ownership state when a managed Skill cannot be removed (198.6246ms)\n✔ managed Skill stamp binds the marker to its installed target (224.7014ms)\n✔ Windows broker discovery requires both runtime ancestry and broker module (2.1399ms)\n✔ update --check reports latest without modifying installation (186.2183ms)\n✔ npm CLI resolves beside Node when lifecycle variables are absent (3.5366ms)\n✔ npm lifecycle path takes precedence over the adjacent installation (0.1018ms)\n✔ npm launch failure is reported without dereferencing missing output (57.2017ms)\n✔ update comparison never treats a newer local version as downgradeable (0.1459ms)\n✔ update --check reports current when local is newer than registry (124.609ms)\n✔ global update upgrades npm, Skill, and a changed runtime contract (237.2903ms)\n✔ runtime update failure restores the previous npm and Skill contract (340.6442ms)\n✔ npx update only reports and never creates a global install (119.7114ms)\nℹ tests 53\nℹ suites 0\nℹ pass 52\nℹ fail 0\nℹ cancelled 0\nℹ skipped 1\nℹ todo 0\nℹ duration_ms 3735.5344",
+    "outputTruncated": false
+  },
+  "receiptHash": "0cf211c1c36f11e1eacad3e3a30d94f1db3275a7b72b9ce561de2efc1335ad7d"
+}

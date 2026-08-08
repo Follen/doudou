@@ -64,6 +64,42 @@ class FakeClickableElement(FakeElement):
         return self.hit
 
 
+class FakeReplyTrigger(FakeElement):
+    def __init__(
+        self,
+        boxes: list[dict[str, float] | None],
+        *,
+        events: list[str],
+        label: str = "展开 2 条回复",
+    ) -> None:
+        super().__init__(boxes[-1] if boxes else None)
+        self.boxes = iter(boxes)
+        self.events = events
+        self.label = label
+        self.clicks = 0
+
+    async def count(self) -> int:
+        return 1
+
+    def nth(self, index: int) -> FakeReplyTrigger:
+        if index != 0:
+            raise IndexError(index)
+        return self
+
+    async def scroll_into_view_if_needed(self, timeout: int) -> None:
+        self.events.append("scroll")
+
+    async def bounding_box(self) -> dict[str, float] | None:
+        self.events.append("box")
+        return next(self.boxes)
+
+    async def inner_text(self) -> str:
+        return self.label
+
+    async def click(self, timeout: int) -> None:
+        self.clicks += 1
+
+
 class FakeMouse:
     def __init__(self) -> None:
         self.clicks: list[tuple[float, float]] = []
@@ -175,6 +211,57 @@ class ComponentGeometryTests(unittest.IsolatedAsyncioTestCase):
             context.exception.details["geometry_reason"],
             "reply_trigger_action_failed",
         )
+
+    async def test_reply_template_scrolls_before_tolerant_scope_validation(self) -> None:
+        page = MagicMock()
+        panel = MagicMock()
+        panel.bounding_box = AsyncMock(return_value=box(100, 100, 100, 40))
+        events: list[str] = []
+        # The pre-scroll geometry is 2.1px beyond the panel; after scrolling the
+        # browser reports the trigger fully inside the confirmed local scope.
+        trigger = FakeReplyTrigger(
+            [box(182.1, 100), box(180, 100)], events=events
+        )
+        component = VideoCommentsPanelComponent()
+        component._panel = AsyncMock(return_value=panel)
+
+        with patch(
+            "doudou.ui.components.video.visible_candidates",
+            new=AsyncMock(side_effect=[[trigger], [trigger]]),
+        ):
+            result = await component.trigger_reply_template(page)
+
+        self.assertEqual(result, 1)
+        self.assertEqual(trigger.clicks, 1)
+        self.assertLess(events.index("scroll"), events.index("box", 1))
+
+    async def test_reply_template_rejects_target_more_than_tolerance_outside_scope(
+        self,
+    ) -> None:
+        page = MagicMock()
+        panel = MagicMock()
+        panel.bounding_box = AsyncMock(return_value=box(100, 100, 100, 40))
+        events: list[str] = []
+        trigger = FakeReplyTrigger(
+            [box(185, 100), box(185, 100)], events=events
+        )
+        component = VideoCommentsPanelComponent()
+        component._panel = AsyncMock(return_value=panel)
+
+        with (
+            patch(
+                "doudou.ui.components.video.visible_candidates",
+                new=AsyncMock(side_effect=[[trigger], [trigger]]),
+            ),
+            self.assertRaises(DoudouError) as context,
+        ):
+            await component.trigger_reply_template(page)
+
+        self.assertEqual(context.exception.code, "PAGE_ADAPTER_DRIFTED")
+        self.assertEqual(
+            context.exception.details["geometry_reason"], "outside_local_scope"
+        )
+        self.assertEqual(trigger.clicks, 0)
 
     async def test_message_semantics_matches_rendered_emoji_titles(self) -> None:
         self.assertTrue(

@@ -1,0 +1,83 @@
+{
+  "schema": "comet.native.implementation-scope.v2",
+  "contractHash": "a995b2593432f1df805d2eb356400455e9fad3e781327a63d29d85552ace24ed",
+  "baselineProjectionRef": "runtime/evidence/snapshots/88660e58ba6fa1c8b793cf48147253fc50fb0ed94dd98ff5a30678a25d1e11b9.json",
+  "baselineProjectionHash": "88660e58ba6fa1c8b793cf48147253fc50fb0ed94dd98ff5a30678a25d1e11b9",
+  "currentProjectionRef": "runtime/evidence/snapshots/fe0660d9e24a88ba82e15c4b69fde4ef10260b04fe045fc22c240b691c98e506.json",
+  "currentProjectionHash": "fe0660d9e24a88ba82e15c4b69fde4ef10260b04fe045fc22c240b691c98e506",
+  "complete": true,
+  "declaredArtifacts": [
+    {
+      "path": "docs/verification/tests/test_component_geometry.py",
+      "kind": "file"
+    },
+    {
+      "path": "doudou/scripts/doudou/ui/components/video.py",
+      "kind": "file"
+    },
+    {
+      "path": "npm/skill-manifest.json",
+      "kind": "file"
+    }
+  ],
+  "changes": [
+    {
+      "path": "docs/verification/tests/test_component_geometry.py",
+      "kind": "modified",
+      "before": {
+        "hash": "4b9d1028fdff98edb80dc2dad58144cd9d050e7f16705acc48a6960195f3b878",
+        "size": 19938
+      },
+      "after": {
+        "hash": "dead64874c59389af6475272259030d68b0403c884a60c88d760041a8dece690",
+        "size": 22896
+      },
+      "attributedTo": [
+        {
+          "path": "docs/verification/tests/test_component_geometry.py",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "doudou/scripts/doudou/ui/components/video.py",
+      "kind": "modified",
+      "before": {
+        "hash": "f68a7bbe76512bc3a1dccc5e1dfee5ca7e7147077c480f9dba3e180608a77b85",
+        "size": 35552
+      },
+      "after": {
+        "hash": "ed3441316c2ff063c48ffa86f6339139ccbed91c3338a41c9f25e0c10d8951fa",
+        "size": 35733
+      },
+      "attributedTo": [
+        {
+          "path": "doudou/scripts/doudou/ui/components/video.py",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "npm/skill-manifest.json",
+      "kind": "modified",
+      "before": {
+        "hash": "166d31166d5a0b3def2d39c778a2a4d1dec4ad7b18862bb3c89490092c1f4b5f",
+        "size": 12325
+      },
+      "after": {
+        "hash": "faf07d4ba4db0b6ed791fee0fd9e5c5048b73a017f04d2e49119014d71f9e95e",
+        "size": 11966
+      },
+      "attributedTo": [
+        {
+          "path": "npm/skill-manifest.json",
+          "kind": "file"
+        }
+      ]
+    }
+  ],
+  "unattributed": [],
+  "unresolvedScopes": [],
+  "noCodeReason": null,
+  "scopeHash": "e1d5e446079619437a0e75d5ad371c6e102d7eea66cecacd5f88187af9edc34a"
+}

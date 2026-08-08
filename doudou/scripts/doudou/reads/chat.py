@@ -178,14 +178,37 @@ async def _enrich_conversation_identities(
             )
         if conversation.get("conversation_type", 1) != 1 and conversation.get("kind") != "direct":
             continue
-        candidates = [
-            participant.get("display_name") or participant.get("alias")
+        # Direct conversations should be addressable by the other participant,
+        # while never replacing the title with the current account's identity.
+        others = [
+            participant
             for participant in participants
-            if participant.get("uid") != self_uid
+            if not self_uid or str(participant.get("uid") or "") != self_uid
         ]
-        candidates = [value for value in candidates if value]
-        if len(set(candidates)) == 1:
-            conversation["display_name"] = candidates[0]
+        if not self_uid and len(others) > 1:
+            sender_sec_uid = str(
+                ((conversation.get("last_message") or {}).get("sender") or {}).get(
+                    "sec_uid"
+                )
+                or ""
+            )
+            matching = [
+                participant
+                for participant in others
+                if sender_sec_uid
+                and str(participant.get("sec_uid") or "") == sender_sec_uid
+            ]
+            others = matching
+        names = [
+            participant.get("remark_name")
+            or participant.get("nickname")
+            or participant.get("display_name")
+            or participant.get("alias")
+            for participant in others
+        ]
+        names = [str(value).strip() for value in names if value and str(value).strip()]
+        if len(names) == 1:
+            conversation["display_name"] = names[0]
 
 
 def _age_seconds(timestamp: str | None) -> float | None:
@@ -372,8 +395,7 @@ async def collect_messages(
             if command == 1002
             else extract_messages(payload, conversation["conversation_id"])
         )
-        if command == 1002 and not batch and conversation.get("last_message"):
-            batch = [conversation["last_message"]]
+        protocol_received = len(batch)
         for item in batch:
             created = int(item["create_time_ms"])
             if (lower is None or created >= lower) and (
@@ -393,6 +415,11 @@ async def collect_messages(
                 "anchor_in": str(anchor),
                 "next_cursor": str(next_cursor),
                 "received": len(batch),
+                "protocol_received": protocol_received,
+                "fallback_used": False,
+                "protocol_http_status": http_status,
+                "protocol_status": status,
+                "payload_bytes": len(payload),
                 "has_more": has_more,
             }
         )

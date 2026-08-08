@@ -1,0 +1,28 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "manual-evidence",
+  "role": "acceptance-evidence",
+  "status": "passed",
+  "bindings": {
+    "change": "issue5-fix",
+    "sourceRevision": 3,
+    "contractHash": "727e3eef6a0f31e00540dd4aa22d653106c4049768b7266c26acee822988600f",
+    "scopeHash": "fa6c30a4a4e9e39c6ace57b4f0cf3b27a894b6cc9fd875a25612568aa7c68ae8",
+    "snapshotHash": "fbbddc32ca90a2d22cc5cf38ac48923d959c01fd61f9677d03e024fc4479eeb9",
+    "artifactHash": "9fb6a15415a4f33a20bf2a9f752e6944cbd66c53f67bc475acdb81a9f4c50e06"
+  },
+  "acceptanceIds": [
+    "acceptance-ff0cc12c8d92a8f566339084e88e9a588258c62286625c8d3634e8e869ff4197"
+  ],
+  "actor": "native-runtime:manual-evidence",
+  "issuedAt": "2026-08-08T05:10:27.721Z",
+  "evidence": {
+    "steps": [
+      "真实 request 会话完成身份补齐并按昵称 resolve"
+    ],
+    "observations": [
+      "live refresh 返回 participants=2、title_is_id=False；按脱敏对方昵称 resolve 返回 status=resolved 且 inbox=request。证据摘要：docs/verification/issue5-fix-real-20260808.md。"
+    ]
+  },
+  "receiptHash": "c71839abba4869dbacb72c0132f02d04d2ac9f9d8c9405b38a1efcfd77d1125b"
+}

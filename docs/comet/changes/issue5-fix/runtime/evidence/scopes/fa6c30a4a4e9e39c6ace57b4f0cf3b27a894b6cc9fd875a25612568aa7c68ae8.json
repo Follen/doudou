@@ -1,0 +1,168 @@
+{
+  "schema": "comet.native.implementation-scope.v2",
+  "contractHash": "727e3eef6a0f31e00540dd4aa22d653106c4049768b7266c26acee822988600f",
+  "baselineProjectionRef": "runtime/evidence/snapshots/527fd5cb12d34f38c66302413bcc173df721edb8603c7bc503afb6a8ab0f9253.json",
+  "baselineProjectionHash": "527fd5cb12d34f38c66302413bcc173df721edb8603c7bc503afb6a8ab0f9253",
+  "currentProjectionRef": "runtime/evidence/snapshots/fbbddc32ca90a2d22cc5cf38ac48923d959c01fd61f9677d03e024fc4479eeb9.json",
+  "currentProjectionHash": "fbbddc32ca90a2d22cc5cf38ac48923d959c01fd61f9677d03e024fc4479eeb9",
+  "complete": true,
+  "declaredArtifacts": [
+    {
+      "path": "docs/verification/issue5-fix-real-20260808.md",
+      "kind": "file"
+    },
+    {
+      "path": "docs/verification/tests/test_broker.py",
+      "kind": "file"
+    },
+    {
+      "path": "docs/verification/tests/test_identity.py",
+      "kind": "file"
+    },
+    {
+      "path": "docs/verification/tests/test_stranger_chat_integration.py",
+      "kind": "file"
+    },
+    {
+      "path": "doudou/scripts/doudou/reads/chat.py",
+      "kind": "file"
+    },
+    {
+      "path": "doudou/scripts/doudou/runtime/browser/session.py",
+      "kind": "file"
+    },
+    {
+      "path": "npm/skill-manifest.json",
+      "kind": "file"
+    }
+  ],
+  "changes": [
+    {
+      "path": "docs/verification/issue5-fix-real-20260808.md",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "c5a329c604c205857c6ff403b4e4fe54dcef9de4c4e539d36367c4f0277fdbc9",
+        "size": 3064
+      },
+      "attributedTo": [
+        {
+          "path": "docs/verification/issue5-fix-real-20260808.md",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "docs/verification/tests/test_broker.py",
+      "kind": "modified",
+      "before": {
+        "hash": "71b255172e2dae586170f823b7a371b50a9ab2de17a33165a0e6761a4b185afa",
+        "size": 40626
+      },
+      "after": {
+        "hash": "2d5630c77b981d29070a3bb3e5ebd5dfc256e06e155dab06ced8966cd88213b5",
+        "size": 44607
+      },
+      "attributedTo": [
+        {
+          "path": "docs/verification/tests/test_broker.py",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "docs/verification/tests/test_identity.py",
+      "kind": "modified",
+      "before": {
+        "hash": "c75d1bf9329a7735ef50216c0b841e37d2a1019df55111b01704ecd3a907e3d7",
+        "size": 9258
+      },
+      "after": {
+        "hash": "537d31c2d6bdf41906b4801cc791e7e8eed856f8856b2eeaa9d446992a12822c",
+        "size": 10597
+      },
+      "attributedTo": [
+        {
+          "path": "docs/verification/tests/test_identity.py",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "docs/verification/tests/test_stranger_chat_integration.py",
+      "kind": "modified",
+      "before": {
+        "hash": "774b08d1221551c5c73e0f3347b306680ea514e3f52f1f1173cea1f8433031f8",
+        "size": 8568
+      },
+      "after": {
+        "hash": "2653b3ac082e06d430daeb9bbb88faf044368de6430f72dfff520684045f4ad9",
+        "size": 11581
+      },
+      "attributedTo": [
+        {
+          "path": "docs/verification/tests/test_stranger_chat_integration.py",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "doudou/scripts/doudou/reads/chat.py",
+      "kind": "modified",
+      "before": {
+        "hash": "5863a5d6b01455558d9af7148b86550a158b2e12b9606e019d0b4864f1d87449",
+        "size": 23505
+      },
+      "after": {
+        "hash": "6d2992480e14d6bb2ef29829219a1a6fb9232cc3af78377347b8b2539b4cd21f",
+        "size": 24515
+      },
+      "attributedTo": [
+        {
+          "path": "doudou/scripts/doudou/reads/chat.py",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "doudou/scripts/doudou/runtime/browser/session.py",
+      "kind": "modified",
+      "before": {
+        "hash": "e67d6435432a368d21084ca42780eb4779b2aa22e39fb2a34558bc7971fa0a8a",
+        "size": 38647
+      },
+      "after": {
+        "hash": "b35f1c80e0133739182d8b5c6039b741806e20e543414be08736b9eb5b46ec9c",
+        "size": 39683
+      },
+      "attributedTo": [
+        {
+          "path": "doudou/scripts/doudou/runtime/browser/session.py",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "npm/skill-manifest.json",
+      "kind": "modified",
+      "before": {
+        "hash": "dbb85aad7efbae4cfab27dd714c49d003c4039f675773b3fa6695962aefb33a8",
+        "size": 12325
+      },
+      "after": {
+        "hash": "7708483ff5fb325aa6a7e85afe7f7fd9ffdab310c210239ed5736d926c2d70d8",
+        "size": 11966
+      },
+      "attributedTo": [
+        {
+          "path": "npm/skill-manifest.json",
+          "kind": "file"
+        }
+      ]
+    }
+  ],
+  "unattributed": [],
+  "unresolvedScopes": [],
+  "noCodeReason": null,
+  "scopeHash": "fa6c30a4a4e9e39c6ace57b4f0cf3b27a894b6cc9fd875a25612568aa7c68ae8"
+}

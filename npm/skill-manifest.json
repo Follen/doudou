@@ -3,7 +3,7 @@
   "package_name": "@follenfang/doudou",
   "package_version": "0.0.7",
   "skill_version": "0.0.7",
-  "tree_sha256": "a2d0dea1b0143f1239b8e2cfc65957caffcc23ce66fc83f02f2d1d74b8a1a602",
+  "tree_sha256": "0bfa4d9265e8ba6120aa2a9ae41112d91f3dc7cb185fad74d14144faaa2c6025",
   "files": [
     {
       "path": "agents/openai.yaml",
@@ -157,8 +157,8 @@
     },
     {
       "path": "scripts/doudou/reads/chat.py",
-      "bytes": 22917,
-      "sha256": "8d932800e13d8d9da8f99e33e8e71755b58274651d5a4eb880f2b00d9357df0e"
+      "bytes": 23944,
+      "sha256": "ce2b3e3eb03db75ff4f3631bff0126355ef91fdcfced1d538b1420ea57e05b26"
     },
     {
       "path": "scripts/doudou/reads/transport.py",
@@ -202,8 +202,8 @@
     },
     {
       "path": "scripts/doudou/runtime/browser/session.py",
-      "bytes": 37726,
-      "sha256": "c08b1958153efea44083c37533a534b3f246203fc1f071477cc0b2ca16844422"
+      "bytes": 38787,
+      "sha256": "2b17c72f61557aa73c173b381944bb187d03c35d65a16994540ece37fff63fdf"
     },
     {
       "path": "scripts/doudou/runtime/camoufox_asset.py",

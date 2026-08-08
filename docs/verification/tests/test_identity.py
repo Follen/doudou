@@ -111,6 +111,42 @@ def test_chat_identity_enrichment_replays_the_page_signed_user_info_template(
     assert session.page.evaluate.await_args.args[1]["endpoint"] == full_endpoint
 
 
+def test_chat_identity_enrichment_batches_seventy_sec_uids(tmp_path: Path) -> None:
+    sec_uids = [f"SEC-{index:02d}" for index in range(70)]
+    session = MagicMock()
+    session.captured_user_info_responses = AsyncMock(return_value=[])
+    session.captured_user_info_endpoint = AsyncMock(return_value="https://www.douyin.com/aweme/v1/web/im/user/info/")
+    session.classify_login = AsyncMock(return_value={"valid": True})
+    calls: list[list[str]] = []
+
+    async def evaluate(_script, params):
+        values = list(params["values"])
+        calls.append(values)
+        return {
+            "http_status": 200,
+            "content_type": "application/json",
+            "retry_after": None,
+            "text": json.dumps(
+                {
+                    "status_code": 0,
+                    "data": [
+                        {"sec_uid": value, "nickname": f"Nick {value}"}
+                        for value in values
+                    ],
+                }
+            ),
+        }
+
+    session.page.evaluate = AsyncMock(side_effect=evaluate)
+    identities = asyncio.run(
+        _resolve_user_identities(session, tmp_path, "work", sec_uids)
+    )
+
+    assert [len(batch) for batch in calls] == [20, 20, 20, 10]
+    assert set(identities) == set(sec_uids)
+    assert identities["SEC-69"]["display_name"] == "Nick SEC-69"
+
+
 def test_identity_merge_never_allows_empty_values_to_downgrade() -> None:
     complete = normalize_identity(
         {

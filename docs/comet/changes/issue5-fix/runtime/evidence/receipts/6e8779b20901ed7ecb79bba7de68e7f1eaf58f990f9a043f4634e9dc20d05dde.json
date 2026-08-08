@@ -1,0 +1,82 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "automated-check",
+  "role": "acceptance-evidence",
+  "status": "passed",
+  "bindings": {
+    "change": "issue5-fix",
+    "sourceRevision": 3,
+    "contractHash": "727e3eef6a0f31e00540dd4aa22d653106c4049768b7266c26acee822988600f",
+    "scopeHash": "fa6c30a4a4e9e39c6ace57b4f0cf3b27a894b6cc9fd875a25612568aa7c68ae8",
+    "snapshotHash": "fbbddc32ca90a2d22cc5cf38ac48923d959c01fd61f9677d03e024fc4479eeb9",
+    "artifactHash": "9fb6a15415a4f33a20bf2a9f752e6944cbd66c53f67bc475acdb81a9f4c50e06"
+  },
+  "acceptanceIds": [
+    "acceptance-04369a11ad9e11b1607a0c5debc1a4abe90d0f026c1f6fec22224f1ed695722e",
+    "acceptance-0a2f4e71fce75dd192f9f7e8fc6429c18911c91c0356f7ac47b1277424649937",
+    "acceptance-0cc1be9022330bd00f157dd582f072fa7ac296e37f7f1092b039cc3db95ff05b",
+    "acceptance-17dbcb31d6d1d3a527f9454651d7fdd47f01570e46659cbb3128f98d873f7870",
+    "acceptance-267c47210dba81b608dda16c80e7e85ce46621df7d522c41cd2bd98fbb85f809",
+    "acceptance-33aeb8211ce06ea0b924f811587ea25669c366dfbd8c4d341400550c3b908721",
+    "acceptance-36c5372801afb0aaa68aae8b8fc547f0ed82c5741b75d725cc50a7b51c83fefe",
+    "acceptance-3791bb2c13a80609ef0020cb67b8370cafb2995533b8e8e2741cd3d2886fa7ab",
+    "acceptance-3fae0f057f57681008a3fa38eee5080e124843e8f393519c256aa57bccdd1f13",
+    "acceptance-4694aa734626ec07b1e2e818ddc58010e9af073c1c2936eabe2ffd52c6e67fbf",
+    "acceptance-4e48721119bcedcea38cd22b1209305d99567aa9295815852de332c7031eebd7",
+    "acceptance-54a4949b0de486b4160694a37bd82b63708446b3169efe3b9e881d0136036542",
+    "acceptance-616efa19d1e229036055c0854476f5f6c2e66b618afa77b66465cf1fe19fb52d",
+    "acceptance-6e09c9405870dec8afd7198f4b494c82f2762ce9e9ebb96a60fac2c8a39d75b1",
+    "acceptance-6f0c731a864fe9ecdbd52045e6edb2ea05fd3eb4295a0af3809b47456731d8c6",
+    "acceptance-74a6967ab009e11d6c987cc8d0ccf9f58affff62f8c7270928ed0a36f79c8708",
+    "acceptance-77ba2b57b5c5bb36ad71256338ee37acbdf678dab2d1c801574755b3a0a37d0b",
+    "acceptance-7bc86b9ca5ce88cb7798f7dc054213a60a833d617e9abeee0690b6b8cc5ab61e",
+    "acceptance-7e4bb9e8ad233f4ce19cb16bab9e21bfcad91cf37c8c9148db81d05d092ab7c9",
+    "acceptance-8069bf87734b3a31f2fdb2b66c7b50dfef807c658670ab8b4d53cdf1fd53b1fd",
+    "acceptance-8671584f3e61c1cbf90302825b84f1965beea35b84f04869199a4b2a4f1067be",
+    "acceptance-86a4fad58231cd84baf7169c72f2dbd5509b0c7dc6be0e24ac4ed8a7a020b3ec",
+    "acceptance-87d0abea56cfe091425fb803fe55da7136f815adfd4ce5cfb99a441ccc8aaf9c",
+    "acceptance-8d7d232e1075500b3a67f8c93dfed7e54f7b04738770b178e0143a23176aafe2",
+    "acceptance-8dbcc6c7bcaec4b625b7793024ddc6b220ca8450757c0876ee3af519c594ffef",
+    "acceptance-8f30729d730893adb9e7e945c9a9317410ed3aa1c28220c727bff55e5ca99926",
+    "acceptance-9115ae29b6788798506d3bb6f3312a422046759063385c964879a0be94e056ab",
+    "acceptance-92e0e5a43d0e9406a525872a4f1d4ac8b26c3ae58965e866f4e75a7052fd9be3",
+    "acceptance-9ea0a66cd29744036b322110057a72e6c21e31aef23055a306d96efde521c3a8",
+    "acceptance-b921351f79dd54d93f99fd3d7090827bb6b169d3171a8ff94c5b92445f48c885",
+    "acceptance-cbcdca4c3150c16e3ec02acb9d8eb92dfe3e6fe4d506650601e2467cb834de86",
+    "acceptance-d8bb5f307ed300cf51ba3e76151e398aa971169b1ecceb8f7151db0fdf6cff8c",
+    "acceptance-e4fe91afaebf5bfe1609cb5701a641f8edb8088cdd3ab1106b4ed805610b1b97",
+    "acceptance-ff0cc12c8d92a8f566339084e88e9a588258c62286625c8d3634e8e869ff4197"
+  ],
+  "actor": "native-runtime:command:powershell",
+  "issuedAt": "2026-08-08T04:57:16.865Z",
+  "evidence": {
+    "executable": "powershell",
+    "args": [
+      "-NoProfile",
+      "-Command",
+      "npm test"
+    ],
+    "cwd": ".",
+    "exitCode": 0,
+    "signal": null,
+    "timedOut": false,
+    "timeoutMs": 600000,
+    "startedAt": "2026-08-08T04:57:12.597Z",
+    "endedAt": "2026-08-08T04:57:16.865Z",
+    "worktree": {
+      "provider": "git",
+      "root": ".",
+      "beforeCommit": "e3a2be59f042d98fcc1c4adcc6facbe93e1fcbff",
+      "afterCommit": "e3a2be59f042d98fcc1c4adcc6facbe93e1fcbff"
+    },
+    "afterFence": {
+      "snapshotHash": "fbbddc32ca90a2d22cc5cf38ac48923d959c01fd61f9677d03e024fc4479eeb9",
+      "scopeHash": "fa6c30a4a4e9e39c6ace57b4f0cf3b27a894b6cc9fd875a25612568aa7c68ae8",
+      "matched": true
+    },
+    "outputHash": "e55509b53532b10b98d420ae57e147a8a08b3a009c04b4367ec487e2b4b58569",
+    "outputSummary": "> @follenfang/doudou@0.0.7 test\n> node npm/scripts/run-node-tests.mjs\n\n✔ downloads and verifies an asset (30.9785ms)\n✔ reuses a complete verified asset without a network request (2.7662ms)\n✔ resumes a matching partial with Range (16.1185ms)\n✔ restarts safely when Range is ignored (14.8614ms)\n✔ classifies HTTP and checksum failures (18.1035ms)\n✔ classifies a stalled response (117.8087ms)\n✔ classifies an unreachable explicit proxy without exposing credentials (3.3094ms)\n✔ classifies disk and TLS failures with stable codes (0.1505ms)\n✔ records every managed Skill target without duplicates (19.8046ms)\n✔ rejects a filesystem root as a managed Skill (1.2115ms)\n✔ launcher options are removed before Python forwarding (0.9562ms)\n✔ explicit Skill directory wins over the Agent home (0.1291ms)\n✔ Agent home resolves to skills/doudou (0.0961ms)\n✔ missing --skill-dir value is rejected (0.2674ms)\n✔ top-level command detection skips the data root value (0.14ms)\n✔ unknown first positional argument is not mistaken for a later command (0.0635ms)\n✔ managed runtime never probes system Python (5.5886ms)\n✔ runtime readiness requires a verified pointer and nested venv (7.6981ms)\n✔ Windows readiness checks Scripts/python.exe instead of the Linux path (9.2118ms)\n✔ DOUDOU_HOME defaults to the user home and supports an override (0.1697ms)\n✔ concurrent setup callers share one owner (48.1809ms)\n✔ a stale setup lock is reclaimed (6.1174ms)\n✔ stage changes clear completed download state (7.5189ms)\n✔ doctor reports setup-required and a live owner (4.9884ms)\n✔ browser download failures use the public browser error namespace (0.1605ms)\n✔ Camoufox assets only use the dedicated DOUDOU_HOME browser root (0.1823ms)\n✔ a verified DOUDOU_HOME removes only a recognized legacy runtime root (8.2517ms)\n✔ interrupted runtime staging is removed and the previous runtime restored (6.0607ms)\n﹣ relocates Linux venv symlinks after the runtime directory is renamed (0.1003ms) # SKIP\n✔ setup cancellation terminates its managed process tree (419.4312ms)\n✔ derives Windows and Linux global npm prefixes (0.6464ms)\n✔ self-removal invokes npm-cli without a shell and with the current prefix (0.6232ms)\n✔ self-removal reports npm failure (1.2693ms)\n✔ installs, validates, and reuses the current Skill (262.343ms)\n✔ text validation is stable across LF and CRLF checkouts (654.3561ms)\n✔ repairs a changed managed Skill through a transactional upgrade (465.7729ms)\n✔ adopts an exact manually installed Skill (200.1563ms)\n✔ fails closed for an unrelated existing target (7.559ms)\n✔ distribution manifest matches package metadata (0.2416ms)\n✔ removes all managed Skills and DOUDOU_HOME while preserving project data (889.4214ms)\n✔ preserves a registered directory whose ownership marker is missing (6.79ms)\n✔ fails without clearing ownership state when a managed Skill cannot be removed (208.0095ms)\n✔ managed Skill stamp binds the marker to its installed target (250.461ms)\n✔ Windows broker discovery requires both runtime ancestry and broker module (2.4165ms)\n✔ update --check reports latest without modifying installation (142.2733ms)\n✔ npm CLI resolves beside Node when lifecycle variables are absent (2.7198ms)\n✔ npm lifecycle path takes precedence over the adjacent installation (0.1048ms)\n✔ npm launch failure is reported without dereferencing missing output (60.4635ms)\n✔ update comparison never treats a newer local version as downgradeable (0.1465ms)\n✔ update --check reports current when local is newer than registry (130.969ms)\n✔ global update upgrades npm, Skill, and a changed runtime contract (626.7222ms)\n✔ runtime update failure restores the previous npm and Skill contract (362.2629ms)\n✔ npx update only reports and never creates a global install (123.4427ms)\nℹ tests 53\nℹ suites 0\nℹ pass 52\nℹ fail 0\nℹ cancelled 0\nℹ skipped 1\nℹ todo 0\nℹ duration_ms 3725.3297",
+    "outputTruncated": false
+  },
+  "receiptHash": "6e8779b20901ed7ecb79bba7de68e7f1eaf58f990f9a043f4634e9dc20d05dde"
+}

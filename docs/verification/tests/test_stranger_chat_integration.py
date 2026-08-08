@@ -6,6 +6,7 @@ import json
 import pytest
 from doudou.common.errors import DoudouError
 from doudou.features.chat import service
+from doudou.protocol.protobuf import decode_fields, get_field
 from doudou.reads import chat
 from doudou.storage.repository import write_conversation_index
 
@@ -217,6 +218,76 @@ def test_collect_routes_request_and_enriches_sender(tmp_path, monkeypatch):
         (tmp_path / result["merge"]["messages_file"]).read_text().splitlines()[0]
     )
     assert messages["sender"]["name"] == "Nickname"
+
+
+def test_request_display_name_uses_counterparty_nickname(tmp_path, monkeypatch):
+    session = Session()
+    request = stranger()
+    request["participants"] = {
+        "participants": [
+            {"uid": "self", "sec_uid": "sec-self", "display_name": "My Account"},
+            {"uid": "other", "sec_uid": "sec-request", "display_name": None},
+        ],
+        "has_more": False,
+        "cursor": "0",
+    }
+
+    async def resolve(*args, **kwargs):
+        return {
+            "sec-self": {"uid": "self", "sec_uid": "sec-self", "display_name": "My Account"},
+            "sec-request": {"uid": "other", "sec_uid": "sec-request", "display_name": "Counterparty Nickname"},
+        }
+
+    monkeypatch.setattr(chat, "_resolve_user_identities", resolve)
+    asyncio.run(chat._enrich_conversation_identities(session, tmp_path, "work", [request]))
+
+    assert request["display_name"] == "Counterparty Nickname"
+    assert request["display_name"] != "My Account"
+    assert request["display_name"] != request["conversation_id"]
+
+
+def test_collect_empty_1002_payload_does_not_fallback_to_last_message(tmp_path, monkeypatch):
+    session = Session()
+
+    async def refreshed(*args, **kwargs):
+        return {"index": {"conversations": [stranger()]}}
+
+    async def post_protobuf(endpoint, request):
+        return 200, b"response"
+
+    session.post_protobuf = post_protobuf
+    monkeypatch.setattr(chat, "refresh_session_index", refreshed)
+    monkeypatch.setattr(
+        chat, "stranger_messages_request", lambda short, reset_unread_count: (short, reset_unread_count)
+    )
+    monkeypatch.setattr(chat, "stranger_request", lambda init, command, body: (command, body))
+    monkeypatch.setattr(chat, "stranger_response_body", lambda raw, command: (0, "OK", b"", None))
+    monkeypatch.setattr(chat, "parse_stranger_messages", lambda payload, conversation_id: [])
+    async def no_identities(*args, **kwargs):
+        return {}
+
+    monkeypatch.setattr(chat, "_resolve_user_identities", no_identities)
+
+    result = asyncio.run(
+        chat.collect_messages(session, tmp_path, "work", "request", download_images=False)
+    )
+
+    assert result["message_count"] == 0
+    assert result["pages"][0]["protocol_received"] == 0
+    assert result["pages"][0]["fallback_used"] is False
+    assert result["pages"][0]["protocol_http_status"] == 200
+    assert result["pages"][0]["protocol_status"] == 0
+    assert result["pages"][0]["payload_bytes"] == 0
+
+
+def test_1002_request_uses_body_field_1001_and_does_not_reset_unread():
+    body = chat.stranger_messages_request("20", reset_unread_count=False)
+    envelope = chat.stranger_request(b"", 1002, body, sequence=1)
+    outer = decode_fields(envelope)
+    command_body = get_field(decode_fields(bytes(get_field(outer, 8, 2).value)), 1001, 2)
+    assert command_body is not None
+    assert decode_fields(bytes(command_body.value)) == decode_fields(body)
+    assert get_field(decode_fields(body), 2, 0).value == 0
 
 
 @pytest.mark.parametrize("operation", ["send", "batch", "like"])

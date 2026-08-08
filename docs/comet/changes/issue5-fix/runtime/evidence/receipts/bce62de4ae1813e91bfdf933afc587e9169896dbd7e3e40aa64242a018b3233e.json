@@ -1,0 +1,33 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "static-inspection",
+  "role": "required-check",
+  "status": "passed",
+  "bindings": {
+    "change": "issue5-fix",
+    "sourceRevision": 3,
+    "contractHash": "727e3eef6a0f31e00540dd4aa22d653106c4049768b7266c26acee822988600f",
+    "scopeHash": "fa6c30a4a4e9e39c6ace57b4f0cf3b27a894b6cc9fd875a25612568aa7c68ae8",
+    "snapshotHash": "fbbddc32ca90a2d22cc5cf38ac48923d959c01fd61f9677d03e024fc4479eeb9",
+    "artifactHash": "9fb6a15415a4f33a20bf2a9f752e6944cbd66c53f67bc475acdb81a9f4c50e06"
+  },
+  "acceptanceIds": [],
+  "actor": "native-runtime:scoped-text-safety",
+  "issuedAt": "2026-08-08T05:13:12.523Z",
+  "evidence": {
+    "subjects": [
+      "docs/verification/issue5-fix-real-20260808.md",
+      "docs/verification/tests/test_broker.py",
+      "docs/verification/tests/test_identity.py",
+      "docs/verification/tests/test_stranger_chat_integration.py",
+      "doudou/scripts/doudou/reads/chat.py",
+      "doudou/scripts/doudou/runtime/browser/session.py",
+      "npm/skill-manifest.json"
+    ],
+    "rule": "scoped-text-safety",
+    "resultSummary": "The built-in scoped inspection passed without skipped or blocking input.",
+    "checkReceiptRef": "runtime/evidence/check-receipts/9431b361b13142feec6d564647d893b44796e8e9ecce9853aa1406b7676f0af1.json",
+    "checkReceiptHash": "9431b361b13142feec6d564647d893b44796e8e9ecce9853aa1406b7676f0af1"
+  },
+  "receiptHash": "bce62de4ae1813e91bfdf933afc587e9169896dbd7e3e40aa64242a018b3233e"
+}

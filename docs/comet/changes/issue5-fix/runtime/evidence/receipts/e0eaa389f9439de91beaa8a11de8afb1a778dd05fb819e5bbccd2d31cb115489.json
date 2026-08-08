@@ -1,0 +1,29 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "manual-evidence",
+  "role": "acceptance-evidence",
+  "status": "passed",
+  "bindings": {
+    "change": "issue5-fix",
+    "sourceRevision": 3,
+    "contractHash": "727e3eef6a0f31e00540dd4aa22d653106c4049768b7266c26acee822988600f",
+    "scopeHash": "fa6c30a4a4e9e39c6ace57b4f0cf3b27a894b6cc9fd875a25612568aa7c68ae8",
+    "snapshotHash": "fbbddc32ca90a2d22cc5cf38ac48923d959c01fd61f9677d03e024fc4479eeb9",
+    "artifactHash": "9fb6a15415a4f33a20bf2a9f752e6944cbd66c53f67bc475acdb81a9f4c50e06"
+  },
+  "acceptanceIds": [
+    "acceptance-33aeb8211ce06ea0b924f811587ea25669c366dfbd8c4d341400550c3b908721",
+    "acceptance-616efa19d1e229036055c0854476f5f6c2e66b618afa77b66465cf1fe19fb52d"
+  ],
+  "actor": "native-runtime:manual-evidence",
+  "issuedAt": "2026-08-08T04:57:42.949Z",
+  "evidence": {
+    "steps": [
+      "真实 request 会话按昵称 resolve"
+    ],
+    "observations": [
+      "conversations resolve 按脱敏对方昵称返回 status=resolved，inbox=request，display_name 为昵称且不为 conversation id。证据：docs/verification/issue5-fix-real-20260808.md。"
+    ]
+  },
+  "receiptHash": "e0eaa389f9439de91beaa8a11de8afb1a778dd05fb819e5bbccd2d31cb115489"
+}

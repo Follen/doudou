@@ -1,0 +1,31 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "manual-evidence",
+  "role": "acceptance-evidence",
+  "status": "passed",
+  "bindings": {
+    "change": "issue3-fix",
+    "sourceRevision": 3,
+    "contractHash": "a995b2593432f1df805d2eb356400455e9fad3e781327a63d29d85552ace24ed",
+    "scopeHash": "e1d5e446079619437a0e75d5ad371c6e102d7eea66cecacd5f88187af9edc34a",
+    "snapshotHash": "fe0660d9e24a88ba82e15c4b69fde4ef10260b04fe045fc22c240b691c98e506",
+    "artifactHash": "8dddb2fbf67a051e1f7b98cd00608a5404542557a47904aafc8ac484df0f3d1c"
+  },
+  "acceptanceIds": [
+    "acceptance-5c19628d292ecd9d95f4360d6ca7ad7468c0c80aee159047257263563c06cd0b",
+    "acceptance-b730b11e97958677302e983cb656b495a4f48237a7132f0e2bc53d257157153e",
+    "acceptance-de3e146a0bbe43907627d860e2dc6339539e495bfa0fdea5ae10a32b5ec28572"
+  ],
+  "actor": "native-runtime:manual-evidence",
+  "issuedAt": "2026-08-08T01:26:11.987Z",
+  "evidence": {
+    "steps": [
+      "run signed-in CLI on issue video",
+      "compare baseline and final CID sets"
+    ],
+    "observations": [
+      "CLI exit 0; final 763 unique CID; baseline 753 unique CID all retained; 50 root pages and 60 reply threads reached has_more=false; evidence contains counts and hashes only"
+    ]
+  },
+  "receiptHash": "ab59f5bdc4d3fc23d06e9c28339befd7f74c4dd2564307483e5ee985c0550167"
+}

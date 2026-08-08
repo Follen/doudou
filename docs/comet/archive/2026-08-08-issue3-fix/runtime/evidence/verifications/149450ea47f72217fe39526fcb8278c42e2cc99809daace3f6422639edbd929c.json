@@ -1,0 +1,288 @@
+{
+  "schema": "comet.native.verification-evidence.v2",
+  "change": "issue3-fix",
+  "sourceRevision": 3,
+  "result": "pass",
+  "freshness": "complete",
+  "contractHash": "a995b2593432f1df805d2eb356400455e9fad3e781327a63d29d85552ace24ed",
+  "acceptanceCriteriaHash": "2defc8be6ec65350ebd1ef4a514b8cd79845b2467f40321c9ad2c51aafd9e3c9",
+  "implementationScopeRef": "runtime/evidence/scopes/e1d5e446079619437a0e75d5ad371c6e102d7eea66cecacd5f88187af9edc34a.json",
+  "implementationScopeHash": "e1d5e446079619437a0e75d5ad371c6e102d7eea66cecacd5f88187af9edc34a",
+  "reportRef": "verification.md",
+  "reportHash": "bb397d1331afcf8541d31d64cd83d4396c06d5b1d906b06c61e517662b08be74",
+  "acceptanceTrace": {
+    "schema": "comet.native.acceptance-trace.v2",
+    "nativeRootRef": "docs/comet",
+    "criteriaHash": "2defc8be6ec65350ebd1ef4a514b8cd79845b2467f40321c9ad2c51aafd9e3c9",
+    "total": 25,
+    "evidenced": 25,
+    "skipped": 0,
+    "entries": [
+      {
+        "acceptanceId": "acceptance-1348dca7bf109dc992bfe9d75525ba6d8bd5a85e3415341749f4a4a5e61ba806",
+        "status": "passed",
+        "kind": "spec-scenario",
+        "source": "specs/incremental-video-comments/spec.md",
+        "evidenceRefs": [
+          "runtime/evidence/receipts/0cf211c1c36f11e1eacad3e3a30d94f1db3275a7b72b9ce561de2efc1335ad7d.json"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-18a9bdbece0b6f3bb7ade7426d2e18271f57f8daced11174f1e941b3be71aca8",
+        "status": "passed",
+        "kind": "spec-scenario",
+        "source": "specs/incremental-video-comments/spec.md",
+        "evidenceRefs": [
+          "runtime/evidence/receipts/0cf211c1c36f11e1eacad3e3a30d94f1db3275a7b72b9ce561de2efc1335ad7d.json"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-1f9af64d419ca0ea3763a83d592ba3693f321c64f128339fa64cc2378f8e9b76",
+        "status": "passed",
+        "kind": "spec-scenario",
+        "source": "specs/incremental-video-comments/spec.md",
+        "evidenceRefs": [
+          "runtime/evidence/receipts/0cf211c1c36f11e1eacad3e3a30d94f1db3275a7b72b9ce561de2efc1335ad7d.json"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-21304fdae20dc1a975cec9203ea5b1fa44bbea92a0a1e6c0da016272396fe8dc",
+        "status": "passed",
+        "kind": "brief-example",
+        "source": "brief.md",
+        "evidenceRefs": [
+          "runtime/evidence/receipts/0cf211c1c36f11e1eacad3e3a30d94f1db3275a7b72b9ce561de2efc1335ad7d.json"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-2bc10dd7deea6c8cbdd21eac6572855b6f532700351fe29867d49aa1d9020d16",
+        "status": "passed",
+        "kind": "spec-must",
+        "source": "specs/incremental-video-comments/spec.md",
+        "evidenceRefs": [
+          "runtime/evidence/receipts/0cf211c1c36f11e1eacad3e3a30d94f1db3275a7b72b9ce561de2efc1335ad7d.json"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-2e279529f59d2c522ef791f8bacbee8cab04ee6a1781a1b038594c5c3aa15b77",
+        "status": "passed",
+        "kind": "spec-scenario",
+        "source": "specs/incremental-video-comments/spec.md",
+        "evidenceRefs": [
+          "runtime/evidence/receipts/0cf211c1c36f11e1eacad3e3a30d94f1db3275a7b72b9ce561de2efc1335ad7d.json"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-329d519ae24802ffe5e42b0b40522d7829bb5575908b9c832b859f85ef13fc93",
+        "status": "passed",
+        "kind": "spec-scenario",
+        "source": "specs/incremental-video-comments/spec.md",
+        "evidenceRefs": [
+          "runtime/evidence/receipts/0cf211c1c36f11e1eacad3e3a30d94f1db3275a7b72b9ce561de2efc1335ad7d.json"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-4b8a657892ba49e3e10c766d8bed5bf51b0898b30b6162f334797bc0913e0622",
+        "status": "passed",
+        "kind": "spec-scenario",
+        "source": "specs/incremental-video-comments/spec.md",
+        "evidenceRefs": [
+          "runtime/evidence/receipts/0cf211c1c36f11e1eacad3e3a30d94f1db3275a7b72b9ce561de2efc1335ad7d.json"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-5c19628d292ecd9d95f4360d6ca7ad7468c0c80aee159047257263563c06cd0b",
+        "status": "passed",
+        "kind": "spec-scenario",
+        "source": "specs/incremental-video-comments/spec.md",
+        "evidenceRefs": [
+          "runtime/evidence/receipts/0cf211c1c36f11e1eacad3e3a30d94f1db3275a7b72b9ce561de2efc1335ad7d.json",
+          "runtime/evidence/receipts/ab59f5bdc4d3fc23d06e9c28339befd7f74c4dd2564307483e5ee985c0550167.json"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-60478f1e927e9155d6b25ea60d6060e56978215c06abf38ec6b46f9bbf53694b",
+        "status": "passed",
+        "kind": "spec-scenario",
+        "source": "specs/incremental-video-comments/spec.md",
+        "evidenceRefs": [
+          "runtime/evidence/receipts/0cf211c1c36f11e1eacad3e3a30d94f1db3275a7b72b9ce561de2efc1335ad7d.json"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-7d378466c946d78ca0136986f00a4e67f67d82d5852c72ff5e09684f64b022a2",
+        "status": "passed",
+        "kind": "spec-must",
+        "source": "specs/incremental-video-comments/spec.md",
+        "evidenceRefs": [
+          "runtime/evidence/receipts/0cf211c1c36f11e1eacad3e3a30d94f1db3275a7b72b9ce561de2efc1335ad7d.json"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-85d36165703f4be4f54aaf49ddcb71417bb10f70780639bc9a6747e7628c2ea0",
+        "status": "passed",
+        "kind": "spec-scenario",
+        "source": "specs/incremental-video-comments/spec.md",
+        "evidenceRefs": [
+          "runtime/evidence/receipts/0cf211c1c36f11e1eacad3e3a30d94f1db3275a7b72b9ce561de2efc1335ad7d.json"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-8f1d860c29cb6eef37251ced39fa413677d721ca041e93683ca220f5c44c9856",
+        "status": "passed",
+        "kind": "brief-example",
+        "source": "brief.md",
+        "evidenceRefs": [
+          "runtime/evidence/receipts/0cf211c1c36f11e1eacad3e3a30d94f1db3275a7b72b9ce561de2efc1335ad7d.json"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-90bb50d6c6680c86c03bfd6ed44be5ac9be30b8ecffe9efe6253ae0a8edb5833",
+        "status": "passed",
+        "kind": "spec-must",
+        "source": "specs/incremental-video-comments/spec.md",
+        "evidenceRefs": [
+          "runtime/evidence/receipts/0cf211c1c36f11e1eacad3e3a30d94f1db3275a7b72b9ce561de2efc1335ad7d.json"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-94b8aad4a4fe3fa8b6fe3bc66de542d38df98145ff73dc5d056da23b50870fb9",
+        "status": "passed",
+        "kind": "spec-must",
+        "source": "specs/incremental-video-comments/spec.md",
+        "evidenceRefs": [
+          "runtime/evidence/receipts/0cf211c1c36f11e1eacad3e3a30d94f1db3275a7b72b9ce561de2efc1335ad7d.json"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-95c5dc1ebb264ed4dce14efbb5cff76d4c23092e6876671cd5821b760ee50a68",
+        "status": "passed",
+        "kind": "spec-scenario",
+        "source": "specs/incremental-video-comments/spec.md",
+        "evidenceRefs": [
+          "runtime/evidence/receipts/0cf211c1c36f11e1eacad3e3a30d94f1db3275a7b72b9ce561de2efc1335ad7d.json"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-a2e5beb73681a06fc6fc0c882c66da72d8b3a66f3d85acc8725c19f4e1291837",
+        "status": "passed",
+        "kind": "spec-scenario",
+        "source": "specs/incremental-video-comments/spec.md",
+        "evidenceRefs": [
+          "runtime/evidence/receipts/0cf211c1c36f11e1eacad3e3a30d94f1db3275a7b72b9ce561de2efc1335ad7d.json"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-acab64cd1c6002e08266307ec344f277097202ed38ccf2ba2ecace8dc954e845",
+        "status": "passed",
+        "kind": "spec-must",
+        "source": "specs/incremental-video-comments/spec.md",
+        "evidenceRefs": [
+          "runtime/evidence/receipts/0cf211c1c36f11e1eacad3e3a30d94f1db3275a7b72b9ce561de2efc1335ad7d.json"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-b730b11e97958677302e983cb656b495a4f48237a7132f0e2bc53d257157153e",
+        "status": "passed",
+        "kind": "spec-must",
+        "source": "specs/incremental-video-comments/spec.md",
+        "evidenceRefs": [
+          "runtime/evidence/receipts/0cf211c1c36f11e1eacad3e3a30d94f1db3275a7b72b9ce561de2efc1335ad7d.json",
+          "runtime/evidence/receipts/ab59f5bdc4d3fc23d06e9c28339befd7f74c4dd2564307483e5ee985c0550167.json"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-bd506bc44bb79ca9f13374549a18653a0e860598742f73774765d7a411593e78",
+        "status": "passed",
+        "kind": "spec-must",
+        "source": "specs/incremental-video-comments/spec.md",
+        "evidenceRefs": [
+          "runtime/evidence/receipts/0cf211c1c36f11e1eacad3e3a30d94f1db3275a7b72b9ce561de2efc1335ad7d.json"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-be9cb06eac74e80b02504ad01fbc3a3f1ec21fcb56acbc7e7e5372e4ff9b5adc",
+        "status": "passed",
+        "kind": "spec-must",
+        "source": "specs/incremental-video-comments/spec.md",
+        "evidenceRefs": [
+          "runtime/evidence/receipts/0cf211c1c36f11e1eacad3e3a30d94f1db3275a7b72b9ce561de2efc1335ad7d.json"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-de3e146a0bbe43907627d860e2dc6339539e495bfa0fdea5ae10a32b5ec28572",
+        "status": "passed",
+        "kind": "brief-example",
+        "source": "brief.md",
+        "evidenceRefs": [
+          "runtime/evidence/receipts/0cf211c1c36f11e1eacad3e3a30d94f1db3275a7b72b9ce561de2efc1335ad7d.json",
+          "runtime/evidence/receipts/ab59f5bdc4d3fc23d06e9c28339befd7f74c4dd2564307483e5ee985c0550167.json"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-e0836a6e50aa56deee9970c41604ffd693467ae39b4579706028a0dca818c5d4",
+        "status": "passed",
+        "kind": "brief-example",
+        "source": "brief.md",
+        "evidenceRefs": [
+          "runtime/evidence/receipts/0cf211c1c36f11e1eacad3e3a30d94f1db3275a7b72b9ce561de2efc1335ad7d.json"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-ef0783ad9073207b7465a79032c3bc19a94f4f6cc41bde625fb3f3224286ea69",
+        "status": "passed",
+        "kind": "spec-must",
+        "source": "specs/incremental-video-comments/spec.md",
+        "evidenceRefs": [
+          "runtime/evidence/receipts/0cf211c1c36f11e1eacad3e3a30d94f1db3275a7b72b9ce561de2efc1335ad7d.json"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-f95c352d936087b249161c316ae30efd82fd64921410ceb22edd241ea632c12a",
+        "status": "passed",
+        "kind": "spec-scenario",
+        "source": "specs/incremental-video-comments/spec.md",
+        "evidenceRefs": [
+          "runtime/evidence/receipts/0cf211c1c36f11e1eacad3e3a30d94f1db3275a7b72b9ce561de2efc1335ad7d.json"
+        ],
+        "skippedReason": null
+      }
+    ],
+    "traceHash": "906cab0a44d30b218cf7d6be8c6ae66cb7418c4092a1da498562a3ad8ef07857"
+  },
+  "partialAllowanceRef": null,
+  "partialAllowanceHash": null,
+  "requiredReceiptRefs": [
+    "runtime/evidence/receipts/6a0332b07414f06585b1fe4f1cf71a12703e83e20dfcac0f759231cdd3a6a09c.json"
+  ],
+  "receiptRefs": [
+    "runtime/evidence/receipts/0cf211c1c36f11e1eacad3e3a30d94f1db3275a7b72b9ce561de2efc1335ad7d.json",
+    "runtime/evidence/receipts/ab59f5bdc4d3fc23d06e9c28339befd7f74c4dd2564307483e5ee985c0550167.json"
+  ],
+  "createdAt": "2026-08-08T01:28:29.030Z",
+  "envelopeHash": "149450ea47f72217fe39526fcb8278c42e2cc99809daace3f6422639edbd929c"
+}

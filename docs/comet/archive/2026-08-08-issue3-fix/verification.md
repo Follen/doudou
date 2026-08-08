@@ -1,0 +1,213 @@
+# Acceptance evidence
+
+<!-- comet-native:acceptance-evidence:start -->
+[
+  {
+    "acceptance_id": "acceptance-1348dca7bf109dc992bfe9d75525ba6d8bd5a85e3415341749f4a4a5e61ba806",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/0cf211c1c36f11e1eacad3e3a30d94f1db3275a7b72b9ce561de2efc1335ad7d.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-18a9bdbece0b6f3bb7ade7426d2e18271f57f8daced11174f1e941b3be71aca8",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/0cf211c1c36f11e1eacad3e3a30d94f1db3275a7b72b9ce561de2efc1335ad7d.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-1f9af64d419ca0ea3763a83d592ba3693f321c64f128339fa64cc2378f8e9b76",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/0cf211c1c36f11e1eacad3e3a30d94f1db3275a7b72b9ce561de2efc1335ad7d.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-21304fdae20dc1a975cec9203ea5b1fa44bbea92a0a1e6c0da016272396fe8dc",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/0cf211c1c36f11e1eacad3e3a30d94f1db3275a7b72b9ce561de2efc1335ad7d.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-2bc10dd7deea6c8cbdd21eac6572855b6f532700351fe29867d49aa1d9020d16",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/0cf211c1c36f11e1eacad3e3a30d94f1db3275a7b72b9ce561de2efc1335ad7d.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-2e279529f59d2c522ef791f8bacbee8cab04ee6a1781a1b038594c5c3aa15b77",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/0cf211c1c36f11e1eacad3e3a30d94f1db3275a7b72b9ce561de2efc1335ad7d.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-329d519ae24802ffe5e42b0b40522d7829bb5575908b9c832b859f85ef13fc93",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/0cf211c1c36f11e1eacad3e3a30d94f1db3275a7b72b9ce561de2efc1335ad7d.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-4b8a657892ba49e3e10c766d8bed5bf51b0898b30b6162f334797bc0913e0622",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/0cf211c1c36f11e1eacad3e3a30d94f1db3275a7b72b9ce561de2efc1335ad7d.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-5c19628d292ecd9d95f4360d6ca7ad7468c0c80aee159047257263563c06cd0b",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/0cf211c1c36f11e1eacad3e3a30d94f1db3275a7b72b9ce561de2efc1335ad7d.json",
+      "runtime/evidence/receipts/ab59f5bdc4d3fc23d06e9c28339befd7f74c4dd2564307483e5ee985c0550167.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-60478f1e927e9155d6b25ea60d6060e56978215c06abf38ec6b46f9bbf53694b",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/0cf211c1c36f11e1eacad3e3a30d94f1db3275a7b72b9ce561de2efc1335ad7d.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-7d378466c946d78ca0136986f00a4e67f67d82d5852c72ff5e09684f64b022a2",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/0cf211c1c36f11e1eacad3e3a30d94f1db3275a7b72b9ce561de2efc1335ad7d.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-85d36165703f4be4f54aaf49ddcb71417bb10f70780639bc9a6747e7628c2ea0",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/0cf211c1c36f11e1eacad3e3a30d94f1db3275a7b72b9ce561de2efc1335ad7d.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-8f1d860c29cb6eef37251ced39fa413677d721ca041e93683ca220f5c44c9856",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/0cf211c1c36f11e1eacad3e3a30d94f1db3275a7b72b9ce561de2efc1335ad7d.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-90bb50d6c6680c86c03bfd6ed44be5ac9be30b8ecffe9efe6253ae0a8edb5833",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/0cf211c1c36f11e1eacad3e3a30d94f1db3275a7b72b9ce561de2efc1335ad7d.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-94b8aad4a4fe3fa8b6fe3bc66de542d38df98145ff73dc5d056da23b50870fb9",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/0cf211c1c36f11e1eacad3e3a30d94f1db3275a7b72b9ce561de2efc1335ad7d.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-95c5dc1ebb264ed4dce14efbb5cff76d4c23092e6876671cd5821b760ee50a68",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/0cf211c1c36f11e1eacad3e3a30d94f1db3275a7b72b9ce561de2efc1335ad7d.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-a2e5beb73681a06fc6fc0c882c66da72d8b3a66f3d85acc8725c19f4e1291837",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/0cf211c1c36f11e1eacad3e3a30d94f1db3275a7b72b9ce561de2efc1335ad7d.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-acab64cd1c6002e08266307ec344f277097202ed38ccf2ba2ecace8dc954e845",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/0cf211c1c36f11e1eacad3e3a30d94f1db3275a7b72b9ce561de2efc1335ad7d.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-b730b11e97958677302e983cb656b495a4f48237a7132f0e2bc53d257157153e",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/0cf211c1c36f11e1eacad3e3a30d94f1db3275a7b72b9ce561de2efc1335ad7d.json",
+      "runtime/evidence/receipts/ab59f5bdc4d3fc23d06e9c28339befd7f74c4dd2564307483e5ee985c0550167.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-bd506bc44bb79ca9f13374549a18653a0e860598742f73774765d7a411593e78",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/0cf211c1c36f11e1eacad3e3a30d94f1db3275a7b72b9ce561de2efc1335ad7d.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-be9cb06eac74e80b02504ad01fbc3a3f1ec21fcb56acbc7e7e5372e4ff9b5adc",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/0cf211c1c36f11e1eacad3e3a30d94f1db3275a7b72b9ce561de2efc1335ad7d.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-de3e146a0bbe43907627d860e2dc6339539e495bfa0fdea5ae10a32b5ec28572",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/0cf211c1c36f11e1eacad3e3a30d94f1db3275a7b72b9ce561de2efc1335ad7d.json",
+      "runtime/evidence/receipts/ab59f5bdc4d3fc23d06e9c28339befd7f74c4dd2564307483e5ee985c0550167.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-e0836a6e50aa56deee9970c41604ffd693467ae39b4579706028a0dca818c5d4",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/0cf211c1c36f11e1eacad3e3a30d94f1db3275a7b72b9ce561de2efc1335ad7d.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-ef0783ad9073207b7465a79032c3bc19a94f4f6cc41bde625fb3f3224286ea69",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/0cf211c1c36f11e1eacad3e3a30d94f1db3275a7b72b9ce561de2efc1335ad7d.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-f95c352d936087b249161c316ae30efd82fd64921410ceb22edd241ea632c12a",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/0cf211c1c36f11e1eacad3e3a30d94f1db3275a7b72b9ce561de2efc1335ad7d.json"
+    ]
+  }
+]
+<!-- comet-native:acceptance-evidence:end -->
+
+# Commands and results
+
+- `python D:\Code\issue3-fix\doudou\scripts\doudou.py --data-root D:\Code\doudou video collect --profile Follen-doudou --sec-uid <redacted> --aweme-id 7665571513114194618`: exit `0`; result `status=collected`, `comments=763`, 50 root pages, 66 reply pages, all reply threads terminal.
+- Baseline backup: `analyze/issue3-fix-real-20260808-baseline-comments.jsonl`; 753 rows, 753 unique CID, 0 duplicates, SHA-256 `91fbfdf27a1a93b7a4dfe27f706ae3b572639af45795050f84fbb1e24c5c5d6e`.
+- Final formal file: `message/profiles/Follen-doudou/content/videos/7665571513114194618/comments.jsonl`; 763 rows, 763 unique CID, 0 duplicates, SHA-256 `214b1826a34e69e32199f573b951f33f1f6b811025738e65fc51d9febce009ca`.
+- CID comparison: historical missing `0`; new CID `10`.
+- Pagination: root `50/50` terminal with final page `received=12`; reply threads `60/60` terminal across `66` pages; `5` reply threads used multiple pages.
+- `$env:PYTHONPATH='doudou\scripts'; python -m pytest docs\verification\tests -q`: exit `0`, `156 passed, 6 subtests passed`.
+- `npm test`: exit `0`, `52 passed, 1 skipped`.
+- `python -m ruff check doudou\scripts docs\verification\tests`: exit `0`, `All checks passed`.
+- `npm run build:manifest; npm run check:manifest; npm run test:pack; npm run test:install`: exit `0`; manifest synchronized, package inventory verified, install checks passed.
+- `comet native check issue3-fix`: exit `0`; typed receipt `runtime/evidence/receipts/6a0332b07414f06585b1fe4f1cf71a12703e83e20dfcac0f759231cdd3a6a09c.json`.
+
+# Skipped checks
+
+None. The deterministic geometry regression, full automated suite, package gates, and signed-in browser collection were executed.
+
+# Spec consistency
+
+The implementation changes only `VideoCommentsPanelComponent.trigger_reply_template`: it scrolls the unique visible reply target before final geometry validation and applies a bounded 4px tolerance only to `video.comments.reply-template`. The default 2px tolerance and fail-closed behavior for ambiguity, disabled targets, semantic mismatch, and clear overflow remain unchanged. The real collection completed protocol pagination and retained every historical CID while adding new records.
+
+# Known limitations and risks
+
+Live comment counts can change between runs. The verified invariant is zero historical CID loss and unique final storage, not a fixed live count. The local baseline backup and raw browser data remain outside the published package and Git history.
+
+# Conclusion
+
+Pass. Issue #3 is fixed, the real browser regression succeeded, all 25 acceptance criteria have current typed evidence, and the full local release gates are green.

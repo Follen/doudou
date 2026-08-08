@@ -1,0 +1,23 @@
+schema: comet.native.v3
+minimum_runtime_version: 3
+revision: 5
+verification_protocol: legacy-v1
+name: issue3-fix
+language: zh-CN
+phase: archive
+brief: brief.md
+approval: confirmed
+approved_contract_hash: a995b2593432f1df805d2eb356400455e9fad3e781327a63d29d85552ace24ed
+spec_changes:
+  - capability: incremental-video-comments
+    operation: replace
+    source: specs/incremental-video-comments/spec.md
+    base_hash: 7a5076b6c250d4ffed5418f372b785e85880fdf635328f27cdd63e0b52a897a7
+verification_result: pass
+verification_report: verification.md
+implementation_scope: runtime/evidence/scopes/e1d5e446079619437a0e75d5ad371c6e102d7eea66cecacd5f88187af9edc34a.json
+verification_evidence: runtime/evidence/verifications/149450ea47f72217fe39526fcb8278c42e2cc99809daace3f6422639edbd929c.json
+partial_allowance: null
+archived: true
+created_at: 2026-08-08
+run_id: d4f1a897-8f8a-46b5-8779-d7bd3cbd0c02

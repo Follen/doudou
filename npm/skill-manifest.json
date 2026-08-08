@@ -3,7 +3,7 @@
   "package_name": "@follenfang/doudou",
   "package_version": "0.0.6",
   "skill_version": "0.0.6",
-  "tree_sha256": "54e2430fa78e045fd8d44d3e4faf7d63b986ef4889294be538c7036a04d71a9d",
+  "tree_sha256": "ee65c23364d4c833259d66f849dcbeae271e226ccbaaa5a5c38a0d9111d67c95",
   "files": [
     {
       "path": "agents/openai.yaml",
@@ -317,8 +317,8 @@
     },
     {
       "path": "scripts/doudou/ui/components/video.py",
-      "bytes": 34675,
-      "sha256": "980a556aa1236bb431f800736fc28237aa880a894a1e0a5f060d337c01d2e5d0"
+      "bytes": 34864,
+      "sha256": "8e771760d03fffc4a2a1d31222bcd5d729029006418d273841595ece99bcc906"
     },
     {
       "path": "scripts/doudou/ui/video.py",

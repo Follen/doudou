@@ -605,6 +605,43 @@ class ProtocolStorageTests(unittest.TestCase):
                 stored["system_event"]["joined_users"][0]["nickname"], "Mentioned"
             )
 
+    def test_protocol_message_upgrades_summary_without_later_downgrade(self) -> None:
+        conversation = {
+            "conversation_id": "request:2",
+            "kind": "direct",
+            "display_name": "request",
+        }
+        summary = {
+            "schema": "doudou.message.v2",
+            "message_id": "1",
+            "create_time_ms": 1,
+            "text": "summary text",
+            "type": "text",
+            "images": [{"source": "summary"}],
+            "collection_source": "stranger-conversation-summary",
+        }
+        protocol = {
+            **summary,
+            "text": "protocol text",
+            "images": [{"source": "protocol"}],
+            "collection_source": "stranger-protocol",
+        }
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            merge_messages(root, "work", conversation, [summary])
+            upgraded = merge_messages(root, "work", conversation, [protocol])
+            self.assertEqual(upgraded["duplicates"], 1)
+            [stored] = read_messages(root, "work", conversation)
+            self.assertEqual(stored["text"], "protocol text")
+            self.assertEqual(stored["images"], [{"source": "protocol"}])
+            self.assertEqual(stored["collection_source"], "stranger-protocol")
+
+            merge_messages(root, "work", conversation, [summary])
+            [stored] = read_messages(root, "work", conversation)
+            self.assertEqual(stored["text"], "protocol text")
+            self.assertEqual(stored["images"], [{"source": "protocol"}])
+            self.assertEqual(stored["collection_source"], "stranger-protocol")
+
 
 if __name__ == "__main__":
     unittest.main()

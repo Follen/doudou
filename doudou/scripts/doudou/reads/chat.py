@@ -178,14 +178,25 @@ async def _enrich_conversation_identities(
             )
         if conversation.get("conversation_type", 1) != 1 and conversation.get("kind") != "direct":
             continue
-        candidates = [
-            participant.get("display_name") or participant.get("alias")
+        # Direct conversations should be addressable by the other participant,
+        # while never replacing the title with the current account's identity.
+        # If self cannot be inferred, keep the protocol title instead of
+        # guessing from the last sender, which may be the current account.
+        others = [
+            participant
             for participant in participants
-            if participant.get("uid") != self_uid
+            if self_uid and str(participant.get("uid") or "") != self_uid
         ]
-        candidates = [value for value in candidates if value]
-        if len(set(candidates)) == 1:
-            conversation["display_name"] = candidates[0]
+        names = [
+            participant.get("remark_name")
+            or participant.get("nickname")
+            or participant.get("display_name")
+            or participant.get("alias")
+            for participant in others
+        ]
+        names = [str(value).strip() for value in names if value and str(value).strip()]
+        if len(names) == 1:
+            conversation["display_name"] = names[0]
 
 
 def _age_seconds(timestamp: str | None) -> float | None:
@@ -229,8 +240,6 @@ async def refresh_session_index(
             "IM initialization did not produce a usable response.",
         )
     conversations = find_conversations(session.init_response)
-    if conversations:
-        await _enrich_conversation_identities(session, data_root, profile, conversations)
 
     # Message requests use a separate command and are merged only after every
     # page succeeds, preserving the previous index on protocol failure.
@@ -274,14 +283,13 @@ async def refresh_session_index(
     else:
         raise DoudouError("STRANGER_PAGE_LIMIT", "Stranger conversation collection reached the page limit.")
     stranger = list(stranger_by_id.values())
-    if stranger:
-        await _enrich_conversation_identities(session, data_root, profile, stranger)
     conversations.extend(stranger)
     if not conversations:
         raise DoudouError(
             "IM_INITIALIZATION_EMPTY",
             "IM initialization and stranger inbox returned no conversations.",
         )
+    await _enrich_conversation_identities(session, data_root, profile, conversations)
     index = write_conversation_index(data_root, profile, conversations)
     snapshot = {
         "schema": "doudou.session-index-snapshot.v1",
@@ -372,8 +380,26 @@ async def collect_messages(
             if command == 1002
             else extract_messages(payload, conversation["conversation_id"])
         )
-        if command == 1002 and not batch and conversation.get("last_message"):
-            batch = [conversation["last_message"]]
+        if command == 1002:
+            batch = [
+                {**item, "collection_source": "stranger-protocol"}
+                for item in batch
+            ]
+        protocol_received = len(batch)
+        summary_received = 0
+        collection_source = "protocol" if batch else "empty"
+        if command == 1002 and not batch:
+            summary = conversation.get("last_message")
+            if isinstance(summary, dict) and summary.get("message_id"):
+                batch = [
+                    {
+                        **summary,
+                        "sender": dict(summary.get("sender") or {}),
+                        "collection_source": "stranger-conversation-summary",
+                    }
+                ]
+                summary_received = 1
+                collection_source = "conversation_summary"
         for item in batch:
             created = int(item["create_time_ms"])
             if (lower is None or created >= lower) and (
@@ -393,6 +419,13 @@ async def collect_messages(
                 "anchor_in": str(anchor),
                 "next_cursor": str(next_cursor),
                 "received": len(batch),
+                "protocol_received": protocol_received,
+                "summary_received": summary_received,
+                "collection_source": collection_source,
+                "fallback_used": False,
+                "protocol_http_status": http_status,
+                "protocol_status": status,
+                "payload_bytes": len(payload),
                 "has_more": has_more,
             }
         )

@@ -1,0 +1,23 @@
+schema: comet.native.v3
+minimum_runtime_version: 3
+revision: 8
+verification_protocol: legacy-v1
+name: issue5-fix
+language: zh-CN
+phase: archive
+brief: brief.md
+approval: confirmed
+approved_contract_hash: feeed74fb27dcb0f0ba285a1b8a70fcc25b1d069d397eb2d33b104fc0a701456
+spec_changes:
+  - capability: stranger-message-requests
+    operation: replace
+    source: specs/stranger-message-requests/spec.md
+    base_hash: 1c693933b0a3587fed71b674f0183bcaa007c546c96c4aabdc894bc40e83f8a4
+verification_result: pass
+verification_report: verification.md
+implementation_scope: runtime/evidence/scopes/aded7f94bf3147dc4d2af961c58a7db9a6695827f2aa4dd098345b10917cf54d.json
+verification_evidence: runtime/evidence/verifications/490bdd6344406fca75faa49a69b4a83b1f40e068f3e121086a60dc6a27356ff0.json
+partial_allowance: null
+archived: true
+created_at: 2026-08-08
+run_id: af92919c-d7f3-4df5-abb5-c7bb7a9612e4

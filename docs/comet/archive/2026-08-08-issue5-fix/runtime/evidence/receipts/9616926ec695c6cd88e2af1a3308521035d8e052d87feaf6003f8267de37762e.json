@@ -1,0 +1,34 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "static-inspection",
+  "role": "required-check",
+  "status": "passed",
+  "bindings": {
+    "change": "issue5-fix",
+    "sourceRevision": 6,
+    "contractHash": "feeed74fb27dcb0f0ba285a1b8a70fcc25b1d069d397eb2d33b104fc0a701456",
+    "scopeHash": "aded7f94bf3147dc4d2af961c58a7db9a6695827f2aa4dd098345b10917cf54d",
+    "snapshotHash": "e999d357b814a81aa70325ffd34d2611856171d87679e9081cb0643dc495e9cb",
+    "artifactHash": "175a35cd77dee6eaeef9d45c91d2abc5027c1d206c91f55e8b7318a7508e02e5"
+  },
+  "acceptanceIds": [],
+  "actor": "native-runtime:scoped-text-safety",
+  "issuedAt": "2026-08-08T06:34:00.190Z",
+  "evidence": {
+    "subjects": [
+      "docs/verification/issue5-fix-real-20260808.md",
+      "docs/verification/tests/test_broker.py",
+      "docs/verification/tests/test_identity.py",
+      "docs/verification/tests/test_stranger_chat_integration.py",
+      "doudou/references/protobuf-message-fields.md",
+      "doudou/scripts/doudou/reads/chat.py",
+      "doudou/scripts/doudou/runtime/browser/session.py",
+      "npm/skill-manifest.json"
+    ],
+    "rule": "scoped-text-safety",
+    "resultSummary": "The built-in scoped inspection passed without skipped or blocking input.",
+    "checkReceiptRef": "runtime/evidence/check-receipts/c78a00edc13055bf9b8ecfe513bf39763ba7427cb0019bc6ba953cdce1016a3f.json",
+    "checkReceiptHash": "c78a00edc13055bf9b8ecfe513bf39763ba7427cb0019bc6ba953cdce1016a3f"
+  },
+  "receiptHash": "9616926ec695c6cd88e2af1a3308521035d8e052d87feaf6003f8267de37762e"
+}

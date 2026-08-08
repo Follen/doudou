@@ -1,0 +1,11 @@
+{
+  "schema": "comet.native.archive-cas.v1",
+  "operationId": "spec-1-stranger-message-requests",
+  "role": "post",
+  "hash": "87b9d94bef20e7c5e41bb8e87deb8598798c0c9ddbed645a5d820e3b6e5302b8",
+  "identity": {
+    "dev": 2421791372,
+    "ino": 3096224744527876,
+    "birthtimeMs": 1786172849025.7798
+  }
+}

@@ -30,6 +30,8 @@ FIREFOX_PREFS: dict[str, Any] = {
     "media.preload.auto": 0,
 }
 
+_PROTOBUF_NETWORK_RETRY_DELAYS = (0.25, 0.5)
+
 
 class BrowserSession:
     def __init__(
@@ -775,23 +777,42 @@ class BrowserSession:
                 "PROTOCOL_ENDPOINT_INVALID",
                 "Only the supported IM protocol endpoint is allowed.",
             )
-        result = await self.page.evaluate(
-            """async ({endpoint, bodyBase64}) => {
-              const bytes = Uint8Array.from(atob(bodyBase64), char => char.charCodeAt(0));
-              const response = await fetch(endpoint, {
-                method: 'POST', credentials: 'include',
-                headers: {'content-type': 'application/x-protobuf'}, body: bytes,
-              });
-              const output = new Uint8Array(await response.arrayBuffer());
-              let binary = ''; for (const byte of output) binary += String.fromCharCode(byte);
-              return {status: response.status, bodyBase64: btoa(binary)};
-            }""",
-            {
-                "endpoint": endpoint,
-                "bodyBase64": base64.b64encode(body).decode("ascii"),
-            },
-        )
-        return int(result["status"]), base64.b64decode(result["bodyBase64"])
+        attempts = len(_PROTOBUF_NETWORK_RETRY_DELAYS) + 1
+        for attempt in range(1, attempts + 1):
+            try:
+                result = await self.page.evaluate(
+                    """async ({endpoint, bodyBase64}) => {
+                      const bytes = Uint8Array.from(atob(bodyBase64), char => char.charCodeAt(0));
+                      const response = await fetch(endpoint, {
+                        method: 'POST', credentials: 'include',
+                        headers: {'content-type': 'application/x-protobuf'}, body: bytes,
+                      });
+                      const output = new Uint8Array(await response.arrayBuffer());
+                      let binary = ''; for (const byte of output) binary += String.fromCharCode(byte);
+                      return {status: response.status, bodyBase64: btoa(binary)};
+                    }""",
+                    {
+                        "endpoint": endpoint,
+                        "bodyBase64": base64.b64encode(body).decode("ascii"),
+                    },
+                )
+            except Exception as error:
+                if "NetworkError" not in f"{type(error).__name__}: {error}":
+                    raise
+                if attempt == attempts:
+                    raise DoudouError(
+                        "PROTOCOL_NETWORK_ERROR",
+                        "The page-context IM protocol request failed after bounded retries.",
+                        {
+                            "endpoint": endpoint,
+                            "attempts": attempts,
+                            "cause": type(error).__name__,
+                        },
+                    ) from error
+                await asyncio.sleep(_PROTOBUF_NETWORK_RETRY_DELAYS[attempt - 1])
+                continue
+            return int(result["status"]), base64.b64decode(result["bodyBase64"])
+        raise AssertionError("unreachable")
 
     async def fetch_text(self, url: str, timeout_ms: int = 15_000) -> dict[str, Any]:
         if not self.page or not url.startswith("https://www.douyin.com/"):

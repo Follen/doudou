@@ -1,0 +1,30 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "manual-evidence",
+  "role": "acceptance-evidence",
+  "status": "passed",
+  "bindings": {
+    "change": "issue5-fix",
+    "sourceRevision": 3,
+    "contractHash": "727e3eef6a0f31e00540dd4aa22d653106c4049768b7266c26acee822988600f",
+    "scopeHash": "fa6c30a4a4e9e39c6ace57b4f0cf3b27a894b6cc9fd875a25612568aa7c68ae8",
+    "snapshotHash": "fbbddc32ca90a2d22cc5cf38ac48923d959c01fd61f9677d03e024fc4479eeb9",
+    "artifactHash": "9fb6a15415a4f33a20bf2a9f752e6944cbd66c53f67bc475acdb81a9f4c50e06"
+  },
+  "acceptanceIds": [
+    "acceptance-0cc1be9022330bd00f157dd582f072fa7ac296e37f7f1092b039cc3db95ff05b",
+    "acceptance-17dbcb31d6d1d3a527f9454651d7fdd47f01570e46659cbb3128f98d873f7870",
+    "acceptance-7e4bb9e8ad233f4ce19cb16bab9e21bfcad91cf37c8c9148db81d05d092ab7c9"
+  ],
+  "actor": "native-runtime:manual-evidence",
+  "issuedAt": "2026-08-08T04:57:41.873Z",
+  "evidence": {
+    "steps": [
+      "修复后真实 Profile 连续刷新 request inbox"
+    ],
+    "observations": [
+      "5 次 live refresh 均 exit=0，耗时 14581/1709/2138/1746/2384 ms；每次 count=1、participants=2、title_is_id=False。证据：docs/verification/issue5-fix-real-20260808.md。未记录账号、conversation id、正文或 sec_uid。"
+    ]
+  },
+  "receiptHash": "d3b70ea3a228a14e23d102f62a292a41055ca5d8abb2dfd22e327e626558c6ec"
+}

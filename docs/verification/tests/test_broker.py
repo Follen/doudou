@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import base64
 import json
 import os
 import tempfile
@@ -98,6 +99,96 @@ class BrokerTests(unittest.TestCase):
             captured,
             [b'{"status_code":0,"data":[{"remark_name":"remark"}]}'],
         )
+
+    def test_protobuf_post_retries_transient_page_network_errors(self) -> None:
+        class Page:
+            def __init__(self) -> None:
+                self.calls = 0
+
+            async def evaluate(self, _script: str, _arguments: dict) -> dict:
+                self.calls += 1
+                if self.calls < 3:
+                    raise RuntimeError("Page.evaluate: NetworkError when attempting to fetch")
+                return {
+                    "status": 200,
+                    "bodyBase64": base64.b64encode(b"response").decode("ascii"),
+                }
+
+        with tempfile.TemporaryDirectory() as directory:
+            _, paths = create_profile(Path(directory), "work")
+
+            async def exercise() -> tuple[int, bytes, int]:
+                browser = BrowserSession(paths)
+                page = Page()
+                browser.page = page
+                with patch("doudou.runtime.browser.session.asyncio.sleep", AsyncMock()):
+                    status, body = await browser.post_protobuf(
+                        "https://imapi.douyin.com/v1/message/test", b"request"
+                    )
+                return status, body, page.calls
+
+            status, body, calls = asyncio.run(exercise())
+        self.assertEqual((status, body, calls), (200, b"response", 3))
+
+    def test_protobuf_post_reports_exhausted_network_retries(self) -> None:
+        page = AsyncMock()
+        page.evaluate.side_effect = RuntimeError("NetworkError: request interrupted")
+        with tempfile.TemporaryDirectory() as directory:
+            _, paths = create_profile(Path(directory), "work")
+
+            async def exercise() -> None:
+                browser = BrowserSession(paths)
+                browser.page = page
+                with (
+                    patch("doudou.runtime.browser.session.asyncio.sleep", AsyncMock()),
+                    self.assertRaises(DoudouError) as raised,
+                ):
+                    await browser.post_protobuf(
+                        "https://imapi.douyin.com/v1/message/test", b"request"
+                    )
+                self.assertEqual(raised.exception.code, "PROTOCOL_NETWORK_ERROR")
+                self.assertEqual(raised.exception.details["attempts"], 3)
+                self.assertEqual(raised.exception.details["cause"], "RuntimeError")
+
+            asyncio.run(exercise())
+        self.assertEqual(page.evaluate.await_count, 3)
+
+    def test_protobuf_post_does_not_retry_non_network_evaluate_errors(self) -> None:
+        page = AsyncMock()
+        page.evaluate.side_effect = RuntimeError("Execution context was destroyed")
+        with tempfile.TemporaryDirectory() as directory:
+            _, paths = create_profile(Path(directory), "work")
+
+            async def exercise() -> None:
+                browser = BrowserSession(paths)
+                browser.page = page
+                with self.assertRaisesRegex(RuntimeError, "Execution context"):
+                    await browser.post_protobuf(
+                        "https://imapi.douyin.com/v1/message/test", b"request"
+                    )
+
+            asyncio.run(exercise())
+        self.assertEqual(page.evaluate.await_count, 1)
+
+    def test_protobuf_post_does_not_retry_http_failures(self) -> None:
+        page = AsyncMock()
+        page.evaluate.return_value = {
+            "status": 503,
+            "bodyBase64": base64.b64encode(b"busy").decode("ascii"),
+        }
+        with tempfile.TemporaryDirectory() as directory:
+            _, paths = create_profile(Path(directory), "work")
+
+            async def exercise() -> tuple[int, bytes]:
+                browser = BrowserSession(paths)
+                browser.page = page
+                return await browser.post_protobuf(
+                    "https://imapi.douyin.com/v1/message/test", b"request"
+                )
+
+            result = asyncio.run(exercise())
+        self.assertEqual(result, (503, b"busy"))
+        self.assertEqual(page.evaluate.await_count, 1)
 
     def test_takeover_restarts_context_instead_of_toggling_window_style(self) -> None:
         class Page:

@@ -32,6 +32,12 @@ AUTHORITATIVE_INCOMING_FIELDS = {
     "unknown_fields",
 }
 
+COLLECTION_SOURCE_PRIORITY = {
+    "stranger-conversation-summary": 0,
+    None: 1,
+    "stranger-protocol": 2,
+}
+
 
 def conversation_folder(conversation: dict[str, Any]) -> str:
     return f"{conversation.get('kind', 'unknown')}__{safe_segment(conversation.get('display_name') or 'unnamed', 64)}__{safe_segment(conversation['conversation_id'], 64)}"
@@ -223,7 +229,26 @@ def merge_messages(
             continue
         duplicates += 1
         merged = dict(previous)
+        previous_source_priority = COLLECTION_SOURCE_PRIORITY.get(
+            previous.get("collection_source"), 1
+        )
+        incoming_source_priority = COLLECTION_SOURCE_PRIORITY.get(
+            item.get("collection_source"), 1
+        )
         for key, value in item.items():
+            if (
+                key == "collection_source"
+                and incoming_source_priority > previous_source_priority
+            ):
+                merged[key] = value
+                continue
+            if (
+                incoming_source_priority < previous_source_priority
+                and key
+                in AUTHORITATIVE_INCOMING_FIELDS | {"collection_source", "images"}
+                and merged.get(key) not in (None, "", [], {})
+            ):
+                continue
             if key == "images":
                 merged[key] = value
                 continue

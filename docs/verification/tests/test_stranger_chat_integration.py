@@ -222,6 +222,7 @@ def test_collect_routes_request_and_enriches_sender(tmp_path, monkeypatch):
         (tmp_path / result["merge"]["messages_file"]).read_text().splitlines()[0]
     )
     assert messages["sender"]["name"] == "Nickname"
+    assert messages["collection_source"] == "stranger-protocol"
 
 
 def test_request_display_name_uses_counterparty_nickname(tmp_path, monkeypatch):

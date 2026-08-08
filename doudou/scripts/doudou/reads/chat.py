@@ -380,6 +380,11 @@ async def collect_messages(
             if command == 1002
             else extract_messages(payload, conversation["conversation_id"])
         )
+        if command == 1002:
+            batch = [
+                {**item, "collection_source": "stranger-protocol"}
+                for item in batch
+            ]
         protocol_received = len(batch)
         summary_received = 0
         collection_source = "protocol" if batch else "empty"

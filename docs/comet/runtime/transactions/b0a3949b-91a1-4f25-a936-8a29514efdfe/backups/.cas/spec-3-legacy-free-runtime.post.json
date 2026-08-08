@@ -1,0 +1,11 @@
+{
+  "schema": "comet.native.archive-cas.v1",
+  "operationId": "spec-3-legacy-free-runtime",
+  "role": "post",
+  "hash": "0f32feea7a719de3e2b064b74a6614898cad6cf318d9bc0aef8cb48e438c7d9a",
+  "identity": {
+    "dev": 2421791372,
+    "ino": 4503599628067471,
+    "birthtimeMs": 1786202501088.4216
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "schema": "comet.native.transaction.v2",
+  "id": "b0a3949b-91a1-4f25-a936-8a29514efdfe",
+  "kind": "archive",
+  "status": "committed",
+  "change": "polish-doudou-skill-cleanup-legacy",
+  "createdAt": "2026-08-08T15:21:37.386Z",
+  "preflightHash": "c3dece5b3673707e51e7d40bd4eb4d79646227faf1c57a9529ffc69c25001bf3",
+  "operations": [
+    {
+      "id": "spec-1-doudou",
+      "type": "write",
+      "target": "specs/doudou/spec.md",
+      "staged": "runtime/transactions/b0a3949b-91a1-4f25-a936-8a29514efdfe/staged/specs/doudou/spec.md",
+      "backup": "runtime/transactions/b0a3949b-91a1-4f25-a936-8a29514efdfe/backups/specs/doudou/spec.md",
+      "expectedTargetHash": "dcddeae7c2398edac3df709ee83b2b1fcb47a507d5421a65a45bd78ac83b0866",
+      "stagedHash": "a57e16a661b67e936945c5779377a40f77c0a18c0bc4df3f6c22422f525ab6af"
+    },
+    {
+      "id": "spec-2-doudou-skill-orchestration",
+      "type": "write",
+      "target": "specs/doudou-skill-orchestration/spec.md",
+      "staged": "runtime/transactions/b0a3949b-91a1-4f25-a936-8a29514efdfe/staged/specs/doudou-skill-orchestration/spec.md",
+      "expectedTargetHash": null,
+      "stagedHash": "0ab84a003121352aeb358cf184ef840df38c6c6e7de25dfa02074c6d5f0b084a"
+    },
+    {
+      "id": "spec-3-legacy-free-runtime",
+      "type": "write",
+      "target": "specs/legacy-free-runtime/spec.md",
+      "staged": "runtime/transactions/b0a3949b-91a1-4f25-a936-8a29514efdfe/staged/specs/legacy-free-runtime/spec.md",
+      "expectedTargetHash": null,
+      "stagedHash": "0f32feea7a719de3e2b064b74a6614898cad6cf318d9bc0aef8cb48e438c7d9a"
+    },
+    {
+      "id": "archive-change",
+      "type": "move",
+      "source": "changes/polish-doudou-skill-cleanup-legacy",
+      "target": "archive/2026-08-08-polish-doudou-skill-cleanup-legacy",
+      "expectedSourceHash": "3cda168983307250e4f790c211bbcd77aff32fcbd187cb49ab14fe6be4ca8b63",
+      "expectedTargetHash": null
+    }
+  ]
+}

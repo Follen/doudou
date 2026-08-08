@@ -13,11 +13,22 @@ export function doudouCacheRoot({ env = process.env, home = os.homedir() } = {})
   return path.resolve(path.isAbsolute(configured) ? configured : path.join(home, configured));
 }
 
-export function legacyDoudouRoot({ platform = process.platform, env = process.env, home = os.homedir() } = {}) {
-  if (platform === "win32") {
-    return path.join(env.LOCALAPPDATA || path.join(home, "AppData", "Local"), "doudou");
-  }
-  return path.join(env.XDG_CACHE_HOME || path.join(home, ".cache"), "doudou");
+export function assertCurrentRuntimeLayout({ platform = process.platform, env = process.env, home = os.homedir() } = {}) {
+  const current = doudouCacheRoot({ env, home });
+  const unsupported = platform === "win32"
+    ? path.join(env.LOCALAPPDATA || path.join(home, "AppData", "Local"), "doudou")
+    : path.join(env.XDG_CACHE_HOME || path.join(home, ".cache"), "doudou");
+  if (path.resolve(unsupported) === path.resolve(current) || !fs.existsSync(unsupported)) return;
+  if (fs.lstatSync(unsupported).isSymbolicLink()) return;
+  const markers = [
+    path.join(unsupported, "runtimes", "current.json"),
+    path.join(unsupported, "setup-state.json"),
+  ];
+  if (!markers.some((filename) => fs.existsSync(filename))) return;
+  const error = new Error("An unsupported Doudou runtime layout was found. Remove or relocate it before using the current runtime.");
+  error.code = "LEGACY_UNSUPPORTED";
+  error.details = { legacy_kind: "runtime_root", supported_root: current };
+  throw error;
 }
 
 export function currentRuntime({ platform = process.platform, env = process.env, home = os.homedir() } = {}) {

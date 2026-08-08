@@ -24,10 +24,14 @@
 <cli> conversations refresh --profile <name> --kind all
 <cli> conversations refresh --profile <name> --kind all --inbox all
 <cli> conversations resolve --profile <name> --target <ID-or-name>
-<cli> messages collect --profile <name> --conversation <ID-or-name>
+<cli> messages collect --profile <name> --conversation <ID-or-name> [--from <RFC3339> --to <RFC3339>] [--max-pages <N>] [--skip-images]
 ```
 
-`conversations refresh --kind all` 默认合并已建立会话和陌生人消息请求。每条记录通过 `inbox=established|request` 区分来源；`--inbox established|request|all` 可筛选来源。消息默认采集本地当天零点到当前时间；需要指定窗口时传 `--from` 和 `--to`。`conversation_type=1` 是私聊，`conversation_type=2` 是群聊；不要根据标题判断。消息请求只读，不能用于发送、回复或点赞。
+`conversations refresh --kind all` 默认合并已建立会话和陌生人消息请求。每条记录通过 `inbox=established|request` 区分来源；`--inbox established|request|all` 可筛选来源。`conversation_type=1` 是私聊，`conversation_type=2` 是群聊；不要根据标题判断。
+
+`messages collect` 每次只接受一个 `--conversation`，没有 `--conversations` 参数。多个会话应逐个调用并分别保留退出码和 result；一个失败不应覆盖其他会话的结果。消息默认采集本地当天零点到当前时间；固定验证窗口时同时传 `--from` 和 `--to`。消息请求只读，不能用于发送、回复或点赞。
+
+命令输出是 NDJSON。包含 conversation/message/profile 的结果先捕获后解析，只投影任务需要的状态、计数和产物路径；不要把完整对象直接回显到对话。
 
 ## Chat writes
 
@@ -61,7 +65,6 @@
 
 ```text
 <cli> identity resolve --profile <name> --douyin-id <douyin-id>
-<cli> identity migrate --profile <name>
 <cli> videos collect --profile <name> --douyin-id <douyin-id>
 <cli> video collect --profile <name> --sec-uid <sec-uid> --aweme-id <video-id>
 ```

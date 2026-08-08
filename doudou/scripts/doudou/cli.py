@@ -10,7 +10,7 @@ from .common.errors import DoudouError
 from .models.resolver import parse_selection, resolve_conversation
 from .runtime.broker.client import BrokerClient
 from .runtime.environment import doctor
-from .runtime.paths import initialize_data_root
+from .runtime.paths import assert_supported_identity_records, initialize_data_root
 from .runtime.profile import create_profile, list_profiles, load_profile, update_profile
 
 
@@ -138,8 +138,6 @@ def parser() -> argparse.ArgumentParser:
     identity_resolve = identity.add_parser("resolve")
     _profile_argument(identity_resolve)
     identity_resolve.add_argument("--douyin-id", required=True)
-    identity_migrate = identity.add_parser("migrate")
-    _profile_argument(identity_migrate)
 
     videos = commands.add_parser("videos").add_subparsers(
         dest="videos_command", required=True
@@ -209,6 +207,8 @@ def dispatch(args: argparse.Namespace, skill_root: Path) -> dict[str, Any]:
     if args.command == "doctor":
         initialize_data_root(data_root)
         return doctor(data_root, launch_probe=args.launch_probe)
+    if args.command == "identity":
+        assert_supported_identity_records(data_root, args.profile)
     initialize_data_root(data_root)
 
     if args.command == "profile":
@@ -394,10 +394,6 @@ def dispatch(args: argparse.Namespace, skill_root: Path) -> dict[str, Any]:
         return client.request(
             "chat.like.preview", {"target": args.conversation, "message": args.message}
         )["result"]
-    if args.command == "identity" and args.identity_command == "migrate":
-        from .storage.identity_migration import migrate_identity_records
-
-        return migrate_identity_records(data_root, args.profile)
     if args.command == "identity":
         return client.request("identity.resolve", {"douyin_id": args.douyin_id})[
             "result"
@@ -467,13 +463,3 @@ def main(argv: list[str] | None = None, skill_root: Path | None = None) -> int:
     except DoudouError as error:
         emit(error.as_event())
         return error.exit_code
-    except RuntimeError as error:
-        if str(error) == "PROFILE_ROOT_CONFLICT":
-            emit(
-                DoudouError(
-                    "PROFILE_ROOT_CONFLICT",
-                    "Both profile/ and Profile/ exist in the data root.",
-                ).as_event()
-            )
-            return 1
-        raise

@@ -1,5 +1,7 @@
 # Only the documentation and deliverable Skill trees are versioned.
 *
+# Local Git worktrees belong under .worktree/<name>.
+.worktree/
 !.gitignore
 !AGENTS.md
 !README.md

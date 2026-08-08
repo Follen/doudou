@@ -5,6 +5,8 @@ import json
 from pathlib import Path
 from unittest.mock import AsyncMock, MagicMock
 
+import pytest
+from doudou.common.errors import DoudouError
 from doudou.models.identity import (
     IdentityCache,
     enrich_known_identities,
@@ -14,7 +16,7 @@ from doudou.models.identity import (
     normalize_identity,
 )
 from doudou.reads.chat import _resolve_user_identities
-from doudou.storage.identity_migration import _fixed_point, migrate_identity_records
+from doudou.runtime.paths import assert_supported_identity_records
 
 
 def test_identity_normalization_keeps_unique_id_distinct_from_nickname() -> None:
@@ -205,18 +207,7 @@ def test_profile_cache_resolves_one_exact_unique_id_without_search(
     assert cache.exact_unique_id("Rurutia.wow") is None
 
 
-def test_identity_migration_is_idempotent(tmp_path: Path) -> None:
-    cache = IdentityCache(tmp_path, "work")
-    cache.merge(
-        {
-            "uid": "1",
-            "sec_uid": "SEC",
-            "unique_id": "douyin-id",
-            "nickname": "Nickname",
-        },
-        source="fixture",
-    )
-    cache.save()
+def test_legacy_identity_record_is_rejected_without_mutation(tmp_path: Path) -> None:
     filename = (
         tmp_path
         / "message"
@@ -232,51 +223,41 @@ def test_identity_migration_is_idempotent(tmp_path: Path) -> None:
         + "\n",
         encoding="utf-8",
     )
-    first = migrate_identity_records(tmp_path, "work")
-    content = filename.read_text(encoding="utf-8")
-    second = migrate_identity_records(tmp_path, "work")
-    assert first["changed_files"] == 1
-    assert second["changed_files"] == 0
-    assert filename.read_text(encoding="utf-8") == content
-    assert json.loads(content)["sender"]["unique_id"] == "douyin-id"
+    original = filename.read_bytes()
+
+    with pytest.raises(DoudouError) as context:
+        assert_supported_identity_records(tmp_path, "work")
+    assert context.value.code == "LEGACY_UNSUPPORTED"
+    assert context.value.details["legacy_format"] == "identity_record"
+    assert context.value.details["path"] == "message/profiles/<PROFILE>/<RECORD>"
+    assert filename.read_bytes() == original
 
 
-def test_identity_migration_reaches_nested_fixed_point_in_one_run() -> None:
-    def enrich(value: dict[str, int]) -> dict[str, int]:
-        stage = int(value.get("stage") or 0)
-        return {"stage": min(stage + 1, 2)}
-
-    assert _fixed_point({"stage": 0}, enrich) == {"stage": 2}
-
-
-def test_identity_migration_crosses_conversation_index_container(tmp_path: Path) -> None:
-    filename = tmp_path / "message" / "profiles" / "work" / "conversations.json"
+def test_current_v1_identity_record_is_supported(tmp_path: Path) -> None:
+    filename = (
+        tmp_path
+        / "message"
+        / "profiles"
+        / "work"
+        / "conversations"
+        / "fixture"
+        / "messages.jsonl"
+    )
     filename.parent.mkdir(parents=True)
     filename.write_text(
         json.dumps(
             {
-                "conversations": [
-                    {
-                        "kind": "direct",
-                        "participants": {
-                            "participants": [{"uid": "1", "sec_uid": "SEC"}]
-                        },
-                    }
-                ]
+                "message_id": "1",
+                "sender": normalize_identity(
+                    {"uid": "1", "sec_uid": "SEC"}, source="fixture"
+                ),
             }
-        ),
+        )
+        + "\n",
         encoding="utf-8",
     )
-    first = migrate_identity_records(tmp_path, "work")
-    content = filename.read_text(encoding="utf-8")
-    second = migrate_identity_records(tmp_path, "work")
-    participant = json.loads(content)["conversations"][0]["participants"][
-        "participants"
-    ][0]
-    assert first["changed_files"] == 1
-    assert second["changed_files"] == 0
-    assert participant["schema"] == "doudou.user-identity.v1"
-    assert participant["unique_id"] is None
+
+    assert_supported_identity_records(tmp_path, "work")
 
 
 def test_message_identity_enrichment_links_mentions_and_reference_sender(

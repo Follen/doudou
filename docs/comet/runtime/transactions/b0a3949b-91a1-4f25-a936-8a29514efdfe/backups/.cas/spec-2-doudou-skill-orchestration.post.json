@@ -1,0 +1,11 @@
+{
+  "schema": "comet.native.archive-cas.v1",
+  "operationId": "spec-2-doudou-skill-orchestration",
+  "role": "post",
+  "hash": "0ab84a003121352aeb358cf184ef840df38c6c6e7de25dfa02074c6d5f0b084a",
+  "identity": {
+    "dev": 2421791372,
+    "ino": 4503599628067468,
+    "birthtimeMs": 1786202500986.985
+  }
+}

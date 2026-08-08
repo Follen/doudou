@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url";
 import { detectCliCommand, parseLauncherOptions, resolveSkillDirectory } from "../lib/options.mjs";
 import { ensureSkill } from "../lib/skill-installer.mjs";
 import { recordManagedSkill } from "../lib/managed-install.mjs";
-import { currentRuntime, runPython } from "../lib/python.mjs";
+import { assertCurrentRuntimeLayout, currentRuntime, runPython } from "../lib/python.mjs";
 import { ensureManagedRuntime, managedRuntimeReady, setupDoctor } from "../lib/runtime-setup.mjs";
 import { removeCurrentNpmPackage } from "../lib/self-remove.mjs";
 import { cleanupManagedInstall } from "../lib/uninstall.mjs";
@@ -49,6 +49,8 @@ async function main() {
     process.stdout.write(`${packageVersion}\n`);
     return 0;
   }
+  try { assertCurrentRuntimeLayout(); }
+  catch (error) { emitError(error.code || "RUNTIME_LAYOUT_INVALID", error.message, error.details); return 1; }
   const command = detectCliCommand(options.forwarded);
   if (command === "update") {
     try {

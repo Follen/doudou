@@ -1,0 +1,11 @@
+{
+  "schema": "comet.native.archive-cas.v1",
+  "operationId": "spec-1-doudou",
+  "role": "original",
+  "hash": "dcddeae7c2398edac3df709ee83b2b1fcb47a507d5421a65a45bd78ac83b0866",
+  "identity": {
+    "dev": 2421791372,
+    "ino": 281474980367384,
+    "birthtimeMs": 1785652917084.177
+  }
+}

@@ -6,7 +6,7 @@ import path from "node:path";
 
 import { clearManagedInstall, readManagedInstall } from "./managed-install.mjs";
 import { resolveSkillDirectory } from "./options.mjs";
-import { doudouCacheRoot, legacyDoudouRoot } from "./python.mjs";
+import { doudouCacheRoot } from "./python.mjs";
 import { INSTALL_STAMP } from "./skill-installer.mjs";
 
 const PACKAGE_NAME = "@follenfang/doudou";
@@ -281,7 +281,6 @@ export async function cleanupManagedInstall({
   removePath = (target) => fs.rmSync(target, { recursive: true, force: true }),
 } = {}) {
   const cacheRoot = doudouCacheRoot({ platform, env, home });
-  const legacyRoot = legacyDoudouRoot({ platform, env, home });
   const runtimes = path.join(cacheRoot, "runtimes");
   const registry = readManagedInstall({ platform, env, home });
   const defaultTarget = resolveSkillDirectory({ env, home });
@@ -298,7 +297,6 @@ export async function cleanupManagedInstall({
     skills: [],
     runtime: { path: cacheRoot, status: "missing" },
     browser_cache: "missing",
-    legacy_runtime: { path: legacyRoot, status: "missing" },
     project_data: "preserved",
   };
 
@@ -342,16 +340,6 @@ export async function cleanupManagedInstall({
     }
   } else {
     clearManagedInstall({ platform, env, home });
-  }
-  if (path.resolve(legacyRoot) !== path.resolve(cacheRoot) && fs.existsSync(legacyRoot)) {
-    const owned = fs.existsSync(path.join(legacyRoot, "runtimes", "current.json"))
-      || fs.existsSync(path.join(legacyRoot, "setup-state.json"));
-    if (owned && !fs.lstatSync(legacyRoot).isSymbolicLink()) {
-      removePath(legacyRoot);
-      result.legacy_runtime.status = fs.existsSync(legacyRoot) ? "failed" : "removed";
-    } else {
-      result.legacy_runtime.status = "preserved_unrecognized";
-    }
   }
   return result;
 }

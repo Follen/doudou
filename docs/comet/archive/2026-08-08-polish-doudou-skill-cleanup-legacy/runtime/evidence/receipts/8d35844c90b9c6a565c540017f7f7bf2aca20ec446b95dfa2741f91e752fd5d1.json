@@ -1,0 +1,49 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "automated-check",
+  "role": "acceptance-evidence",
+  "status": "passed",
+  "bindings": {
+    "change": "polish-doudou-skill-cleanup-legacy",
+    "sourceRevision": 5,
+    "contractHash": "8c83e000545a10609db1aced048c898abd640b83309f6728d49993ef2c44b3d3",
+    "scopeHash": "092f4d5381f85f40e2d968cd7cfa0031919426b93fa0362d5ba797361332d9d1",
+    "snapshotHash": "a2d275b6c9c69526115d0e4ef380401c63d18c15632dce10b414c61e53ea634e",
+    "artifactHash": "bcb71facaf23ae4f7ef850577e94ed03da0c8760ddec697a2ee08838e4ed57ab"
+  },
+  "acceptanceIds": [
+    "acceptance-008f6e315f0f5723f9e200ad6a04b17afd7675b95d8cbdf3868e7a2828f2dfaa"
+  ],
+  "actor": "native-runtime:command:cmd",
+  "issuedAt": "2026-08-08T15:14:31.445Z",
+  "evidence": {
+    "executable": "cmd",
+    "args": [
+      "/c",
+      "echo",
+      "acceptance-probe"
+    ],
+    "cwd": ".",
+    "exitCode": 0,
+    "signal": null,
+    "timedOut": false,
+    "timeoutMs": 120000,
+    "startedAt": "2026-08-08T15:14:31.426Z",
+    "endedAt": "2026-08-08T15:14:31.445Z",
+    "worktree": {
+      "provider": "git",
+      "root": ".",
+      "beforeCommit": "ae688ac3633fbc0c4e8304a62c698fa7fbe50994",
+      "afterCommit": "ae688ac3633fbc0c4e8304a62c698fa7fbe50994"
+    },
+    "afterFence": {
+      "snapshotHash": "a2d275b6c9c69526115d0e4ef380401c63d18c15632dce10b414c61e53ea634e",
+      "scopeHash": "092f4d5381f85f40e2d968cd7cfa0031919426b93fa0362d5ba797361332d9d1",
+      "matched": true
+    },
+    "outputHash": "6850badf465809aa9b3b1fdf969a8c49e875eda9c5f90f361421fa9b901f1bdf",
+    "outputSummary": "acceptance-probe",
+    "outputTruncated": false
+  },
+  "receiptHash": "8d35844c90b9c6a565c540017f7f7bf2aca20ec446b95dfa2741f91e752fd5d1"
+}

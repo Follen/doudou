@@ -116,26 +116,6 @@ test("Camoufox assets only use the dedicated DOUDOU_HOME browser root", () => {
   assert.equal(result, path.join(home, "browsers"));
 });
 
-test("a verified DOUDOU_HOME removes only a recognized legacy runtime root", (t) => {
-  const root = fs.mkdtempSync(path.join(os.tmpdir(), "doudou-legacy-runtime-"));
-  t.after(() => fs.rmSync(root, { recursive: true, force: true }));
-  const current = path.join(root, "home", ".doudou");
-  const legacy = path.join(root, "legacy-cache", "doudou");
-  fs.mkdirSync(path.join(legacy, "runtimes"), { recursive: true });
-  fs.writeFileSync(path.join(legacy, "runtimes", "current.json"), "{}");
-  const result = setupInternals.cleanupLegacyInstall(
-    {
-      platform: "linux",
-      env: { DOUDOU_HOME: current, XDG_CACHE_HOME: path.join(root, "legacy-cache") },
-      home: path.join(root, "home"),
-    },
-    current,
-  );
-  assert.equal(result.status, "removed");
-  assert.equal(fs.existsSync(legacy), false);
-  assert.equal(fs.existsSync(path.join(current, "migrations", "legacy-cache-v1.json")), true);
-});
-
 test("interrupted runtime staging is removed and the previous runtime restored", (t) => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "doudou-setup-recover-"));
   t.after(() => fs.rmSync(root, { recursive: true, force: true }));

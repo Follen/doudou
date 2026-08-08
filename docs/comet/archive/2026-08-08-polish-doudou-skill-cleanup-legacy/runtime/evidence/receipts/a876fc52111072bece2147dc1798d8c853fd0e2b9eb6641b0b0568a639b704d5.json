@@ -1,0 +1,47 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "static-inspection",
+  "role": "required-check",
+  "status": "passed",
+  "bindings": {
+    "change": "polish-doudou-skill-cleanup-legacy",
+    "sourceRevision": 5,
+    "contractHash": "8c83e000545a10609db1aced048c898abd640b83309f6728d49993ef2c44b3d3",
+    "scopeHash": "092f4d5381f85f40e2d968cd7cfa0031919426b93fa0362d5ba797361332d9d1",
+    "snapshotHash": "a2d275b6c9c69526115d0e4ef380401c63d18c15632dce10b414c61e53ea634e",
+    "artifactHash": "bcb71facaf23ae4f7ef850577e94ed03da0c8760ddec697a2ee08838e4ed57ab"
+  },
+  "acceptanceIds": [],
+  "actor": "native-runtime:scoped-text-safety",
+  "issuedAt": "2026-08-08T15:07:20.032Z",
+  "evidence": {
+    "subjects": [
+      "docs/verification/tests/test_architecture.py",
+      "docs/verification/tests/test_cli_doctor.py",
+      "docs/verification/tests/test_identity.py",
+      "docs/verification/tests/test_profile.py",
+      "doudou/.gitignore",
+      "doudou/SKILL.md",
+      "doudou/references/cli.md",
+      "doudou/references/diagnostics.md",
+      "doudou/references/layout.md",
+      "doudou/scripts/doudou/cli.py",
+      "doudou/scripts/doudou/runtime/paths.py",
+      "doudou/scripts/doudou/runtime/profile.py",
+      "doudou/scripts/doudou/storage/identity_migration.py",
+      "npm/bin/doudou.mjs",
+      "npm/lib/python.mjs",
+      "npm/lib/runtime-setup.mjs",
+      "npm/lib/uninstall.mjs",
+      "npm/skill-manifest.json",
+      "npm/test/python.test.mjs",
+      "npm/test/runtime-setup.test.mjs",
+      "npm/test/uninstall.test.mjs"
+    ],
+    "rule": "scoped-text-safety",
+    "resultSummary": "The built-in scoped inspection passed without skipped or blocking input.",
+    "checkReceiptRef": "runtime/evidence/check-receipts/5d6aadf1581f1f7ffc132f7b39b735388cdb1f56b31ecd27a24c8a7c167fd4f2.json",
+    "checkReceiptHash": "5d6aadf1581f1f7ffc132f7b39b735388cdb1f56b31ecd27a24c8a7c167fd4f2"
+  },
+  "receiptHash": "a876fc52111072bece2147dc1798d8c853fd0e2b9eb6641b0b0568a639b704d5"
+}

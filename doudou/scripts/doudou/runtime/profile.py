@@ -3,7 +3,6 @@ from __future__ import annotations
 import os
 import platform
 import secrets
-import shutil
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -13,7 +12,9 @@ from ..common.errors import DoudouError
 from .lock import lock_is_live
 from .paths import (
     ProfilePaths,
+    assert_supported_profile_metadata,
     initialize_data_root,
+    is_current_profile_metadata,
     profile_paths,
     stored_profile_paths,
 )
@@ -45,14 +46,15 @@ def default_identity_config(profile_id: str) -> dict[str, Any]:
 def create_profile(
     data_root: Path, profile_name: str, display_name: str | None = None
 ) -> tuple[dict[str, Any], ProfilePaths]:
-    initialize_data_root(data_root)
     paths = profile_paths(data_root, profile_name)
     if paths.metadata.exists():
+        assert_supported_profile_metadata(read_json(paths.metadata))
         raise DoudouError(
             "PROFILE_EXISTS",
             f"Profile already exists: {profile_name}.",
             {"profile_id": paths.profile_id},
         )
+    initialize_data_root(data_root)
     for directory in (
         paths.browser_data,
         paths.runtime,
@@ -91,7 +93,6 @@ def create_profile(
 def load_profile(
     data_root: Path, profile_name: str
 ) -> tuple[dict[str, Any], ProfilePaths]:
-    initialize_data_root(data_root)
     paths = profile_paths(data_root, profile_name)
     metadata = read_json(paths.metadata, optional=True)
     if metadata is None:
@@ -100,11 +101,8 @@ def load_profile(
             f"Profile not found: {profile_name}.",
             {"profile_id": paths.profile_id},
         )
-    if (
-        metadata.get("schema") != "doudou.profile.v2"
-        or metadata.get("runtime") != "camoufox-python"
-    ):
-        return migrate_chromium_profile(data_root, profile_name, metadata)
+    assert_supported_profile_metadata(metadata)
+    initialize_data_root(data_root)
     if metadata.get("profile_id") != paths.profile_id:
         raise DoudouError(
             "PROFILE_METADATA_MISMATCH",
@@ -112,64 +110,6 @@ def load_profile(
             {"path": str(paths.metadata)},
         )
     return metadata, paths
-
-
-def migrate_chromium_profile(
-    data_root: Path, profile_name: str, legacy_metadata: dict[str, Any]
-) -> tuple[dict[str, Any], ProfilePaths]:
-    paths = profile_paths(data_root, profile_name)
-    if legacy_metadata.get("schema") not in {
-        "doudou.profile.v1",
-        "douyin-message.profile.v1",
-    }:
-        raise DoudouError(
-            "PROFILE_RUNTIME_UNKNOWN",
-            "The existing Profile runtime cannot be identified for migration.",
-            {"path": str(paths.metadata), "schema": legacy_metadata.get("schema")},
-        )
-    stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
-    backup = paths.profile.with_name(f"{paths.profile_id}__chromium-backup-{stamp}")
-    if backup.exists():
-        raise DoudouError(
-            "PROFILE_BACKUP_EXISTS",
-            "The Chromium Profile backup target already exists.",
-            {"backup": str(backup)},
-        )
-    migration_path = (
-        paths.message / "migrations" / f"{stamp}__chromium-to-camoufox.json"
-    )
-    paths.message.mkdir(parents=True, exist_ok=True)
-    try:
-        os.replace(paths.profile, backup)
-        metadata, new_paths = create_profile(
-            data_root, profile_name, legacy_metadata.get("display_name")
-        )
-        atomic_write_json(
-            migration_path,
-            {
-                "schema": "doudou.profile-migration.v1",
-                "profile_id": paths.profile_id,
-                "migrated_at": utc_now(),
-                "source_runtime": "chromium-playwright",
-                "target_runtime": "camoufox-python",
-                "source_schema": legacy_metadata.get("schema"),
-                "backup_path": str(backup.relative_to(data_root)),
-                "new_profile_path": str(new_paths.profile.relative_to(data_root)),
-                "atomic_rename": "passed",
-                "message_directory_reused": str(paths.message.relative_to(data_root)),
-            },
-        )
-        return metadata, new_paths
-    except Exception as error:
-        if paths.profile.exists() and backup.exists():
-            shutil.rmtree(paths.profile)
-        if backup.exists():
-            os.replace(backup, paths.profile)
-        raise DoudouError(
-            "PROFILE_MIGRATION_FAILED",
-            "The Chromium Profile was restored after Camoufox migration failed.",
-            {"profile_id": paths.profile_id, "error_type": type(error).__name__},
-        ) from error
 
 
 def update_profile(
@@ -190,6 +130,8 @@ def list_profiles(data_root: Path) -> list[dict[str, Any]]:
             continue
         metadata = read_json(entry / "profile.json", optional=True)
         if metadata:
+            if not is_current_profile_metadata(metadata):
+                continue
             if entry.name != str(metadata.get("profile_id") or ""):
                 continue
             paths = stored_profile_paths(data_root, str(metadata["profile_id"]))

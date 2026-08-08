@@ -43,13 +43,12 @@ test("removes all managed Skills and DOUDOU_HOME while preserving project data",
   await installManagedSkill(first, managedOptions);
   await installManagedSkill(second, managedOptions);
   const cacheRoot = doudouCacheRoot(managedOptions);
-  const legacyRoot = path.join(managedOptions.home, ".cache", "doudou");
   const runtime = path.join(cacheRoot, "runtimes", "runtime", "bin");
   const browser = path.join(cacheRoot, "browsers", "browser.bin");
   const externalBrowser = path.join(root, "shared-camoufox", "browser.bin");
   const profile = path.join(root, "project", "profile", "work", "profile.json");
   const message = path.join(root, "project", "message", "profiles", "work", "messages.jsonl");
-  for (const filename of [path.join(runtime, "python"), path.join(legacyRoot, "runtimes", "current.json"), browser, externalBrowser, profile, message]) {
+  for (const filename of [path.join(runtime, "python"), browser, externalBrowser, profile, message]) {
     fs.mkdirSync(path.dirname(filename), { recursive: true });
     fs.writeFileSync(filename, filename, "utf8");
   }
@@ -67,12 +66,10 @@ test("removes all managed Skills and DOUDOU_HOME while preserving project data",
   assert.equal(fs.existsSync(first), false);
   assert.equal(fs.existsSync(second), false);
   assert.equal(fs.existsSync(cacheRoot), false);
-  assert.equal(fs.existsSync(legacyRoot), false);
   assert.equal(fs.readFileSync(externalBrowser, "utf8"), externalBrowser);
   assert.equal(fs.readFileSync(profile, "utf8"), profile);
   assert.equal(fs.readFileSync(message, "utf8"), message);
   assert.equal(result.browser_cache, "removed");
-  assert.equal(result.legacy_runtime.status, "removed");
   assert.equal(result.project_data, "preserved");
   assert.deepEqual(
     result.skills.filter((entry) => entry.status === "removed").map((entry) => entry.target).sort(),

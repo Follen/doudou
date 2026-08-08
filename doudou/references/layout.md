@@ -50,4 +50,4 @@ message/profiles/<profile>/
 
 用户级安装默认位于 `~/.doudou/`，可由 `DOUDOU_HOME` 覆盖：`runtimes/` 保存专用 Python/venv，`browsers/` 保存专用 Camoufox，`downloads/` 保存受控下载。它们不进入调用项目或 Skill 包。
 
-旧 Chromium Profile 不和 Camoufox 数据库合并。首次使用时整个目录原子改名为 `profile/<name>__chromium-backup-<UTC>/`，随后创建同名 Camoufox Profile；`message/profiles/<name>/` 保持不变。
+旧 `Profile/`、旧 Chromium Profile 和旧 identity 记录不受支持。CLI 返回 `LEGACY_UNSUPPORTED` 并保持数据原样；不迁移、不删除、不忽略，也不创建同名替代目录。

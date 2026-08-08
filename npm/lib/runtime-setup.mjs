@@ -5,7 +5,7 @@ import path from "node:path";
 import { spawn, spawnSync } from "node:child_process";
 
 import { controlledDownload, DownloadError } from "./controlled-download.mjs";
-import { doudouCacheRoot, legacyDoudouRoot } from "./python.mjs";
+import { doudouCacheRoot } from "./python.mjs";
 
 export class SetupError extends Error {
   constructor(code, message, details = {}, options = {}) {
@@ -204,25 +204,6 @@ function currentPointer(expected) {
   try { return JSON.parse(fs.readFileSync(expected.pointer, "utf8")); } catch { return null; }
 }
 
-function cleanupLegacyInstall(options, currentRoot) {
-  const legacy = legacyDoudouRoot(options);
-  if (path.resolve(legacy) === path.resolve(currentRoot) || !fs.existsSync(legacy)) {
-    return { status: "not_applicable", path: legacy };
-  }
-  const owned = fs.existsSync(path.join(legacy, "runtimes", "current.json"))
-    || fs.existsSync(path.join(legacy, "setup-state.json"));
-  if (!owned || fs.lstatSync(legacy).isSymbolicLink()) {
-    return { status: "preserved_unrecognized", path: legacy };
-  }
-  fs.rmSync(legacy, { recursive: true, force: true });
-  const result = { status: "removed", path: legacy, migrated_at: new Date().toISOString() };
-  atomicJson(path.join(currentRoot, "migrations", "legacy-cache-v1.json"), {
-    schema: "doudou.legacy-cache-migration.v1",
-    ...result,
-  });
-  return result;
-}
-
 function recoverInterruptedRuntime(expected) {
   const pointer = currentPointer(expected);
   if (pointer?.path === expected.directory && !fs.existsSync(expected.directory)) {
@@ -320,7 +301,7 @@ export async function ensureManagedRuntime(options) {
   const expected = expectedManagedRuntime({ ...options, platform, arch, env, home });
   const cache = doudouCacheRoot({ platform, env, home });
   if (!options.force && managedRuntimeReady({ ...options, platform, arch, env, home })) {
-    return { status: "ready", reused: true, runtime: expected.directory, runtime_id: expected.runtimeId, legacy_migration: cleanupLegacyInstall({ platform, env, home }, cache) };
+    return { status: "ready", reused: true, runtime: expected.directory, runtime_id: expected.runtimeId };
   }
   const lock = await acquireSetupLock(cache, options);
   let temporary;
@@ -387,7 +368,7 @@ export async function ensureManagedRuntime(options) {
     atomicJson(expected.pointer, { schema: "doudou.runtime-pointer.v2", runtime_id: expected.runtimeId, path: expected.directory, updated_at: new Date().toISOString() });
     if (replaced) fs.rmSync(replaced, { recursive: true, force: true });
     writeOwner(lock.paths, owner, { stage: "complete", completed_at: new Date().toISOString() }, options);
-    return { status: "installed", reused: false, runtime: expected.directory, runtime_id: expected.runtimeId, legacy_migration: cleanupLegacyInstall({ platform, env, home }, cache) };
+    return { status: "installed", reused: false, runtime: expected.directory, runtime_id: expected.runtimeId };
   } catch (error) {
     if (temporary) fs.rmSync(temporary, { recursive: true, force: true });
     const code = error.code || (error instanceof DownloadError ? error.code : "RUNTIME_SETUP_FAILED");
@@ -409,5 +390,4 @@ export const setupInternals = {
   browserCacheRoot,
   relocateVenv,
   recoverInterruptedRuntime,
-  cleanupLegacyInstall,
 };

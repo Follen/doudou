@@ -1,0 +1,31 @@
+schema: comet.native.v3
+minimum_runtime_version: 3
+revision: 7
+verification_protocol: legacy-v1
+name: polish-doudou-skill-cleanup-legacy
+language: zh-CN
+phase: archive
+brief: brief.md
+approval: confirmed
+approved_contract_hash: 8c83e000545a10609db1aced048c898abd640b83309f6728d49993ef2c44b3d3
+spec_changes:
+  - capability: doudou
+    operation: replace
+    source: specs/doudou/spec.md
+    base_hash: dcddeae7c2398edac3df709ee83b2b1fcb47a507d5421a65a45bd78ac83b0866
+  - capability: doudou-skill-orchestration
+    operation: create
+    source: specs/doudou-skill-orchestration/spec.md
+    base_hash: null
+  - capability: legacy-free-runtime
+    operation: create
+    source: specs/legacy-free-runtime/spec.md
+    base_hash: null
+verification_result: pass
+verification_report: verification.md
+implementation_scope: runtime/evidence/scopes/092f4d5381f85f40e2d968cd7cfa0031919426b93fa0362d5ba797361332d9d1.json
+verification_evidence: runtime/evidence/verifications/8e2cd313d28d21064972d52fcc5d884928000e67b23118d47327fe8144d1f675.json
+partial_allowance: null
+archived: true
+created_at: 2026-08-08
+run_id: aca4d6ec-b680-4f3f-a2a8-a6030a9376ba

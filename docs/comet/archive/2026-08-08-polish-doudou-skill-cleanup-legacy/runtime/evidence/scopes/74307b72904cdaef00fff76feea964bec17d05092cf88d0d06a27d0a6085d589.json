@@ -1,0 +1,408 @@
+{
+  "schema": "comet.native.implementation-scope.v2",
+  "contractHash": "e5403d92a64386e369e2bb16e78a099004f6791ee7f93a0fb389c55a89ede0e9",
+  "baselineProjectionRef": "runtime/evidence/snapshots/0e89954f5bbfb447fb06e437922750a2dcb2f3a3e81585384b7ab081d74cf5a5.json",
+  "baselineProjectionHash": "0e89954f5bbfb447fb06e437922750a2dcb2f3a3e81585384b7ab081d74cf5a5",
+  "currentProjectionRef": "runtime/evidence/snapshots/a2d275b6c9c69526115d0e4ef380401c63d18c15632dce10b414c61e53ea634e.json",
+  "currentProjectionHash": "a2d275b6c9c69526115d0e4ef380401c63d18c15632dce10b414c61e53ea634e",
+  "complete": true,
+  "declaredArtifacts": [
+    {
+      "path": ".gitignore",
+      "kind": "file"
+    },
+    {
+      "path": "docs/verification/tests",
+      "kind": "directory"
+    },
+    {
+      "path": "doudou",
+      "kind": "directory"
+    },
+    {
+      "path": "npm",
+      "kind": "directory"
+    }
+  ],
+  "changes": [
+    {
+      "path": "docs/verification/tests/test_architecture.py",
+      "kind": "modified",
+      "before": {
+        "hash": "8a56b25a8a1e92940a2ed474e26e85fd36c34fe2ffe988713287f5bdba7b6d62",
+        "size": 5911
+      },
+      "after": {
+        "hash": "bc7d715c6aa2b3435b21524fe9e7e439121b642d17fd881917460b2899ff2a61",
+        "size": 6233
+      },
+      "attributedTo": [
+        {
+          "path": "docs/verification/tests",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "docs/verification/tests/test_cli_doctor.py",
+      "kind": "modified",
+      "before": {
+        "hash": "628c08f6f3610ba670400693e5be99db201a0642bb99713b3edffea73abf22c6",
+        "size": 1920
+      },
+      "after": {
+        "hash": "c4871bb59b568ba13fc967e1a2e2200a5dc8208041c0189a63db1f57207dbbd7",
+        "size": 4023
+      },
+      "attributedTo": [
+        {
+          "path": "docs/verification/tests",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "docs/verification/tests/test_identity.py",
+      "kind": "modified",
+      "before": {
+        "hash": "c271b12be7ce3946745be50ea06720e59657d2d724e1f0d1fb1c53e5fa10074c",
+        "size": 10635
+      },
+      "after": {
+        "hash": "8f6eb921501c8a28d5912659382b6a1aae0526a282ff6482aaf53fc1b9cdd3a1",
+        "size": 9691
+      },
+      "attributedTo": [
+        {
+          "path": "docs/verification/tests",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "docs/verification/tests/test_profile.py",
+      "kind": "modified",
+      "before": {
+        "hash": "481395494178c3b8afa75dbcc960a3ddbf3815cea9d7294ea32e0eacac96958c",
+        "size": 5091
+      },
+      "after": {
+        "hash": "561735afbdca9dac2ff272fe632f54d49574239ada7ac1783bf003af1bdbe5d8",
+        "size": 8387
+      },
+      "attributedTo": [
+        {
+          "path": "docs/verification/tests",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/.gitignore",
+      "kind": "modified",
+      "before": {
+        "hash": "ef4a9428e189fe5e5729f5cd818ac3f49cc573f0e88891841d82b0d7605b3351",
+        "size": 175
+      },
+      "after": {
+        "hash": "e8e8ce4f691ce2b06fa95038a969c0d05e2e02a67cf51c441e6b1044719a8496",
+        "size": 102
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/SKILL.md",
+      "kind": "modified",
+      "before": {
+        "hash": "3d6897cac1aff155fe3110ece3b8bde1de5ad05251a965be13545e9da818cb61",
+        "size": 3686
+      },
+      "after": {
+        "hash": "92a11039ecea860a5346522b840759f6c86951264766a6647653b596f65adc7c",
+        "size": 3660
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/references/cli.md",
+      "kind": "modified",
+      "before": {
+        "hash": "c2f620791496f0082a495707d871fa3937b2fc560fc3349751b6eb1abe9b89e4",
+        "size": 4330
+      },
+      "after": {
+        "hash": "4fa5af4bad646047e963dc8b9e68040035a0f87c81aed45cb9faa9b6dc95c789",
+        "size": 4287
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/references/diagnostics.md",
+      "kind": "modified",
+      "before": {
+        "hash": "262373187622cf0072bb4b221443bba42b54d6acd711c228bcb1ae1abc7adfe3",
+        "size": 3778
+      },
+      "after": {
+        "hash": "4892ca7204ddaebf2ffd946caf0d15fb5e03b602fee94c85cd3a82f3e7e515fb",
+        "size": 3801
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/references/layout.md",
+      "kind": "modified",
+      "before": {
+        "hash": "5b5fc7a4e4bcea2d037c3c284ccdaf6ee7db7735214c2211950e7f52280071e8",
+        "size": 2047
+      },
+      "after": {
+        "hash": "2ddaab6c4e615fbf5fecd6f5f1aa2c4507151379a3142be40be95ab6260c014e",
+        "size": 2025
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/scripts/doudou/cli.py",
+      "kind": "modified",
+      "before": {
+        "hash": "b58ab4f1cdcc064ec097f0cd4faa34baf21395851d3ebedf6d0c4c57a790c723",
+        "size": 19298
+      },
+      "after": {
+        "hash": "9f7a4921036760d2d1b9b8ecd4690d1f8dcf5d22e9ca8d1f18c484adddcd7c52",
+        "size": 18773
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/scripts/doudou/runtime/paths.py",
+      "kind": "modified",
+      "before": {
+        "hash": "a1f270abcc1c66026319acbede04d21102a42d66c79d2abfd795260767d69e2f",
+        "size": 2624
+      },
+      "after": {
+        "hash": "697fb832d3e7116cf3b9f66d07038e3e8cb0d8f94a95baef3a155231aae845c4",
+        "size": 6363
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/scripts/doudou/runtime/profile.py",
+      "kind": "modified",
+      "before": {
+        "hash": "138a10d7e9c4d6ab555fa3b0d402b1d7f309dd88bb6c28369ce13ecf7883db55",
+        "size": 9494
+      },
+      "after": {
+        "hash": "0c7d60e30736a90c697d5d8296fce8b34e423269cd9abb8e7286732761d4dc9d",
+        "size": 7121
+      },
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "doudou/scripts/doudou/storage/identity_migration.py",
+      "kind": "removed",
+      "before": {
+        "hash": "6ba8e3e834dc0942ef33829e2e3fce3269e490c9c0f0a26aba1363a4b03cfd5b",
+        "size": 3058
+      },
+      "after": null,
+      "attributedTo": [
+        {
+          "path": "doudou",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "npm/bin/doudou.mjs",
+      "kind": "modified",
+      "before": {
+        "hash": "952f4e8884f46444c758e5d63b108126cf50f186c7bfd0ea336fdd8bbda5fcc4",
+        "size": 4209
+      },
+      "after": {
+        "hash": "afbc2d85b485aeea015f22d1d8da357cbc63cc68c232a35b95cdb062de40ef51",
+        "size": 4388
+      },
+      "attributedTo": [
+        {
+          "path": "npm",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "npm/lib/python.mjs",
+      "kind": "modified",
+      "before": {
+        "hash": "d56c717e623f858dd36396bf934e5781edcccfe56f8f69cc71367f9758244ec1",
+        "size": 1800
+      },
+      "after": {
+        "hash": "3e417d097a0b56682ac3823ee6aa6befb93932fc53df6bee204ae579956c6bd6",
+        "size": 2475
+      },
+      "attributedTo": [
+        {
+          "path": "npm",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "npm/lib/runtime-setup.mjs",
+      "kind": "modified",
+      "before": {
+        "hash": "16e59d7ef01c154bc7a5712e29c02999d2913c09431bc90d0cf8f16724fbb504",
+        "size": 21580
+      },
+      "after": {
+        "hash": "86d35c1ffcafa81f337eb0253774f94d9392179d046b60dc707e85031669bf22",
+        "size": 20575
+      },
+      "attributedTo": [
+        {
+          "path": "npm",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "npm/lib/uninstall.mjs",
+      "kind": "modified",
+      "before": {
+        "hash": "2ae89d495ea9fb8868e65bdc0cf91c78737f760308cf62fa8a9ffad42d27cd27",
+        "size": 11796
+      },
+      "after": {
+        "hash": "d53f15420af60eec108c30189a6610f98eeba0d93f61da9bb3f3a6f8ee6ca5cb",
+        "size": 11146
+      },
+      "attributedTo": [
+        {
+          "path": "npm",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "npm/skill-manifest.json",
+      "kind": "modified",
+      "before": {
+        "hash": "335175578bd13ece3e827ac592658899e58a742c20ddb610a96e79a196e8da62",
+        "size": 12126
+      },
+      "after": {
+        "hash": "2ab11e52aa64655e2337872de8a5586f1afff8bb258726405c3e42b0cfeed1b7",
+        "size": 11947
+      },
+      "attributedTo": [
+        {
+          "path": "npm",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "npm/test/python.test.mjs",
+      "kind": "modified",
+      "before": {
+        "hash": "6b52d7ff8bf05de2f7eb0e523aa91800ed16aecc85e12a549e4ea8bca8736a68",
+        "size": 4217
+      },
+      "after": {
+        "hash": "e70921da99dd8dea27aa3c4f70d6e9cbfd0a8c3d10126384846dd7c42aaf64c9",
+        "size": 5794
+      },
+      "attributedTo": [
+        {
+          "path": "npm",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "npm/test/runtime-setup.test.mjs",
+      "kind": "modified",
+      "before": {
+        "hash": "701a60062d8d0e51335af39be9738c113eb34cfea5fae179a513f810b89c9d3c",
+        "size": 8566
+      },
+      "after": {
+        "hash": "e457a9f25a6b9f75a64713bbc2eac202d755309bfb4af852771a4f38f9706f68",
+        "size": 7655
+      },
+      "attributedTo": [
+        {
+          "path": "npm",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "npm/test/uninstall.test.mjs",
+      "kind": "modified",
+      "before": {
+        "hash": "e5308822e5acf0b5321af77122f272d2168c4b9c2f433eb1338d759d142103c8",
+        "size": 6227
+      },
+      "after": {
+        "hash": "5d07450c63d45bd0fff21cabd9982542630569cf2c3b090dae0b8c4596d738ed",
+        "size": 5996
+      },
+      "attributedTo": [
+        {
+          "path": "npm",
+          "kind": "directory"
+        }
+      ]
+    }
+  ],
+  "unattributed": [],
+  "unresolvedScopes": [],
+  "noCodeReason": null,
+  "scopeHash": "74307b72904cdaef00fff76feea964bec17d05092cf88d0d06a27d0a6085d589"
+}

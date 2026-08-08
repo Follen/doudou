@@ -4,7 +4,7 @@ import os from "node:os";
 import path from "node:path";
 import test from "node:test";
 
-import { currentRuntime, doudouCacheRoot } from "../lib/python.mjs";
+import { assertCurrentRuntimeLayout, currentRuntime, doudouCacheRoot } from "../lib/python.mjs";
 import {
   expectedManagedRuntime,
   managedPython,
@@ -75,4 +75,43 @@ test("DOUDOU_HOME defaults to the user home and supports an override", () => {
   assert.equal(doudouCacheRoot({ platform: "linux", env: {}, home: "/home/user" }), path.join("/home/user", ".doudou"));
   assert.equal(doudouCacheRoot({ platform: "linux", env: { DOUDOU_HOME: "/managed/doudou" }, home: "/home/user" }), path.resolve("/managed/doudou"));
   assert.equal(doudouCacheRoot({ platform: "linux", env: { DOUDOU_HOME: "custom" }, home: "/home/user" }), path.resolve("/home/user", "custom"));
+});
+
+test("recognized unsupported runtime roots fail without migration or deletion", (t) => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "doudou-unsupported-runtime-"));
+  t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  const unsupported = path.join(root, "cache", "doudou");
+  const marker = path.join(unsupported, "runtimes", "current.json");
+  fs.mkdirSync(path.dirname(marker), { recursive: true });
+  fs.writeFileSync(marker, "{}", "utf8");
+  const options = {
+    platform: "linux",
+    home: path.join(root, "home"),
+    env: {
+      DOUDOU_HOME: path.join(root, "current"),
+      XDG_CACHE_HOME: path.join(root, "cache"),
+    },
+  };
+  assert.throws(
+    () => assertCurrentRuntimeLayout(options),
+    (error) => error.code === "LEGACY_UNSUPPORTED",
+  );
+  assert.equal(fs.existsSync(marker), true);
+});
+
+test("unrecognized directories and the configured current root are not legacy", (t) => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "doudou-current-runtime-"));
+  t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  const cache = path.join(root, "cache");
+  fs.mkdirSync(path.join(cache, "doudou"), { recursive: true });
+  assert.doesNotThrow(() => assertCurrentRuntimeLayout({
+    platform: "linux",
+    home: root,
+    env: { DOUDOU_HOME: path.join(root, "current"), XDG_CACHE_HOME: cache },
+  }));
+  assert.doesNotThrow(() => assertCurrentRuntimeLayout({
+    platform: "linux",
+    home: root,
+    env: { DOUDOU_HOME: path.join(cache, "doudou"), XDG_CACHE_HOME: cache },
+  }));
 });

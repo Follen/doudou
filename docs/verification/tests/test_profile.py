@@ -7,6 +7,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from doudou.common.core import atomic_write_json
+from doudou.common.errors import DoudouError
 from doudou.runtime.browser.session import BrowserSession
 from doudou.runtime.profile import create_profile, list_profiles, load_profile
 
@@ -80,7 +81,24 @@ class ProfileTests(unittest.TestCase):
             self.assertIsNotNone(listed["recent_write_at"])
             datetime.fromisoformat(listed["recent_write_at"].replace("Z", "+00:00")).astimezone(timezone.utc)
 
-    def test_legacy_chromium_profile_is_atomically_backed_up(self) -> None:
+    def test_legacy_profile_root_is_rejected_without_mutation(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            legacy = root / "Profile"
+            legacy.mkdir()
+            marker = legacy / "marker.txt"
+            marker.write_text("legacy", encoding="utf-8")
+
+            with self.assertRaises(DoudouError) as context:
+                create_profile(root, "work")
+
+            self.assertEqual(context.exception.code, "LEGACY_UNSUPPORTED")
+            self.assertEqual(context.exception.details["legacy_format"], "profile_root")
+            self.assertEqual(marker.read_text(encoding="utf-8"), "legacy")
+            self.assertNotIn("profile", {item.name for item in root.iterdir()})
+            self.assertFalse((root / "message").exists())
+
+    def test_legacy_chromium_profile_is_rejected_without_mutation(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             legacy = root / "profile" / "work"
@@ -95,21 +113,76 @@ class ProfileTests(unittest.TestCase):
                 ),
                 encoding="utf-8",
             )
-            metadata, _paths = load_profile(root, "work")
-            self.assertEqual(metadata["runtime"], "camoufox-python")
-            backups = list((root / "profile").glob("work__chromium-backup-*"))
-            self.assertEqual(len(backups), 1)
-            self.assertTrue((backups[0] / "browser-data" / "Default").is_dir())
+            original = (legacy / "profile.json").read_bytes()
+
+            with self.assertRaises(DoudouError) as context:
+                load_profile(root, "work")
+
+            self.assertEqual(context.exception.code, "LEGACY_UNSUPPORTED")
             self.assertEqual(
-                [item["profile_id"] for item in list_profiles(root)], ["work"]
+                context.exception.details["legacy_format"], "browser_profile"
             )
-            self.assertTrue(
-                any(
-                    (root / "message" / "profiles" / "work" / "migrations").glob(
-                        "*.json"
-                    )
-                )
+            self.assertEqual((legacy / "profile.json").read_bytes(), original)
+            self.assertTrue((legacy / "browser-data" / "Default").is_dir())
+            self.assertEqual(list((root / "profile").glob("*__chromium-backup-*")), [])
+            self.assertFalse((root / "message").exists())
+
+    def test_legacy_backup_coexists_without_blocking_current_profiles(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            current, _paths = create_profile(root, "current")
+            backup = root / "profile" / "old__chromium-backup-20260101T000000Z"
+            backup.mkdir()
+            (backup / "profile.json").write_text(
+                json.dumps(
+                    {
+                        "schema": "doudou.profile.v1",
+                        "profile_id": backup.name,
+                    }
+                ),
+                encoding="utf-8",
             )
+
+            self.assertEqual(
+                [profile["profile_id"] for profile in list_profiles(root)],
+                [current["profile_id"]],
+            )
+            self.assertEqual(
+                load_profile(root, "current")[0]["schema"], "doudou.profile.v2"
+            )
+
+            with self.assertRaises(DoudouError) as context:
+                load_profile(root, backup.name)
+            self.assertEqual(context.exception.code, "LEGACY_UNSUPPORTED")
+            self.assertTrue((backup / "profile.json").exists())
+
+    def test_create_does_not_overwrite_selected_legacy_profile(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            legacy = root / "profile" / "work"
+            legacy.mkdir(parents=True)
+            metadata = legacy / "profile.json"
+            metadata.write_text(
+                json.dumps({"schema": "doudou.profile.v1", "profile_id": "work"}),
+                encoding="utf-8",
+            )
+            original = metadata.read_bytes()
+
+            with self.assertRaises(DoudouError) as context:
+                create_profile(root, "work")
+            self.assertEqual(context.exception.code, "LEGACY_UNSUPPORTED")
+            self.assertEqual(metadata.read_bytes(), original)
+
+    def test_current_v1_identity_config_is_not_treated_as_legacy(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            _metadata, paths = create_profile(root, "work")
+
+            self.assertEqual(
+                json.loads(paths.camoufox_config.read_text(encoding="utf-8"))["schema"],
+                "doudou.camoufox-config.v1",
+            )
+            self.assertEqual(load_profile(root, "work")[0]["schema"], "doudou.profile.v2")
 
 
 if __name__ == "__main__":

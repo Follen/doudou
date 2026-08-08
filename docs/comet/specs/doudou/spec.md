@@ -2,21 +2,21 @@
 
 ## 交付与运行时边界
 
-系统必须以 `doudou` 名称交付标准 Codex Skill 和确定性 Python CLI。用户可通过 npm package `@follenfang/doudou` 安装并运行 `doudou ...`，也可直接运行 `python <skill>/scripts/doudou.py ...`；npm/Node.js 只能作为 Skill 安装、环境 ensure 和 Python 进程启动层。分发版生产浏览器运行时必须直接使用 Python `camoufox==0.5.4` 和官方浏览器 `152.0.4-beta.28`，不得把 Node.js Playwright Chromium 或 `camoufox-reverse-mcp` 作为生产浏览器入口或 fallback。
+系统必须以 `doudou` 名称交付标准 Codex Skill 和确定性 Python CLI。用户只能通过 npm package `@follenfang/doudou` 安装并运行 `doudou ...`，或通过 `npx --yes @follenfang/doudou ...` 临时运行；npm/Node.js 负责 Skill 安装、受管环境 ensure 和 Python 进程启动。`scripts/doudou.py` 只作为 npm launcher 的内部 Python bootstrap，不是公开安装方式或兼容入口。分发版生产浏览器运行时必须直接使用 Python `camoufox==0.5.4` 和官方浏览器 `152.0.4-beta.28`，不得把 Node.js Playwright Chromium 或 `camoufox-reverse-mcp` 作为生产浏览器入口或 fallback。
 
-CLI 必须从调用者当前项目运行。默认 data root 必须是当前工作目录；只有显式 `--data-root` 或 `DOUDOU_HOME` 才能覆盖。用户登录态必须写入 `profile/<profile>/`，生产记录必须写入 `message/profiles/<profile>/`，不得写入已安装 Skill 目录或用户级依赖缓存。
+CLI 必须从调用者当前项目运行。默认 data root 必须是当前工作目录，只有显式 `--data-root` 可以覆盖业务数据根；`DOUDOU_HOME` 只覆盖用户级受管 runtime 根，不改变 Profile 与消息目录。用户登录态必须写入 `profile/<profile>/`，生产记录必须写入 `message/profiles/<profile>/`，不得写入已安装 Skill 目录或用户级依赖缓存。
 
-仅存在旧顶层 `Profile/` 时必须一次性迁移为 `profile/`；新旧根目录同时存在且不是同一目录时必须停止并报告冲突。新版只接受 `doudou.*` schema、`doudou` 锁 owner、Python doudou CLI 和 `DOUDOU_HOME`。其他产品 schema 或 owner 必须返回包含文件路径和旧格式说明的稳定错误，不得覆盖、删除或静默接受。
+新版只接受项目 `profile/`、`message/profiles/`、当前 `doudou.*` schema、`doudou` 锁 owner、npm 启动链路和 `DOUDOU_HOME`。发现旧顶层 `Profile/`、被命令明确选择的旧 Chromium Profile、被当前命令读取的旧 identity 数据、带 Doudou 标记的旧用户缓存、其他产品 schema 或 owner 时，必须在启动浏览器或改写数据前返回 `LEGACY_UNSUPPORTED`，包含脱敏路径槽位、旧格式类别和当前支持路径；不得迁移、删除、覆盖或创建同名替代目录。历史 Chromium backup 目录可与当前 Profile 共存，但不参与 Profile 枚举或默认选择。
 
 `setup` 必须在操作系统用户级 doudou 缓存中建立共享的锁定 Python 运行环境并安装官方 Camoufox 浏览器，供该用户的多个调用项目复用。Skill 目录与业务项目不得包含虚拟环境、第三方依赖副本或浏览器二进制。共享运行环境只能包含可重新安装的程序依赖和浏览器，不得包含 Profile、Cookie、Storage、消息、媒体、会话索引、发送回执、诊断或业务项目标识。
 
 运行环境升级必须先在同一用户缓存下的临时新目录完成依赖安装、浏览器校验和真实 doctor 启动验证，再原子切换当前环境指针。只有新环境验证通过、切换成功且旧环境没有有效进程占用时，才能删除旧环境。安装、验证或切换失败时必须保留并继续使用旧环境，不得留下指向不完整新环境的当前指针。
 
-setup 必须为环境升级保存脱敏 rollback 记录，包含旧/新运行时版本、阶段、切换状态、验证结论和恢复结果。旧 Chromium Profile 自动备份必须保存项目内迁移记录，包含原路径、备份路径、时间、原子改名结论和新 Profile 创建状态。rollback 不属于消息发送语义；发送链路继续只保存业务 request、response、receipt 和 verification。
+setup 必须为当前环境升级保存脱敏 rollback 记录，包含旧/新运行时版本、阶段、切换状态、验证结论和恢复结果。rollback 不属于消息发送语义；发送链路继续只保存业务 request、response、receipt 和 verification。
 
 Skill 安装目录只包含发布清单声明的代码、指令、参考文档、测试和锁文件，不得包含用户 Profile、消息、发送回执、诊断、`analyze/`、虚拟环境、依赖缓存或浏览器二进制。`camoufox-reverse-mcp`、Babel、mitmproxy、WABT 和研发 Skill 只属于维护者工具链，不是普通用户依赖。
 
-可交付 Skill 必须包含 Python 源码、带哈希的锁定依赖、Camoufox/官方浏览器版本清单以及 setup/doctor bootstrap，不得包含开发者机器生成的 venv。npm 包必须使用白名单携带该 Skill 树、启动器和版本 manifest，不携带 Python packages 或浏览器。CLI bootstrap 必须发现合格系统 Python，定位或创建用户级共享 venv，然后用该 venv 的解释器重新执行真实命令。
+可交付 Skill 必须包含 Python 源码、带哈希的锁定依赖、Camoufox/官方浏览器版本清单以及 setup/doctor bootstrap，不得包含开发者机器生成的 venv。npm 包必须使用白名单携带该 Skill 树、启动器和版本 manifest，不携带 Python packages 或浏览器。npm bootstrap 必须下载并校验 runtime manifest 锁定的专用 Python，在用户级目录创建版本化受管 venv，再用该 venv 的解释器执行内部 Python bootstrap；不得探测或选择系统 Python。
 
 `docs/comet/archive/`、`analyze/`、旧发送回执、旧诊断和其他历史证据必须保持创建时的内容、名称和哈希，不参与 Python 迁移的机械改写。运行时残留检查必须把不可变历史路径列为明确排除项。
 
@@ -38,13 +38,13 @@ Skill 安装目录只包含发布清单声明的代码、指令、参考文档�
 
 ## 环境检测与安装
 
-doctor 必须以机器可读 NDJSON 检测 Python `>=3.10,<4.0`、包管理器、精确 `camoufox==0.5.4`、官方浏览器 `152.0.4-beta.28`、浏览器文件完整性、Windows 隐藏有头或 Linux Xvfb 虚拟有头启动能力、交互登录条件以及用户项目目录写权限。结果必须报告实际解释器、实际包版本、浏览器版本和安装来源。
+doctor 必须以机器可读 NDJSON 检测受管 Python `3.12.13`、精确 `camoufox==0.5.4`、官方浏览器 `152.0.4-beta.28`、浏览器文件完整性、Windows 真无头或 Linux Xvfb 虚拟有头启动能力、交互登录条件以及用户项目目录写权限。结果必须报告实际受管解释器、实际包版本、浏览器版本和安装来源，不探测或选择系统 Python。
 
 setup 必须使用 Skill 的锁定 Python 依赖定义在用户级 doudou 缓存建立或更新隔离运行环境，并通过 Camoufox 官方安装机制取得精确浏览器版本；不得依赖用户全局恰好存在的同名包或任意 Firefox/Chromium。安装完成后必须重新 doctor，成功后才能恢复原浏览器任务。
 
 锁定依赖必须可重复安装并校验包哈希。首次 setup 必须按“创建临时 venv → 安装锁定依赖 → 下载并校验官方浏览器 → 验证平台默认后台有头模式 → 切换当前环境”的顺序执行；任一步失败时不得把不完整环境标记为当前。
 
-Node.js 和 npm 可作为 `@follenfang/doudou` 的安装/启动环境，但不是 Python CLI 直接运行的必需环境。Playwright-managed Chromium 不得作为生产浏览器或兼容入口。若仅维护者调研命令需要额外工具，doctor 必须将其放在单独的研发检查中，不得让普通业务任务失败。
+Node.js 和 npm 是 `@follenfang/doudou` 的公开安装与启动环境；Python CLI 不作为独立公开入口。Playwright-managed Chromium 不得作为生产浏览器或兼容入口。若仅维护者调研命令需要额外工具，doctor 必须将其放在单独的研发检查中，不得让普通业务任务失败。
 
 ### 场景：首次使用缺少环境
 
@@ -70,7 +70,7 @@ Profile 元数据必须记录运行时类型、锁定 Camoufox 包版本、官�
 
 同一 Profile 同时只允许一个有效 owner。锁必须校验 PID、进程启动身份、data root、Profile 和命令；只有用户明确确认后才能终止完全匹配的 owner，PID 被复用或身份不匹配时不得终止。
 
-现有 Chromium `browser-data/` 不能由 Camoufox 直接启动、原地转换或合并。第一次遇到同名旧 Profile 时，CLI 必须在启动浏览器前把整个旧 Profile 原子改名为 `profile/<name>__chromium-backup-<UTC时间>/`，再以原 Profile 名创建全新 Camoufox Profile 并要求有头重新登录。既有 `message/profiles/<name>/` 必须继续沿用。备份目标已存在、原子改名失败或旧运行时无法明确识别时必须停止并报告，不得覆盖、删除、合并或留下部分迁移结果。
+现有 Chromium `browser-data/` 不能由 Camoufox 启动、原地转换、备份迁移或合并。发现旧 Chromium Profile 时必须返回 `LEGACY_UNSUPPORTED`，保持 Profile 与消息目录原样，并要求用户使用当前命令显式创建新的不同名称 Profile。
 
 ### 场景：同 Profile 交互与后台复用
 
@@ -82,11 +82,7 @@ Profile 元数据必须记录运行时类型、锁定 Camoufox 包版本、官�
 
 ### 场景：旧 Chromium Profile
 
-给定 `profile/<name>/` 标记为旧 Chromium 运行时，当 Camoufox 命令运行时，必须在启动浏览器前把整个目录原子备份为带 UTC 时间的同级目录，以原名称创建 Camoufox Profile，并返回需要重新登录的结果；不得把旧 Cookie/Storage 当作 Camoufox 已登录状态。后续消息读取和发送记录仍使用 `message/profiles/<name>/`。
-
-### 场景：旧 Profile 备份失败
-
-给定备份名称冲突、目录被占用、权限不足或无法证明旧运行时类型，当迁移开始时，CLI 必须在创建新 Profile 前停止并报告原路径、拟备份路径和稳定错误码；原 Profile 与消息目录保持原样。
+给定 `profile/<name>/` 标记为旧 Chromium 运行时，当任意 Profile 或业务命令运行时，必须在启动浏览器和改写数据前返回 `LEGACY_UNSUPPORTED`；不得备份、迁移、删除、合并或以原名称创建 Camoufox Profile，原 Profile 与消息目录保持原样。
 
 ## Profile Broker 生命周期
 
@@ -296,11 +292,9 @@ Python 包必须保持以下依赖方向：`models` 与 `storage` 不依赖浏�
 
 给定后续新增一种聊天系统事件、视频互动或页面选择器，当实现进入正式代码时，数据结构、协议解析、读取编排、页面动作、写回执和聊天/视频组合分别位于对应包；`cli.py` 只增加命令映射，broker 只增加可调用 handler，不把业务算法复制到入口或 runtime。
 
-正式运行时迁移必须采用研究先行门槛：先在 Git 忽略的 `analyze/` 使用隔离 Camoufox 环境与实验 Profile，验证同一 browser-data 的有头登录/人工验证、后台有头 broker IM 初始化和持久复用，记录脱敏指纹、Cookie/Storage 哈希变化、协议拉取，以及经用户确认的真实页面发送结果和受控 DOM 操作计数。该门槛未通过时不得删除现有 Node.js 生产 CLI；研究失败必须形成明确结论和下一实验。
+正式运行时只保留 npm launcher、专用 Python、当前 Python CLI 与 Camoufox 主链路。活动源码、CLI help、当前 references、README 和当前测试不得保留旧 Node 生产 CLI、旧缓存迁移、旧 Profile 迁移或 identity migration 的实现、别名、隐藏开关和专用 fixture；普通当前 schema 名称中的 `.v1` 不因版本后缀被视为 legacy。
 
-研究门槛必须新增独立实验与结论：聊天系统事件结构化、消息图片读取、用户名解析与视频列表、SSR 视频详情、封面下载、根评论与回复分页、聊天点赞、视频发表评论、回复评论、评论点赞，以及两个 Profile 的锁和目录隔离。`analyze/video-comments/` 的历史 Node 研究文件与输出不得覆盖；Python/Camoufox 验证写入新的隔离子目录并引用既有 3,402 条记录作为对照。
-
-进入 Archive 前必须对正式 Python CLI 与正式 Camoufox Profile 执行全量真实业务回归并全部通过。回归至少覆盖登录/扫码/短信或滑块接管、后台隐藏恢复、同一 broker 连续命令、群聊与私聊、今日全部消息、进群系统事件、未知字段 inventory、消息图片下载解密、抖音号身份解析、视频列表、视频详情、评论与回复分页，以及在用户授权测试目标上的文字发送、引用回复、@、图片、聊天点赞、视频评论、回复评论和评论点赞。每项必须有脱敏的目标 ID、命令、退出状态、业务回执和只读复查证据；失败、跳过、人工未完成或结果不明确的项目均不得记为通过或进入 Archive。
+进入 Archive 前必须按 implementation scope 对正式 Python CLI 与正式 Camoufox Profile 执行风险相称的真实业务回归。读取、Profile、runtime、Skill 或存储变更至少验证 doctor、Profile 选择、live 会话索引、群聊与私聊协议读取，以及非空重复采集的 added/duplicates/conflicts；涉及消息图片、身份、视频或评论读取时增加对应真实读取。只有 implementation scope 修改页面写入、plan/confirm、网络回执或写后复查时，才必须在用户授权测试目标上执行受影响的文字发送、引用回复、@、图片、聊天点赞、视频评论、回复评论或评论点赞。每项必须有脱敏目标槽位、命令、退出状态、协议/业务结果和必要复查证据；失败、人工未完成或结果不明确的必测项不得记为通过或进入 Archive。
 
 ### 场景：登录失效后恢复原任务
 

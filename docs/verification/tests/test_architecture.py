@@ -46,6 +46,52 @@ class ArchitectureTests(unittest.TestCase):
             )
         )
 
+    def test_skill_examples_use_current_cli_contract(self) -> None:
+        markdown_files = [SKILL / "SKILL.md", *(SKILL / "references").glob("*.md")]
+        executable_lines = [
+            line.strip()
+            for filename in markdown_files
+            for line in filename.read_text(encoding="utf-8").splitlines()
+            if line.strip().startswith(("<cli>", "doudou ", "npx ", "node "))
+        ]
+        self.assertFalse(
+            any("bin/doudou.js" in line for line in executable_lines),
+            executable_lines,
+        )
+        self.assertFalse(
+            any("--conversations" in line for line in executable_lines),
+            executable_lines,
+        )
+        self.assertFalse(
+            any("identity migrate" in line for line in executable_lines),
+            executable_lines,
+        )
+        self.assertTrue(
+            any(
+                "messages collect" in line and "--conversation" in line
+                for line in executable_lines
+            )
+        )
+
+        diagnostics_text = (SKILL / "references" / "diagnostics.md").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn(
+            "conversations refresh --profile <name> --kind all --force",
+            diagnostics_text,
+        )
+        current_docs = "\n".join(
+            filename.read_text(encoding="utf-8") for filename in markdown_files
+        )
+        self.assertNotIn("chromium-backup", current_docs)
+
+        skill_text = (SKILL / "SKILL.md").read_text(encoding="utf-8")
+        self.assertIn("references/diagnostics.md", skill_text)
+        openai_yaml = (SKILL / "agents" / "openai.yaml").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("$doudou", openai_yaml)
+
     def test_package_root_contains_only_entrypoints(self) -> None:
         root_modules = sorted(path.name for path in SOURCE.glob("*.py"))
         self.assertEqual(root_modules, ["__init__.py", "cli.py"])

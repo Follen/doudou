@@ -11,7 +11,11 @@ from doudou.ui.components.base import (
     component_probe,
     require_target,
 )
-from doudou.ui.components.chat import ChatComposerComponent, message_semantics_match
+from doudou.ui.components.chat import (
+    ChatComposerComponent,
+    ConversationListComponent,
+    message_semantics_match,
+)
 from doudou.ui.components.video import (
     CommentItemComponent,
     VideoCommentComposerComponent,
@@ -611,6 +615,198 @@ class ComponentGeometryTests(unittest.IsolatedAsyncioTestCase):
             context.exception.details["geometry_reason"],
             "comment_editor_not_focused_after_action",
         )
+
+
+class FakeConversationRow(FakeElement):
+    def __init__(
+        self,
+        label: str,
+        initial_box: dict[str, float],
+        *,
+        after_scroll_box: dict[str, float] | None = None,
+    ) -> None:
+        super().__init__(initial_box)
+        self.label = label
+        self.after_scroll_box = after_scroll_box
+        self.selected = False
+        self.scroll_calls = 0
+
+    async def count(self) -> int:
+        return 1
+
+    def nth(self, index: int) -> FakeConversationRow:
+        if index != 0:
+            raise IndexError(index)
+        return self
+
+    def get_by_text(self, text: str, exact: bool = True) -> FakeLocator:
+        matched = (self.label == text) if exact else (text in self.label)
+        return FakeLocator(FakeElement(self.box)) if matched else FakeLocator()
+
+    async def scroll_into_view_if_needed(self, timeout: int = 5_000) -> None:
+        self.scroll_calls += 1
+        if self.after_scroll_box is not None:
+            self.box = self.after_scroll_box
+
+    async def get_attribute(self, name: str) -> str:
+        if name == "class" and self.selected:
+            return "conversationConversationItemcurConversation"
+        return "conversationConversationItem"
+
+    async def evaluate(self, _expression: str) -> dict[str, Any]:
+        return {"receives_events": True, "blocker": None}
+
+
+class FakeConversationContainer(FakeElement):
+    def __init__(
+        self,
+        container_box: dict[str, float],
+        rows_by_scroll: dict[int, list[FakeConversationRow]],
+        *,
+        initial_scroll_top: int = 0,
+    ) -> None:
+        super().__init__(container_box)
+        self.rows_by_scroll = rows_by_scroll
+        self.scroll_top = initial_scroll_top
+        self.reset_calls = 0
+
+    def locator(self, _selector: str) -> FakeLocator:
+        return FakeLocator(*self.rows_by_scroll.get(self.scroll_top, []))
+
+    async def evaluate(self, _expression: str, reset: bool = False) -> dict[str, Any]:
+        before = self.scroll_top
+        if reset:
+            self.reset_calls += 1
+            self.scroll_top = 0
+        else:
+            next_offsets = sorted(
+                offset for offset in self.rows_by_scroll if offset > self.scroll_top
+            )
+            if next_offsets:
+                self.scroll_top = next_offsets[0]
+        return {
+            "resolved": True,
+            "before": before,
+            "after": self.scroll_top,
+            "client_height": 400,
+            "scroll_height": 800,
+            "moved": self.scroll_top != before,
+        }
+
+
+class FakeChatPage(FakePage):
+    def __init__(
+        self,
+        containers_per_lookup: list[list[FakeConversationContainer]],
+    ) -> None:
+        super().__init__()
+        self.containers_per_lookup = containers_per_lookup
+        self.lookup_index = 0
+        self.body = FakeElement(box(0, 0, 1280, 800))
+        self.mouse.click = self._click
+
+    async def _click(self, x: float, y: float) -> None:
+        self.mouse.clicks.append((x, y))
+        active = self.containers_per_lookup[
+            min(self.lookup_index - 1, len(self.containers_per_lookup) - 1)
+        ]
+        for container in active:
+            for row in container.rows_by_scroll.get(container.scroll_top, []):
+                if row.box is None:
+                    continue
+                if (
+                    row.box["x"] <= x <= row.box["x"] + row.box["width"]
+                    and row.box["y"] <= y <= row.box["y"] + row.box["height"]
+                ):
+                    row.selected = True
+
+    def locator(self, selector: str) -> Any:
+        if selector == "body":
+            return self.body
+        index = min(self.lookup_index, len(self.containers_per_lookup) - 1)
+        self.lookup_index += 1
+        return FakeLocator(*self.containers_per_lookup[index])
+
+
+class ConversationListComponentTests(unittest.IsolatedAsyncioTestCase):
+    async def test_conversation_list_waits_for_unmounted_container_then_resets_scroll(
+        self,
+    ) -> None:
+        target_row = FakeConversationRow("测试群聊", box(20, 120, 280, 60))
+        old_row = FakeConversationRow("旧会话", box(20, 120, 280, 60))
+        container = FakeConversationContainer(
+            box(0, 100, 320, 400),
+            {0: [target_row], 240: [old_row]},
+            initial_scroll_top=240,
+        )
+        page = FakeChatPage([[], [], [container]])
+
+        operations = await ConversationListComponent(page).open("测试群聊")
+
+        self.assertEqual(operations, 1)
+        self.assertTrue(target_row.selected)
+        self.assertEqual(container.reset_calls, 1)
+        self.assertEqual(page.mouse.clicks, [(160.0, 150.0)])
+
+    async def test_conversation_list_fails_immediately_on_non_empty_container_drift(
+        self,
+    ) -> None:
+        first = FakeConversationContainer(box(0, 100, 320, 400), {0: []})
+        second = FakeConversationContainer(box(340, 100, 320, 400), {0: []})
+        page = FakeChatPage([[first, second]])
+
+        with self.assertRaises(DoudouError) as context:
+            await ConversationListComponent(page).open("测试群聊")
+
+        self.assertEqual(context.exception.code, "PAGE_ADAPTER_DRIFTED")
+        self.assertEqual(context.exception.details["candidate_count"], 2)
+        self.assertEqual(context.exception.details["visible_count"], 2)
+        self.assertEqual(page.waits, [])
+
+    async def test_conversation_list_scrolls_partially_clipped_row_into_scope(
+        self,
+    ) -> None:
+        clipped_row = FakeConversationRow(
+            "测试私聊",
+            box(20, 470, 280, 60),
+            after_scroll_box=box(20, 440, 280, 60),
+        )
+        container = FakeConversationContainer(
+            box(0, 100, 320, 400),
+            {0: [clipped_row]},
+        )
+        page = FakeChatPage([[container]])
+
+        operations = await ConversationListComponent(page).open("测试私聊")
+
+        self.assertEqual(operations, 1)
+        self.assertEqual(clipped_row.scroll_calls, 1)
+        self.assertTrue(clipped_row.selected)
+        self.assertEqual(page.mouse.clicks, [(160.0, 470.0)])
+
+    async def test_conversation_list_rejects_row_outside_scope_after_scroll(
+        self,
+    ) -> None:
+        outside_row = FakeConversationRow(
+            "越界会话",
+            box(20, 520, 280, 60),
+            after_scroll_box=box(20, 520, 280, 60),
+        )
+        container = FakeConversationContainer(
+            box(0, 100, 320, 400),
+            {0: [outside_row]},
+        )
+        page = FakeChatPage([[container]])
+
+        with self.assertRaises(DoudouError) as context:
+            await ConversationListComponent(page).open("越界会话")
+
+        self.assertEqual(context.exception.code, "PAGE_ADAPTER_DRIFTED")
+        self.assertEqual(
+            context.exception.details["geometry_reason"], "outside_local_scope"
+        )
+        self.assertEqual(page.mouse.clicks, [])
+
 
 if __name__ == "__main__":
     unittest.main()

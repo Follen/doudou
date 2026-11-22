@@ -125,10 +125,8 @@ class ConversationListComponent:
         deadline = asyncio.get_running_loop().time() + 15
         target = None
         diagnostics = {"candidate_count": 0, "visible_count": 0}
-        initial_container = await self._container()
-        scroll = await self._scroll_local_viewport(initial_container, reset=True)
-        if scroll.get("resolved") and scroll.get("moved"):
-            await self.page.wait_for_timeout(250)
+        scroll: dict[str, Any] = {"resolved": False, "moved": False}
+        reset_done = False
         while asyncio.get_running_loop().time() < deadline:
             try:
                 container, items, total_items = await self._items()
@@ -147,6 +145,12 @@ class ConversationListComponent:
                 }
                 await self.page.wait_for_timeout(250)
                 continue
+            if not reset_done:
+                reset_done = True
+                scroll = await self._scroll_local_viewport(container, reset=True)
+                if scroll.get("resolved") and scroll.get("moved"):
+                    await self.page.wait_for_timeout(250)
+                    continue
             matches: list[Any] = []
             for item in items:
                 labels = await visible_candidates(
@@ -161,6 +165,7 @@ class ConversationListComponent:
                 "scroll": scroll,
             }
             if len(matches) == 1:
+                await matches[0].scroll_into_view_if_needed(timeout=5_000)
                 target = await require_target(
                     matches[0],
                     component=self.name,

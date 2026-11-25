@@ -19,78 +19,50 @@
 
 ## 项目简介
 
-Doudou 是可分发的 Codex Skill 与 Python CLI。npm 包只负责安装、升级和启动 Skill；业务运行时由 Python、Camoufox 和项目本地数据目录组成。
+Doudou 是基于 Rust + 原生 Chrome CDP 的抖音 CLI 与自解释 Agent Skill，使用 7-crate Cargo workspace 构建。
 
-- 读取能力通过页面上下文中的结构化协议完成。
-- 写入能力通过受控页面组件执行，并使用网络回执和只读协议复查。
-- npm 包和 Skill 均不得包含 Profile、消息记录、Cookie、登录态、浏览器、venv 或研发抓包数据。
+- 读取能力通过页面上下文中的结构化 HTTP / Protobuf 协议完成。
+- 写入能力通过受控页面组件执行，采用两阶段单次写计划（`ConfirmationRequired -> Executing -> Sent | Failed | Unknown`），并使用网络回执与只读协议复查。
+- CDP 传输层严禁启用 `Runtime.enable` 或 `Console.enable`，脚本评估在隔离世界（`Page.createIsolatedWorld`）完成。
+- 仓库与 Skill 均不得包含 Profile、消息记录、Cookie、登录态、浏览器数据或研发抓包数据。
 
-## Tag 与版本标准
+## 版本与 CI 门禁
 
-- 正式版本遵循 SemVer，Git tag 固定使用 `vX.Y.Z`，例如 `v0.0.1`。
-- tag 去掉前缀 `v` 后，必须与以下位置完全一致：
-  - `package.json` 的 `version`
-  - `package-lock.json` 的根版本
-  - `doudou/scripts/doudou/__init__.py` 的 `__version__`
-  - `npm/skill-manifest.json` 的 `package_version` 和 `skill_version`
-- 发布前运行 `npm run build:manifest`，再运行全部本地门禁。
-- tag 只能从干净的 `main` 创建，并且该提交必须已经推送到 `origin/main`。
-- 使用 annotated tag：`git tag -a vX.Y.Z -m "Doudou X.Y.Z"`，然后执行 `git push origin vX.Y.Z`。
-- 未发布版本的失败 tag 可以在修复后删除并重建；npm 已发布的版本和对应 tag 不得移动、覆盖或复用。
-- `latest` 只指向最新正式版；预发布版本使用独立 dist-tag，不得覆盖 `latest`。
-
-## CI 与发布
-
-发布 workflow 位于 `.github/workflows/publish-npm.yml`，只在推送 `v*` tag 时触发。
-
-1. `check:release` 校验 tag、npm package 和 Python Skill 版本一致。
-2. Windows 与 Linux matrix 分别运行 Node 测试、Skill manifest 校验、包内容与凭据检查、全局安装/npx/禁用 lifecycle scripts 安装回归、Python 测试和 Ruff。
-3. 两个平台全部通过后，publish job 才能运行。
-4. npm 发布使用 Trusted Publishing/OIDC，只授予 `contents: read` 和 `id-token: write`，仓库不得保存长期 `NPM_TOKEN`。
-5. 发布完成后必须确认 GitHub Actions 全绿、npm `latest` 指向目标版本，并从 registry 实际执行一次全局安装和 npx。
-
-本地发布门禁：
+- 正式版本遵循 SemVer，workspace 版本定义在根 `Cargo.toml` 的 `[workspace.package].version`，Git tag 固定使用 `vX.Y.Z`。
+- CI workflow 位于 `.github/workflows/ci.yml`，在 `ubuntu-latest`、`windows-latest`、`macos-latest` 上执行格式化检查、Clippy、全量单测/集成测试、release 编译及 CLI 自省冒烟检查。
+- 每次提交或发布前必须通过本地门禁：
 
 ```powershell
-npm test
-npm run build:manifest
-npm run check:manifest
-npm run test:pack
-npm run test:install
-npm run check:release -- vX.Y.Z
-$env:PYTHONPATH = "doudou\scripts"
-python -m pytest docs\verification\tests -q
-python -m ruff check doudou\scripts docs\verification\tests
-python "$HOME\.codex\skills\.system\skill-creator\scripts\quick_validate.py" doudou
+cargo fmt --all -- --check
+cargo clippy --workspace --all-targets -- -D warnings
+cargo test --workspace
+cargo build --release -p doudou-cli
 ```
 
 ## 目录位置
 
-仓库内可发布内容：
+仓库内受版本控制内容：
 
-- `doudou/`：最终 Skill；包含 `SKILL.md`、Agent 元数据、参考文档、Python CLI 和锁定依赖。
-- `npm/`：npm 安装器、启动器、Skill manifest、Node 测试及发布检查脚本。
-- `docs/verification/tests/`：Python 自动化测试。
-- `docs/comet/`：Comet change、归档和验证记录。
-- `.github/workflows/`：GitHub Actions workflow。
-- `package.json`、`package-lock.json`：npm 包元数据和锁文件。
-- `README.md`：用户安装、使用、升级、诊断与发布说明。
+- `Cargo.toml`、`Cargo.lock`、`crates/`：7-crate Rust workspace（`doudou-core`、`doudou-protocol`、`doudou-storage`、`doudou-cdp`、`doudou-ui`、`doudou-runtime`、`doudou-cli`）。
+- `doudou/`：精简后的自解释 Agent Skill（`SKILL.md` 与 `agents/openai.yaml`）；命令、参数、事件与错误码由 `doudou cli search` / `doudou cli schema` 实时输出。
+- `PORTING.md`：7-crate 架构说明与原 Python 版本模块/测试映射。
+- `docs/`：协议字段参考、Comet 规格归档与历史验证记录。
+- `.github/workflows/`：GitHub Actions Rust CI workflow。
+- `README.md`、`AGENTS.md`：双语使用说明与仓库约定。
 
-仓库内本地数据与研发目录：
+本地运行数据与研发目录（默认由 `.gitignore` 忽略，不得进入 Git 远端）：
 
-- `profile/<profile>/`：项目本地 Profile、浏览器数据、指纹配置、锁和 broker 状态。
-- `message/profiles/<profile>/`：按 Profile 隔离的会话、消息、媒体、计划、回执、内容采集和诊断记录。
+- `target/`：Cargo 构建产物。
+- `message/profiles/<profile>/`：当前项目目录内按 Profile 隔离的会话、消息、媒体、计划、回执、内容采集和诊断记录。
 - `analyze/`：研发抓包、协议实验和中间分析材料。
-- `.comet/`：本地 Comet workflow 状态。
-- `.agents/`、`.codex/`：项目本地 Agent/Codex 配置。
+- `.agents/`、`.codex/`、`.worktree/`：本地 Agent 配置、验证 skill 与 Git worktree。
 
-`profile/`、`message/`、`analyze/`、缓存和本地工具状态不得进入 npm 包或 Git 远端。
+用户级系统数据位置（标准 OS AppData，可用 `--home` 或 `DOUDOU_HOME` 覆盖）：
 
-用户级安装位置：
+- Windows：`%LOCALAPPDATA%\doudou\`
+- macOS：`~/Library/Application Support/doudou/`
+- Linux：`${XDG_DATA_HOME:-~/.local/share}/doudou/`
+- Profile 与浏览器数据：`<doudou_home>/profiles/<profile>/`
+- 全局 Broker 注册表：`<doudou_home>/brokers/`
 
-- Skill：默认 `~/.agents/skills/doudou/`；可用 `--skill-dir` 或 `DOUDOU_AGENT_HOME` 覆盖。
-- 用户级安装根：`${DOUDOU_HOME:-~/.doudou}/`，Windows 与 Linux 一致。
-- 运行时与 venv：`<DOUDOU_HOME>/runtimes/`。
-- Camoufox 浏览器：`<DOUDOU_HOME>/browsers/`，不复用系统或其他工具缓存。
-
-业务命令的数据根默认是执行命令时的当前项目目录。Skill 可以安装在用户目录，但 Profile 和消息记录始终创建在调用项目的 `profile/` 与 `message/` 下。
+业务命令的数据根默认是执行命令时的当前项目目录（可用 `--data-root` 覆盖），Profile 与浏览器状态始终保存在 `<doudou_home>/profiles/<profile>/`。

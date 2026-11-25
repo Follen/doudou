@@ -8,109 +8,90 @@
 
 ## English
 
-Doudou is a distributable Agent Skill and Python CLI for Douyin. It uses a project-local Camoufox browser profile to read conversations, messages, images, system events, user videos, and comments via structured page protocols, and performs confirmed write actions through controlled UI interactions in a persistent broker session.
+Doudou is a Rust CLI and self-describing Agent Skill for Douyin. It drives your local Chrome / Chromium / Edge browser over native WebSocket CDP (without `Runtime.enable`) to read conversations, messages, images, system events, user videos, and comments via structured page protocols, and performs two-phase confirmed write actions through controlled UI interactions in a serialized per-profile broker.
 
-### Installation
+### Requirements & Installation
 
-Requires Node.js `>=18.18`. The npm package ships only the launcher and Skill source. Setup downloads and checksum-verifies a dedicated Python runtime without using your system Python, and never bundles Python, virtual environments, dependencies, or browser binaries inside the npm package.
+- Rust toolchain `>= 1.85` (Rust edition 2024)
+- Local Chrome, Chromium, or Edge installed on the machine (auto-discovered, or override via `DOUDOU_CHROME_PATH`)
 
-```powershell
-npm install -g @follenfang/doudou
-doudou doctor
+Install the CLI binary from source:
+
+```bash
+cargo install --path crates/doudou-cli
 ```
 
-On the first run, `doudou` atomically installs the matching Skill into `~/.agents/skills/doudou/`. When a business command runs without a ready runtime, setup runs automatically: it downloads and verifies Python `3.12.13`, creates a versioned virtual environment under `${DOUDOU_HOME:-~/.doudou}`, installs locked dependencies, downloads and verifies Camoufox `152.0.4-beta.28`, and then continues the original command. You can also run setup ahead of time:
+Or build without installing:
 
-```powershell
-doudou setup
+```bash
+cargo build --release -p doudou-cli
+```
+
+To install the Agent Skill, copy `doudou/` (`doudou/SKILL.md` and `doudou/agents/openai.yaml`) to `~/.agents/skills/doudou/`.
+
+### Quick Start
+
+```bash
+# 1. Verify Chrome discovery, writable roots, and optional headless CDP probe
+doudou doctor --launch-probe
+
+# 2. Create a profile in OS AppData and sign in interactively
 doudou profile create --profile work
-doudou profile login --profile work
+doudou session login --profile work
+
+# 3. Discover any command, flag, event, or error code directly from the binary
+doudou cli search "send"
+doudou cli schema protocol send
 ```
 
-To run without a global install, use `npx`. Even when npm lifecycle scripts are disabled, the first command installs the Skill automatically:
+### Storage Boundary
 
-```powershell
-npx --yes @follenfang/doudou -- doctor
-npx --yes @follenfang/doudou -- profile list
-```
+Profiles, browser state, and broker metadata live in standard OS AppData (overridable via `--home` or `DOUDOU_HOME`):
 
-Override the Skill directory per call with `--skill-dir <absolute-path>`, or set `DOUDOU_AGENT_HOME` to change the default location to `<home>/skills/doudou`. `DOUDOU_HOME` overrides only user-level Python, virtual environments, browser assets, and install state. Profiles and collected records always stay inside the current working project:
+- **Windows**: `%LOCALAPPDATA%\doudou\profiles\<name>\`
+- **macOS**: `~/Library/Application Support/doudou/profiles/<name>/`
+- **Linux**: `${XDG_DATA_HOME:-~/.local/share}/doudou/profiles/<name>/`
+
+Collected conversations, messages, images, videos, comments, write plans, and receipts always stay inside the current working directory (overridable via `--data-root`):
 
 ```text
-profile/<profile>/
-message/profiles/<profile>/
+message/profiles/<name>/
 ```
 
-### How it works
+### How It Works
 
-- Each project and profile runs one serialized Python broker that exits after 20 minutes of idle time.
-- Windows defaults to true headless mode (`windows_headless`). When login, SMS, slider, or passkey verification appears, the same broker closes the background context, opens a visible headed window on the same profile for human takeover, and returns to headless mode after completion. Linux uses Xvfb virtual headed mode.
-- The first business command initializes the page and IM capture internally without a separate user warmup step.
-- Conversations, messages, images, videos, and comments are read from structured HTTP and Protobuf responses in the page context.
-- Text messages, replies, images, chat likes, and video comments, replies, and likes are submitted through one normal page action. Chat text, chat replies, and video comments submit via editor `Enter`, verified by network receipts and read-only protocol rechecks.
-- Image downloads verify AES-GCM decryption first, then validate the ciphertext or plaintext MD5, plaintext byte length, and actual file format.
-- Video lists are captured from protocol responses. Pagination uses controlled scrolling in a versioned Profile component instead of reusing expired signed URLs.
-- Page read protocols classify failures by HTTP status, `Content-Type`, `Retry-After`, response size or hash, and JSON business status. Comment pagination persists checkpoints per page so runs can resume from a failed cursor.
-- Endpoint paths and field aliases live in versioned protocol adapters, and selectors live in versioned UI adapters. Every write control is checked for stable semantics, local component structure, unique visible and enabled state, and geometry bounds before any click. Ambiguous or drifted controls return `PAGE_ADAPTER_DRIFTED` without guessing clicks. Schema changes return `PROTOCOL_SCHEMA_DRIFTED` instead of masquerading as login expiry.
-- Every write command generates a preview plan first. Execution requires explicit confirmation with `--confirm --plan-id <id>`.
-- Batch sends reuse one broker after a single confirmation, run strictly in series with at least 5 seconds between attempts, and mark remaining items `skipped` after the first failure.
+- **Self-describing CLI**: `doudou cli search <query>` and `doudou cli schema [command]` introspect the live `clap` command tree directly — no external markdown CLI reference to drift out of sync.
+- **Stealth CDP transport**: Never enables `Runtime.enable` or `Console.enable`; evaluates scripts in an isolated world (`Page.createIsolatedWorld`), launches without `--enable-automation`, and strips `HeadlessChrome` user-agent leaks.
+- **Per-profile single-flight broker**: Each profile runs one loopback TCP JSON-line broker (16 MiB frame limit, constant-time auth token, idle auto-exit) shared across working directories. When login or verification appears, the broker switches the same profile to a visible headed Chrome window for human takeover and returns to headless mode afterward.
+- **Protocol-first reads**: Conversations, stranger message requests, messages, images (AES-256-GCM decrypted + MD5 verified), user identities (`/aweme/v1/web/search/sug/`), user video lists, and checkpointed comment/reply trees are captured from structured HTTP/Protobuf responses.
+- **Two-phase write safety**: Every write command (`chat`/`protocol send`, `reply`, `send-batch`, `like`, `video comment`, `reply`, `like`) first generates a preview plan and executes once with `--confirm --plan-id <id>`. The strict `ConfirmationRequired -> Executing -> Sent | Failed | Unknown` state machine and RAII execution guards prevent crash-retry duplicate sends (`PLAN_ALREADY_USED`). On `WRITE_RESULT_UNKNOWN`, never auto-retry — run a read-only check first.
+- **Drift-safe UI adapters**: Controls are verified for semantics, local component structure, visibility, enabled state, and geometry/occlusion before clicking; ambiguous or drifted controls fail closed with `PAGE_ADAPTER_DRIFTED`.
 
-### Common commands
+### Common Commands
 
-```powershell
+```bash
 doudou conversations refresh --profile work --kind all
 doudou messages collect --profile work --conversation "<conversation-name-or-id>"
-doudou protocol send --profile work --recipient "<conversation-name-or-id>" --text "Hello"
-doudou protocol send --profile work --confirm --plan-id <id>
-doudou protocol send-batch --profile work --conversation-ids <ID1,ID2> --text "Hello"
+doudou chat send --profile work --recipient "<conversation-name-or-id>" --text "Hello"
+doudou chat send --profile work --confirm --plan-id <plan-id>
+doudou chat batch --profile work --conversation-ids <ID1,ID2> --text "Hello"
+doudou chat like --profile work --conversation "<conversation-name-or-id>" --message <msg-id>
+doudou identity resolve --profile work --douyin-id Rurutia.wow
 doudou videos collect --profile work --douyin-id Rurutia.wow
-doudou video collect --profile work --sec-uid <sec_uid> --aweme-id <video-id>
+doudou video collect --profile work --sec-uid <sec_uid> --aweme-id <aweme-id>
+doudou page-doctor --profile work --conversation "<conversation-name-or-id>"
 ```
 
-See [`doudou/SKILL.md`](doudou/SKILL.md) for full agent orchestration rules, [`doudou/references/cli.md`](doudou/references/cli.md) for CLI parameters, and [`doudou/references/layout.md`](doudou/references/layout.md) for storage layout.
+See [`doudou/SKILL.md`](doudou/SKILL.md) for the agent orchestration rules and [`PORTING.md`](PORTING.md) for the 7-crate workspace architecture and legacy Python → Rust mapping.
 
-### Upgrade and uninstall
+### Development Verification
 
-```powershell
-doudou update --check
-doudou update
-doudou uninstall
+```bash
+cargo fmt --all -- --check
+cargo clippy --workspace --all-targets -- -D warnings
+cargo test --workspace
+cargo build --release -p doudou-cli
 ```
-
-`doudou update` upgrades an existing global npm installation and atomically updates the Skill. If the runtime manifest has not changed, it reuses the active runtime. If the manifest changed, it validates the new runtime side-by-side before switching. In `npx` mode, `update` reports version status without creating a global install.
-
-`doudou uninstall` stops managed brokers, removes all npm-managed Skill installations and `${DOUDOU_HOME:-~/.doudou}`, and removes the npm package itself. Project `profile/` and `message/` directories are preserved. Because npm 7+ does not run uninstall lifecycle scripts, running `npm uninstall` directly leaves those runtime files on disk.
-
-### Troubleshooting
-
-- `SKILL_INSTALL_FAILED`: the target Skill directory contains unrecognized files. Pass a different `--skill-dir` or inspect the directory first.
-- `DEPENDENCY_INSTALL_FAILED`: locked dependency installation failed. The next `setup` builds a fresh staging runtime instead of reusing a partial virtual environment.
-- `BROWSER_DOWNLOAD_STALLED`: browser download received no new bytes for 90 seconds. Re-running `setup` resumes from a valid `.part` file.
-- `BROWSER_DOWNLOAD_CHECKSUM_MISMATCH`: downloaded browser asset failed SHA-256 verification and was not activated.
-- `RUNTIME_SETUP_FAILED`: run `doudou doctor` to inspect setup ownership, partial downloads, caches, and the suggested repair command.
-- Login, SMS, slider, or passkey challenges: run `doudou profile login --profile <name>` in your local desktop terminal so the broker opens a visible browser window on the same profile for takeover.
-
-### Release
-
-GitHub Actions publishes to npm only when a `v*` tag is pushed. The tag without the `v` prefix must match `package.json`, `package-lock.json`, `doudou/scripts/doudou/__init__.py`, and `npm/skill-manifest.json`. Publishing uses GitHub OIDC Trusted Publishing bound to `Follen/doudou` and `.github/workflows/publish-npm.yml` with provenance enabled and no long-lived `NPM_TOKEN`.
-
-```powershell
-git tag -a vX.Y.Z -m "Doudou X.Y.Z"
-git push origin vX.Y.Z
-```
-
-### Development verification
-
-```powershell
-npm test
-npm run check:manifest
-npm run test:pack
-$env:PYTHONPATH = "doudou\scripts"
-python -m pytest docs\verification\tests -q
-python -m ruff check doudou\scripts docs\verification\tests
-```
-
-The published tarball contains the npm launcher and full Skill source, and excludes virtual environments, Python packages, browser binaries, profiles, messages, and `analyze/` data.
 
 ---
 
@@ -118,106 +99,87 @@ The published tarball contains the npm launcher and full Skill source, and exclu
 
 ## 中文
 
-Doudou 是可分发的 Agent Skill 与 Python CLI，用项目本地 Camoufox Profile 通过结构化页面协议读取抖音聊天、图片、系统事件、用户视频和评论，并通过常驻浏览器执行经确认的受控页面写操作。
+Doudou 是基于 Rust + 原生 Chrome CDP 的抖音 CLI 与自解释 Agent Skill。通过本机 Chrome / Chromium / Edge（原生 WebSocket CDP，禁止 `Runtime.enable`）读取抖音群聊、私聊、陌生人消息请求、图片、系统事件、用户视频与全量评论，并通过串行单飞行 broker 执行经确认的受控页面写操作。
 
-### 安装
+### 环境要求与安装
 
-只要求 Node.js `>=18.18`。npm 包只携带启动器和 Skill 源码；setup 自行下载校验专用 Python，不使用用户系统 Python，也不把 Python、venv、依赖或浏览器打进 npm 包。
+- Rust 工具链 `>= 1.85`（Rust edition 2024）
+- 本机已安装 Chrome、Chromium 或 Edge（自动探测，也可用 `DOUDOU_CHROME_PATH` 指定）
 
-```powershell
-npm install -g @follenfang/doudou
-doudou doctor
+从源码安装 `doudou` 命令：
+
+```bash
+cargo install --path crates/doudou-cli
 ```
 
-`doudou` 首次运行会把版本匹配的 Skill 原子安装到 `~/.agents/skills/doudou/`。首次业务命令发现运行时缺失时，会自动执行 setup：下载校验专用 Python `3.12.13`，在 `${DOUDOU_HOME:-~/.doudou}` 创建版本化 venv、安装锁定依赖、受控下载并验证专用 Camoufox `152.0.4-beta.28`，然后继续原命令。也可以提前执行：
+或仅编译 release 二进制：
 
-```powershell
-doudou setup
+```bash
+cargo build --release -p doudou-cli
+```
+
+如需安装 Agent Skill，将仓库中的 `doudou/` 目录（含 `SKILL.md` 和 `agents/openai.yaml`）复制到 `~/.agents/skills/doudou/` 即可。
+
+### 快速开始
+
+```bash
+# 1. 检查本机 Chrome 探测、目录权限及无头 CDP 探针
+doudou doctor --launch-probe
+
+# 2. 在系统标准 AppData 创建 Profile 并扫码登录
 doudou profile create --profile work
-doudou profile login --profile work
+doudou session login --profile work
+
+# 3. 直接向 CLI 检索命令、参数、事件和错误码（无需翻文档）
+doudou cli search "send"
+doudou cli schema protocol send
 ```
 
-不希望全局安装时可使用 `npx`；即使 npm lifecycle scripts 被禁用，首次命令仍会补齐 Skill：
+### 数据与目录边界
 
-```powershell
-npx --yes @follenfang/doudou -- doctor
-npx --yes @follenfang/doudou -- profile list
-```
+Profile、Chrome 用户数据与 broker 状态存放在系统标准 AppData 目录（可用 `--home` 或 `DOUDOU_HOME` 覆盖）：
 
-Skill 目录可用 `--skill-dir <完整路径>` 临时覆盖，或用 `DOUDOU_AGENT_HOME` 把默认位置改为 `<home>/skills/doudou`。`DOUDOU_HOME` 只覆盖用户级 Python、venv、浏览器和安装状态的位置；Profile 与业务记录始终留在运行命令时的当前项目：
+- **Windows**：`%LOCALAPPDATA%\doudou\profiles\<name>\`
+- **macOS**：`~/Library/Application Support/doudou/profiles/<name>/`
+- **Linux**：`${XDG_DATA_HOME:-~/.local/share}/doudou/profiles/<name>/`
+
+采集到的会话、消息、解密图片、视频、评论、写计划与回执始终写入当前工作目录（可用 `--data-root` 覆盖）：
 
 ```text
-profile/<profile>/
-message/profiles/<profile>/
+message/profiles/<name>/
 ```
 
-### 工作方式
+### 核心机制
 
-- 每个项目和 Profile 只有一个 Python broker，串行执行命令，空闲 20 分钟自动退出。
-- Windows 默认真无头（`windows_headless`）；登录、短信、滑块或 Passkey 等人工认证出现时，同一 broker 关闭后台 context，切换同一 Profile 到可见有头窗口供人工接管，完成后恢复真无头。Linux 保留 Xvfb 虚拟有头。
-- 首条业务命令内部初始化页面与 IM 捕获，没有用户侧单独预热流程。
-- 会话、消息、图片、视频和评论读取使用页面上下文中的结构化 HTTP 与 Protobuf 协议。
-- 文字、引用回复、图片、聊天点赞、视频评论/回复/点赞通过一次正常页面动作提交；聊天文字/引用和视频评论/回复使用编辑器 `Enter`，由网络回执验证写结果，并由只读协议补充复查。
-- 图片下载先校验 AES-GCM 解密，再按平台字段口径校验加密体或明文 MD5、明文大小与实际文件格式。
-- 视频列表从协议响应读取；翻页由版本化 Profile 组件的受控滚动触发，不复用过期签名 URL。
-- 页面读协议统一按 HTTP 状态、Content-Type、Retry-After、响应长度或哈希和 JSON 业务状态分类；评论分页逐页保存检查点，可从失败游标恢复。
-- 接口路径与字段别名集中在版本化 Protocol Adapter，页面 selector 集中在版本化 UI Adapter。写控件依次校验稳定语义、局部组件结构、唯一可见与启用状态以及几何边界；不唯一或漂移时在点击前返回 `PAGE_ADAPTER_DRIFTED`，不猜测点击。接口结构变化返回 `PROTOCOL_SCHEMA_DRIFTED`，不伪装成登录失效。
-- 写操作先生成预览计划，经明确确认后使用 `--confirm --plan-id <id>` 执行。
-- 批量发送一次确认后复用同一 broker，严格串行，相邻尝试至少间隔 5 秒；首个失败后其余项目标记为 `skipped`，不会继续写入。
+- **自解释 CLI**：`doudou cli search <query>` 与 `doudou cli schema [command]` 直接从运行时的 `clap` 命令树实时生成帮助和 JSON Schema，单一事实源不漂移。
+- **隐身 CDP 传输**：运行时强制禁止 `Runtime.enable` 与 `Console.enable`，通过 `Page.createIsolatedWorld` 隔离执行脚本，启动不带 `--enable-automation`，并剥离 `HeadlessChrome` UA 特征。
+- **单飞行本机 Broker**：每个 Profile 维护一个 loopback TCP JSON-line broker（16 MiB 帧上限、常时间 token 校验、空闲自动退出），可跨项目目录复用；遇到登录、短信、滑块或 Passkey 验证时切换同一 Profile 到可见有头窗口人工接管，完成后恢复无头模式。
+- **协议优先读取**：会话列表、陌生人消息请求、消息、图片（AES-256-GCM 解密 + MD5 校验）、抖音号解析（`/aweme/v1/web/search/sug/`）、作者视频列表及带断点的全量评论/子回复均通过结构化 HTTP/Protobuf 响应读取。
+- **两阶段写安全**：所有写命令先生成一次性预览计划，经人工确认后带 `--confirm --plan-id <id>` 执行一次。严格单次状态机（`ConfirmationRequired -> Executing -> Sent | Failed | Unknown`）与 RAII 守卫确保崩溃或重试不会二次外发（`PLAN_ALREADY_USED`）；出现 `WRITE_RESULT_UNKNOWN` 时必须先只读复查，严禁自动重试。
+- **防漂移页面组件**：每次写点击前校验稳定语义、组件结构、唯一可见启用状态与几何/遮挡边界，异常时直接返回 `PAGE_ADAPTER_DRIFTED`，不猜测点击。
 
 ### 常用命令
 
-```powershell
+```bash
 doudou conversations refresh --profile work --kind all
 doudou messages collect --profile work --conversation "<会话名称或ID>"
-doudou protocol send --profile work --recipient "<会话名称或ID>" --text "你好"
-doudou protocol send --profile work --confirm --plan-id <id>
-doudou protocol send-batch --profile work --conversation-ids <ID1,ID2> --text "你好"
+doudou chat send --profile work --recipient "<会话名称或ID>" --text "你好"
+doudou chat send --profile work --confirm --plan-id <plan-id>
+doudou chat batch --profile work --conversation-ids <ID1,ID2> --text "你好"
+doudou chat like --profile work --conversation "<会话名称或ID>" --message <msg-id>
+doudou identity resolve --profile work --douyin-id Rurutia.wow
 doudou videos collect --profile work --douyin-id Rurutia.wow
 doudou video collect --profile work --sec-uid <sec_uid> --aweme-id <视频ID>
+doudou page-doctor --profile work --conversation "<会话名称或ID>"
 ```
 
-完整 Agent 编排见 [`doudou/SKILL.md`](doudou/SKILL.md)，命令参数见 [`doudou/references/cli.md`](doudou/references/cli.md)，存储结构见 [`doudou/references/layout.md`](doudou/references/layout.md)。
-
-### 升级与卸载
-
-```powershell
-doudou update --check
-doudou update
-doudou uninstall
-```
-
-`doudou update` 只升级已有全局 npm 安装并原子更新 Skill；runtime manifest 没变化时复用当前 runtime，变化时并排验证新 runtime 后切换。`npx` 模式只报告版本状态，不创建全局安装。
-
-`doudou uninstall` 会停止受管 broker，删除全部 npm 管理的 Skill、整个 `${DOUDOU_HOME:-~/.doudou}`，再删除 npm 包自身。项目中的 `profile/`、`message/` 会保留。npm 7+ 不执行卸载 lifecycle，直接使用 `npm uninstall` 不会清理这些运行文件。
-
-### 故障诊断
-
-- `SKILL_INSTALL_FAILED`：目标 Skill 目录存在未知内容；换用 `--skill-dir`，或先人工核对该目录。
-- `DEPENDENCY_INSTALL_FAILED`：锁定依赖安装失败；再次 setup 会创建新的临时 runtime，不复用半安装 venv。
-- `BROWSER_DOWNLOAD_STALLED`：浏览器下载 90 秒无新字节；网络恢复后再次 setup 会续传有效 `.part`。
-- `BROWSER_DOWNLOAD_CHECKSUM_MISMATCH`：浏览器资产 SHA-256 哈希不符，损坏文件不会激活。
-- `RUNTIME_SETUP_FAILED`：运行 `doudou doctor` 查看 setup owner、下载 partial、缓存和可执行修复命令。
-- 登录、短信、滑块或 Passkey：在本机桌面终端运行 `doudou profile login --profile <name>`，由同一 broker 关闭后台 context，再用同一 Profile 显示有头浏览器供人工接管。
-
-### 发布
-
-GitHub Actions 只在 `v*` tag 推送时发布。tag 去掉 `v` 后必须与 `package.json`、`package-lock.json`、`doudou/scripts/doudou/__init__.py` 和 `npm/skill-manifest.json` 版本完全一致。发布通过绑定 `Follen/doudou` 与 `.github/workflows/publish-npm.yml` 的 GitHub OIDC Trusted Publishing 完成（公开仓库自动携带 provenance，不使用长期 `NPM_TOKEN`）。
-
-```powershell
-git tag -a vX.Y.Z -m "Doudou X.Y.Z"
-git push origin vX.Y.Z
-```
+Agent 编排约束见 [`doudou/SKILL.md`](doudou/SKILL.md)，7-crate 架构与原 Python 版本映射见 [`PORTING.md`](PORTING.md)。
 
 ### 开发验证
 
-```powershell
-npm test
-npm run check:manifest
-npm run test:pack
-$env:PYTHONPATH = "doudou\scripts"
-python -m pytest docs\verification\tests -q
-python -m ruff check doudou\scripts docs\verification\tests
+```bash
+cargo fmt --all -- --check
+cargo clippy --workspace --all-targets -- -D warnings
+cargo test --workspace
+cargo build --release -p doudou-cli
 ```
-
-发布 tarball 包含 npm 启动器和完整 Skill 源码，但不包含 venv、Python packages、浏览器二进制、Profile、消息或 `analyze/` 数据。

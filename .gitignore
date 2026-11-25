@@ -1,26 +1,20 @@
-# Only the documentation and deliverable Skill trees are versioned.
+# Default-deny: only source crates, docs, workflows, and deliverable Skill files are versioned.
 *
 # Local Git worktrees belong under .worktree/<name>.
 .worktree/
 !.gitignore
 !AGENTS.md
 !README.md
-!package.json
-!package-lock.json
-!.comet/
-!.comet/**
-!npm/
-!npm/**
-!.github/
-!.github/**
-!docs/
-!docs/**
-docs/**/__pycache__/
-docs/**/*.py[cod]
-!doudou/
-!doudou/**
+!PORTING.md
 !Cargo.toml
 !Cargo.lock
-!PORTING.md
+!.comet/
+!.comet/**
+!.github/
+!.github/**
 !crates/
 !crates/**
+!docs/
+!docs/**
+!doudou/
+!doudou/**

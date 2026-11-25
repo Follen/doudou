@@ -19,3 +19,8 @@ docs/**/__pycache__/
 docs/**/*.py[cod]
 !doudou/
 !doudou/**
+!Cargo.toml
+!Cargo.lock
+!PORTING.md
+!crates/
+!crates/**

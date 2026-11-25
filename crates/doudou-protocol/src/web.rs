@@ -17,7 +17,17 @@ pub fn first_url(value: Option<&Value>) -> Option<String> {
     }
 }
 
+fn non_empty_str(value: Option<&Value>) -> Option<&str> {
+    value
+        .and_then(Value::as_str)
+        .map(str::trim)
+        .filter(|s| !s.is_empty())
+}
+
 /// Normalize a web user object if it carries at least one identifier.
+///
+/// Supports standard Douyin user records (`unique_id`/`sec_uid`/`uid`) as well as
+/// `/aweme/v1/web/search/sug/` rich-suggestion objects (`extra_info.rich_sug_*`).
 pub fn identity_from(value: &Map<String, Value>) -> Option<Value> {
     let has_unique = value
         .get("unique_id")
@@ -30,11 +40,46 @@ pub fn identity_from(value: &Map<String, Value>) -> Option<Value> {
     let has_uid = value
         .get("uid")
         .is_some_and(|v| !v.is_null() && v.as_str() != Some(""));
-    if !has_unique && !has_sec && !has_uid {
+    if has_unique || has_sec || has_uid {
+        return Some(normalize_identity(
+            Some(&Value::Object(value.clone())),
+            "web-protocol",
+        ));
+    }
+
+    // Extract structured identity from `/aweme/v1/web/search/sug/` items (`extra_info.rich_sug_*`).
+    let extra = value
+        .get("extra_info")
+        .and_then(Value::as_object)
+        .unwrap_or(value);
+    let sec_uid = non_empty_str(extra.get("rich_sug_sec_uid"));
+    let uid = non_empty_str(extra.get("rich_sug_user_id"));
+    if sec_uid.is_none() && uid.is_none() {
         return None;
     }
+    let unique_id = non_empty_str(extra.get("rich_sug_short_id")).or_else(|| {
+        if value.contains_key("extra_info") {
+            non_empty_str(value.get("content"))
+        } else {
+            None
+        }
+    });
+    let nickname = non_empty_str(extra.get("rich_sug_nickname"));
+    let mut synthesized = Map::new();
+    if let Some(v) = unique_id {
+        synthesized.insert("unique_id".to_owned(), json!(v));
+    }
+    if let Some(v) = sec_uid {
+        synthesized.insert("sec_uid".to_owned(), json!(v));
+    }
+    if let Some(v) = uid {
+        synthesized.insert("uid".to_owned(), json!(v));
+    }
+    if let Some(v) = nickname {
+        synthesized.insert("nickname".to_owned(), json!(v));
+    }
     Some(normalize_identity(
-        Some(&Value::Object(value.clone())),
+        Some(&Value::Object(synthesized)),
         "web-protocol",
     ))
 }

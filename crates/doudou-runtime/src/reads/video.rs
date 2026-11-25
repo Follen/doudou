@@ -193,6 +193,18 @@ fn extract_identity_candidates(captured_values: &[Value]) -> Vec<Value> {
     candidates.into_values().collect()
 }
 
+fn is_search_verify_check(value: &Map<String, Value>) -> bool {
+    value
+        .get("search_nil_info")
+        .and_then(Value::as_object)
+        .and_then(|info| {
+            info.get("search_nil_type")
+                .or_else(|| info.get("search_nil_item"))
+        })
+        .and_then(Value::as_str)
+        .is_some_and(|tag| tag.eq_ignore_ascii_case("verify_check"))
+}
+
 /// Resolve a Douyin handle (`unique_id`) to a structured user identity (`sec_uid`, `uid`, etc.).
 pub async fn resolve_identity(
     session: &mut ChromeSession,
@@ -202,92 +214,149 @@ pub async fn resolve_identity(
     douyin_id: &str,
 ) -> Result<Value> {
     let _ = session.ensure_authenticated(AuthPolicy::FailFast).await?;
-    let page = session.ensure_page().await?;
-    let buffer = page
-        .enable_network_capture(
-            IDENTITY_CAPTURE_PATTERNS
-                .iter()
-                .map(|p| (*p).to_owned())
-                .collect(),
-        )
-        .await?;
-    let mut seen_request_ids: HashSet<String> = buffer
-        .snapshot()
-        .into_iter()
-        .map(|ex| ex.request_id)
-        .collect();
-
     let encoded: String = url::form_urlencoded::byte_serialize(douyin_id.as_bytes()).collect();
-    let search_url = format!("https://www.douyin.com/search/{encoded}?type=user");
-    let _ = session.navigate_douyin(&search_url).await?;
-
-    let mut captured_values: Vec<Value> = Vec::new();
-    let ui_page = CdpUiPage::new(page);
-    if let Ok(Some(render_text)) = VideoDetailComponent::new(&ui_page).render_data().await
-        && let Ok(parsed) = parse_render_data(&render_text)
-    {
-        captured_values.push(Value::Object(parsed));
-    }
-
-    // Wait boundedly for JSON API search/profile responses with completed response bodies
-    // (skipping HTML document navigations), checking both SSR #RENDER_DATA and XHR responses.
-    let wait_budget = if session.mode() == doudou_cdp::SessionMode::Fake {
-        Duration::from_millis(200)
-    } else {
-        Duration::from_secs(10)
-    };
-    let deadline = Instant::now() + wait_budget;
     let needle = douyin_id.to_lowercase();
+    let mut captured_values: Vec<Value> = Vec::new();
     let mut protocol_errors: Vec<DoudouError> = Vec::new();
 
-    let values = loop {
-        let ready: Vec<CapturedNetworkExchange> = buffer
-            .snapshot()
-            .into_iter()
-            .filter(|ex| {
-                !seen_request_ids.contains(&ex.request_id) && is_ready_identity_api_exchange(ex)
-            })
-            .collect();
-
-        for ex in ready {
-            seen_request_ids.insert(ex.request_id.clone());
-            let proto = exchange_to_proto_response(&ex);
-            match parse_result(
-                session,
-                &proto,
-                ResponseCodes {
-                    empty: "IDENTITY_RESPONSE_EMPTY",
-                    invalid: "IDENTITY_RESPONSE_INVALID",
-                    failed: "IDENTITY_LOOKUP_FAILED",
-                },
-                "identity.lookup",
-            )
-            .await
-            {
-                Ok(map) => captured_values.push(Value::Object(map)),
-                Err(err) => protocol_errors.push(err),
-            }
+    // Fast path: Douyin's in-page search autocomplete API (`/aweme/v1/web/search/sug/`)
+    // returns exact `rich_sug_sec_uid` / `rich_sug_user_id` / `rich_sug_short_id` directly
+    // without leaving `/chat` or triggering full-page search `verify_check`.
+    if session.mode() != doudou_cdp::SessionMode::Fake {
+        let sug_url = format!(
+            "https://www.douyin.com/aweme/v1/web/search/sug/?keyword={encoded}&source=normal_search&aid=6383"
+        );
+        if let Ok(sug_map) = fetch_json(
+            session,
+            &sug_url,
+            ResponseCodes {
+                empty: "IDENTITY_RESPONSE_EMPTY",
+                invalid: "IDENTITY_RESPONSE_INVALID",
+                failed: "IDENTITY_LOOKUP_FAILED",
+            },
+            "identity.sug",
+            15_000,
+            false,
+        )
+        .await
+        {
+            captured_values.push(Value::Object(sug_map));
         }
+    }
 
-        let current_values = extract_identity_candidates(&captured_values);
-        let has_exact = current_values.iter().any(|item| {
+    let sug_candidates = extract_identity_candidates(&captured_values);
+    let sug_exact_matches: Vec<&Value> = sug_candidates
+        .iter()
+        .filter(|item| {
             value_as_string(item.get("unique_id")).to_lowercase() == needle
                 && !value_as_string(item.get("sec_uid")).is_empty()
-        });
-        if has_exact {
-            break current_values;
+        })
+        .collect();
+
+    let mut verify_check_seen = false;
+    let values = if sug_exact_matches.len() == 1 {
+        sug_candidates
+    } else {
+        let page = session.ensure_page().await?;
+        let buffer = page
+            .enable_network_capture(
+                IDENTITY_CAPTURE_PATTERNS
+                    .iter()
+                    .map(|p| (*p).to_owned())
+                    .collect(),
+            )
+            .await?;
+        let mut seen_request_ids: HashSet<String> = buffer
+            .snapshot()
+            .into_iter()
+            .map(|ex| ex.request_id)
+            .collect();
+
+        let search_url = format!("https://www.douyin.com/search/{encoded}?type=user");
+        let _ = session.navigate_douyin(&search_url).await?;
+
+        let ui_page = CdpUiPage::new(page);
+        if let Ok(Some(render_text)) = VideoDetailComponent::new(&ui_page).render_data().await
+            && let Ok(parsed) = parse_render_data(&render_text)
+        {
+            captured_values.push(Value::Object(parsed));
         }
 
-        let remaining = deadline.saturating_duration_since(Instant::now());
-        if remaining.is_zero() {
-            break current_values;
+        // Wait boundedly for JSON API search/profile responses with completed response bodies
+        // (skipping HTML document navigations), checking both SSR #RENDER_DATA and XHR responses.
+        let wait_budget = if session.mode() == doudou_cdp::SessionMode::Fake {
+            Duration::from_millis(200)
+        } else {
+            Duration::from_secs(10)
+        };
+        let deadline = Instant::now() + wait_budget;
+
+        loop {
+            let ready: Vec<CapturedNetworkExchange> = buffer
+                .snapshot()
+                .into_iter()
+                .filter(|ex| {
+                    !seen_request_ids.contains(&ex.request_id) && is_ready_identity_api_exchange(ex)
+                })
+                .collect();
+
+            for ex in ready {
+                seen_request_ids.insert(ex.request_id.clone());
+                let proto = exchange_to_proto_response(&ex);
+                match parse_result(
+                    session,
+                    &proto,
+                    ResponseCodes {
+                        empty: "IDENTITY_RESPONSE_EMPTY",
+                        invalid: "IDENTITY_RESPONSE_INVALID",
+                        failed: "IDENTITY_LOOKUP_FAILED",
+                    },
+                    "identity.lookup",
+                )
+                .await
+                {
+                    Ok(map) => {
+                        if is_search_verify_check(&map) {
+                            verify_check_seen = true;
+                        }
+                        captured_values.push(Value::Object(map));
+                    }
+                    Err(err) => protocol_errors.push(err),
+                }
+            }
+
+            let current_values = extract_identity_candidates(&captured_values);
+            let has_exact = current_values.iter().any(|item| {
+                value_as_string(item.get("unique_id")).to_lowercase() == needle
+                    && !value_as_string(item.get("sec_uid")).is_empty()
+            });
+            if has_exact {
+                break current_values;
+            }
+
+            let remaining = deadline.saturating_duration_since(Instant::now());
+            if remaining.is_zero() {
+                break current_values;
+            }
+            let _ = buffer
+                .wait_for(remaining.min(Duration::from_millis(250)), |ex| {
+                    !seen_request_ids.contains(&ex.request_id) && is_ready_identity_api_exchange(ex)
+                })
+                .await;
         }
-        let _ = buffer
-            .wait_for(remaining.min(Duration::from_millis(250)), |ex| {
-                !seen_request_ids.contains(&ex.request_id) && is_ready_identity_api_exchange(ex)
-            })
-            .await;
     };
+
+    if values.is_empty() && verify_check_seen {
+        return Err(DoudouError::new(
+            "VERIFICATION_REQUIRED",
+            "Douyin search requested account verification (`verify_check`).",
+        )
+        .with_details(json!({
+            "douyin_id": douyin_id,
+            "operation": "identity.lookup",
+            "search_nil_type": "verify_check",
+        })));
+    }
 
     let exact: Vec<&Value> = values
         .iter()

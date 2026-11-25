@@ -213,4 +213,28 @@ mod tests {
             "MEDIA_MD5_MISMATCH"
         );
     }
+
+    #[test]
+    fn identities_in_extracts_search_sug_rich_identity() {
+        let payload = json!({
+            "status_code": 0,
+            "sug_list": [
+                {
+                    "content": "Rurutia.wow",
+                    "extra_info": {
+                        "rich_sug_sec_uid": "MS4wLjABAAAA_test_sec_uid",
+                        "rich_sug_user_id": "123456789",
+                        "rich_sug_nickname": "Rurutia",
+                        "rich_sug_short_id": "Rurutia.wow"
+                    }
+                }
+            ]
+        });
+        let found = identities_in(&payload);
+        assert_eq!(found.len(), 1);
+        assert_eq!(found[0]["unique_id"], "Rurutia.wow");
+        assert_eq!(found[0]["sec_uid"], "MS4wLjABAAAA_test_sec_uid");
+        assert_eq!(found[0]["uid"], "123456789");
+        assert_eq!(found[0]["nickname"], "Rurutia");
+    }
 }

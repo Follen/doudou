@@ -156,6 +156,11 @@ pub const CHAT_ADAPTER: PageAdapter = PageAdapter {
         ("message_context_menu", ".MessageOperatePopWindowwrapper"),
         ("message_context_action", ".MessageOperatePopBodybuttonItem"),
         (
+            "message_emoji_toggle",
+            ".PopBodyEmojiQuickReplytoggleButton",
+        ),
+        ("message_emoji_like", r#"img[title="[爱心]"]"#),
+        (
             "image_preview_dialog",
             r#"[role="dialog"].semi-modal-content:has(.MsgInputSendFileModalbox img)"#,
         ),

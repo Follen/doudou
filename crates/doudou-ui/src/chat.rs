@@ -405,14 +405,15 @@ pub async fn like_message(session: &dyn UiSession, plan: &Value) -> Result<Value
     let target = component.target(message_text, "chat.message.like").await?;
 
     let capture_handle = page
-        .start_network_capture(CaptureFilter::contains(["/v1/message/modify_property"]))
+        .start_network_capture(CaptureFilter::contains([
+            "/v1/message/modify_property",
+            "/v1/message/set_property",
+        ]))
         .await?;
 
     let mut write_started = false;
     let action_result: Result<()> = async {
-        dom_operations += component
-            .menu_action(&target, "点赞", "chat.message.like")
-            .await?;
+        dom_operations += component.like_action(&target, "chat.message.like").await?;
         write_started = true;
         page.sleep_ms(3_000)
             .await
@@ -432,15 +433,19 @@ pub async fn like_message(session: &dyn UiSession, plan: &Value) -> Result<Value
     })?;
     action_result?;
 
+    let is_property_endpoint = |path: &str| {
+        let normalized = path.trim_end_matches('/');
+        normalized == "/v1/message/modify_property" || normalized == "/v1/message/set_property"
+    };
     let modify_requests: Vec<_> = capture
         .requests
         .iter()
-        .filter(|item| item.endpoint.path.trim_end_matches('/') == "/v1/message/modify_property")
+        .filter(|item| is_property_endpoint(&item.endpoint.path))
         .collect();
     let modify_responses: Vec<_> = capture
         .responses
         .iter()
-        .filter(|item| item.endpoint.path.trim_end_matches('/') == "/v1/message/modify_property")
+        .filter(|item| is_property_endpoint(&item.endpoint.path))
         .collect();
 
     let transport_observed = !modify_requests.is_empty() || !modify_responses.is_empty();

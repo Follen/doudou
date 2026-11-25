@@ -852,7 +852,21 @@ impl<'a> MessageItemComponent<'a> {
         self.page
             .click_element(item, MouseButton::Right, 15_000)
             .await?;
-        let menu = self.context_menu(item, capability).await?;
+
+        // Native CDP right-click finishes in <1ms; allow the popup container a brief bounded
+        // window to mount and become visible before declaring drift.
+        let mount_deadline = self.page.now_ms().saturating_add(2_000);
+        let menu = loop {
+            match self.context_menu(item, capability).await {
+                Ok(found) => break found,
+                Err(err) => {
+                    if self.page.now_ms() >= mount_deadline {
+                        return Err(err);
+                    }
+                    self.page.sleep_ms(50).await?;
+                }
+            }
+        };
 
         let ready_deadline = self.page.now_ms().saturating_add(3_000);
         let mut ready = false;
@@ -869,6 +883,8 @@ impl<'a> MessageItemComponent<'a> {
             self.page.sleep_ms(50).await?;
         }
         if !ready {
+            let _ = self.page.press_key("Escape", 2_000).await;
+            let _ = self.page.click_xy(4.0, 4.0, MouseButton::Left, 2_000).await;
             return Err(drift_error(
                 "The message action menu did not reach its ready state.",
                 &ComponentContext::new(
@@ -893,13 +909,20 @@ impl<'a> MessageItemComponent<'a> {
             )
             .await?;
         let mut exact_rows = Vec::new();
+        let mut available_actions = Vec::new();
         for row in visible_candidates(self.page, &action_rows, DEFAULT_CANDIDATE_LIMIT).await? {
             let text = self.page.inner_text(&row, 5_000).await?;
-            if text.trim() == label {
+            let trimmed = text.trim();
+            if !trimmed.is_empty() {
+                available_actions.push(trimmed.to_owned());
+            }
+            if trimmed == label {
                 exact_rows.push(row);
             }
         }
         if exact_rows.len() != 1 {
+            let _ = self.page.press_key("Escape", 2_000).await;
+            let _ = self.page.click_xy(4.0, 4.0, MouseButton::Left, 2_000).await;
             return Err(drift_error(
                 "The message action menu did not resolve one exact action row.",
                 &ComponentContext::new(
@@ -910,6 +933,7 @@ impl<'a> MessageItemComponent<'a> {
                 ),
                 json!({
                     "candidate_count": exact_rows.len(),
+                    "available_actions": available_actions,
                     "geometry_reason": "message_menu_action_not_unique",
                 }),
             ));
@@ -980,6 +1004,202 @@ impl<'a> MessageItemComponent<'a> {
             }
         })?;
         Ok(2)
+    }
+
+    /// Open the right-click context menu on `item` and trigger the message like reaction.
+    ///
+    /// Supports both the classic `"点赞"` text action row and the quick-emoji reaction bar
+    /// (`.PopBodyEmojiQuickReplytoggleButton` -> `img[title="[爱心]"]`).
+    pub async fn like_action(&self, item: &ElementId, capability: &str) -> Result<usize> {
+        self.page
+            .click_element(item, MouseButton::Right, 15_000)
+            .await?;
+
+        let mount_deadline = self.page.now_ms().saturating_add(2_000);
+        let menu = loop {
+            match self.context_menu(item, capability).await {
+                Ok(found) => break found,
+                Err(err) => {
+                    if self.page.now_ms() >= mount_deadline {
+                        return Err(err);
+                    }
+                    self.page.sleep_ms(50).await?;
+                }
+            }
+        };
+
+        let ready_deadline = self.page.now_ms().saturating_add(3_000);
+        let mut ready = false;
+        while self.page.now_ms() < ready_deadline {
+            let class_name = self
+                .page
+                .get_attribute(&menu, "class")
+                .await?
+                .unwrap_or_default();
+            if class_name.contains(Self::MENU_READY_CLASS) {
+                ready = true;
+                break;
+            }
+            self.page.sleep_ms(50).await?;
+        }
+        if !ready {
+            let _ = self.page.press_key("Escape", 2_000).await;
+            let _ = self.page.click_xy(4.0, 4.0, MouseButton::Left, 2_000).await;
+            return Err(drift_error(
+                "The message action menu did not reach its ready state.",
+                &ComponentContext::new(
+                    Self::NAME,
+                    Self::VERSION,
+                    capability,
+                    "target message -> local menu -> ready state",
+                ),
+                json!({ "geometry_reason": "message_menu_not_ready" }),
+            ));
+        }
+
+        // Path 1: Classic "点赞" text action row.
+        let like_label = CHAT_ADAPTER.label("like").unwrap_or("点赞");
+        let action_selector = CHAT_ADAPTER
+            .selector("message_context_action")
+            .unwrap_or(".MessageOperatePopBodybuttonItem");
+        let action_rows = self
+            .page
+            .query_all(
+                Some(&menu),
+                &SelectorQuery::css(action_selector),
+                DEFAULT_CANDIDATE_LIMIT,
+            )
+            .await?;
+        let mut exact_rows = Vec::new();
+        let mut available_actions = Vec::new();
+        for row in visible_candidates(self.page, &action_rows, DEFAULT_CANDIDATE_LIMIT).await? {
+            let text = self.page.inner_text(&row, 5_000).await?;
+            let trimmed = text.trim();
+            if !trimmed.is_empty() {
+                available_actions.push(trimmed.to_owned());
+            }
+            if trimmed == like_label {
+                exact_rows.push(row);
+            }
+        }
+        if exact_rows.len() == 1 {
+            let action = require_target(
+                self.page,
+                &exact_rows,
+                &ComponentContext::new(
+                    Self::NAME,
+                    Self::VERSION,
+                    capability,
+                    "target message -> ready local action popup -> exact semantic action row",
+                ),
+                &TargetOptions::default()
+                    .require_enabled()
+                    .scope(&menu)
+                    .anchor(item, None, Some(600.0))
+                    .filter_by_geometry(),
+            )
+            .await?;
+            let _ = click_verified_target(
+                self.page,
+                &action,
+                &ComponentContext::new(
+                    Self::NAME,
+                    Self::VERSION,
+                    capability,
+                    "ready local action row -> stable hit target -> dynamic mouse click",
+                ),
+                ClickOptions::default().without_scroll(),
+            )
+            .await
+            .map_err(|err| {
+                if err.code == "PAGE_ADAPTER_DRIFTED" {
+                    err
+                } else {
+                    err.mark_write_started()
+                }
+            })?;
+            return Ok(2);
+        }
+
+        // Path 2: Quick-emoji reaction bar (`.PopBodyEmojiQuickReplytoggleButton` -> `img[title="[爱心]"]`).
+        let emoji_like_selector = CHAT_ADAPTER
+            .selector("message_emoji_like")
+            .unwrap_or(r#"img[title="[爱心]"]"#);
+        let mut heart_candidates = self
+            .page
+            .query_all(
+                Some(&menu),
+                &SelectorQuery::css(emoji_like_selector),
+                DEFAULT_CANDIDATE_LIMIT,
+            )
+            .await?;
+        let mut visible_hearts =
+            visible_candidates(self.page, &heart_candidates, DEFAULT_CANDIDATE_LIMIT).await?;
+        let mut dom_ops = 1usize;
+
+        if visible_hearts.is_empty() {
+            let toggle_selector = CHAT_ADAPTER
+                .selector("message_emoji_toggle")
+                .unwrap_or(".PopBodyEmojiQuickReplytoggleButton");
+            let toggles = self
+                .page
+                .query_all(
+                    Some(&menu),
+                    &SelectorQuery::css(toggle_selector),
+                    DEFAULT_CANDIDATE_LIMIT,
+                )
+                .await?;
+            let visible_toggles =
+                visible_candidates(self.page, &toggles, DEFAULT_CANDIDATE_LIMIT).await?;
+            if visible_toggles.len() == 1 {
+                self.page
+                    .click_element(&visible_toggles[0], MouseButton::Left, 5_000)
+                    .await?;
+                dom_ops += 1;
+                self.page.sleep_ms(350).await?;
+                heart_candidates = self
+                    .page
+                    .query_all(
+                        Some(&menu),
+                        &SelectorQuery::css(emoji_like_selector),
+                        DEFAULT_CANDIDATE_LIMIT,
+                    )
+                    .await?;
+                if let Some(first) = heart_candidates.first() {
+                    let _ = self.page.scroll_into_view(first, 5_000).await;
+                    self.page.sleep_ms(120).await?;
+                }
+                visible_hearts =
+                    visible_candidates(self.page, &heart_candidates, DEFAULT_CANDIDATE_LIMIT)
+                        .await?;
+            }
+        }
+
+        if visible_hearts.len() == 1 {
+            self.page
+                .click_element(&visible_hearts[0], MouseButton::Left, 10_000)
+                .await
+                .map_err(DoudouError::mark_write_started)?;
+            return Ok(dom_ops + 1);
+        }
+
+        let _ = self.page.press_key("Escape", 2_000).await;
+        let _ = self.page.click_xy(4.0, 4.0, MouseButton::Left, 2_000).await;
+        Err(drift_error(
+            "The message action menu did not resolve one exact action row.",
+            &ComponentContext::new(
+                Self::NAME,
+                Self::VERSION,
+                capability,
+                "target message -> ready local action popup -> exact semantic action row or reaction heart",
+            ),
+            json!({
+                "candidate_count": exact_rows.len(),
+                "reaction_heart_count": visible_hearts.len(),
+                "available_actions": available_actions,
+                "geometry_reason": "message_menu_action_not_unique",
+            }),
+        ))
     }
 
     /// Return a `not_exercised` diagnostic probe entry for the message context menu.

@@ -138,6 +138,61 @@ fn value_as_bool(val: Option<&Value>) -> bool {
     }
 }
 
+const IDENTITY_CAPTURE_PATTERNS: &[&str] = &[
+    "/aweme/v1/web/",
+    "discover/search",
+    "user/profile",
+    "user/detail",
+    "aweme/post",
+];
+
+fn is_html_document_exchange(ex: &CapturedNetworkExchange) -> bool {
+    if ex
+        .resource_type
+        .as_deref()
+        .is_some_and(|rt| rt.eq_ignore_ascii_case("Document"))
+    {
+        return true;
+    }
+    if ex
+        .mime_type
+        .as_deref()
+        .is_some_and(|mime| mime.to_ascii_lowercase().contains("text/html"))
+    {
+        return true;
+    }
+    ex.response_headers.iter().any(|(k, v)| {
+        k.eq_ignore_ascii_case("content-type") && v.to_ascii_lowercase().contains("text/html")
+    })
+}
+
+fn is_ready_identity_api_exchange(ex: &CapturedNetworkExchange) -> bool {
+    if ex.method.eq_ignore_ascii_case("OPTIONS")
+        || ex.status.is_none()
+        || ex.response_body.is_none()
+        || is_html_document_exchange(ex)
+    {
+        return false;
+    }
+    let path = ex.url.split('?').next().unwrap_or(&ex.url).to_lowercase();
+    IDENTITY_CAPTURE_PATTERNS.iter().any(|p| path.contains(p))
+}
+
+fn extract_identity_candidates(captured_values: &[Value]) -> Vec<Value> {
+    let mut candidates: BTreeMap<(String, String, String), Value> = BTreeMap::new();
+    for value in captured_values {
+        for item in identities_in(value) {
+            let k = (
+                value_as_string(item.get("unique_id")),
+                value_as_string(item.get("sec_uid")),
+                value_as_string(item.get("uid")),
+            );
+            candidates.insert(k, item);
+        }
+    }
+    candidates.into_values().collect()
+}
+
 /// Resolve a Douyin handle (`unique_id`) to a structured user identity (`sec_uid`, `uid`, etc.).
 pub async fn resolve_identity(
     session: &mut ChromeSession,
@@ -149,34 +204,22 @@ pub async fn resolve_identity(
     let _ = session.ensure_authenticated(AuthPolicy::FailFast).await?;
     let page = session.ensure_page().await?;
     let buffer = page
-        .enable_network_capture(vec![
-            "search".to_owned(),
-            "user/profile".to_owned(),
-            "user/detail".to_owned(),
-            "aweme/post".to_owned(),
-        ])
+        .enable_network_capture(
+            IDENTITY_CAPTURE_PATTERNS
+                .iter()
+                .map(|p| (*p).to_owned())
+                .collect(),
+        )
         .await?;
-    let start_idx = buffer.snapshot().len();
+    let mut seen_request_ids: HashSet<String> = buffer
+        .snapshot()
+        .into_iter()
+        .map(|ex| ex.request_id)
+        .collect();
 
     let encoded: String = url::form_urlencoded::byte_serialize(douyin_id.as_bytes()).collect();
     let search_url = format!("https://www.douyin.com/search/{encoded}?type=user");
     let _ = session.navigate_douyin(&search_url).await?;
-
-    // Wait boundedly for at least one search/profile response to arrive (fast in fake mode).
-    let wait_budget = if session.mode() == doudou_cdp::SessionMode::Fake {
-        Duration::from_millis(50)
-    } else {
-        Duration::from_secs(10)
-    };
-    let _ = buffer
-        .wait_for(wait_budget, |ex| {
-            let path = ex.url.split('?').next().unwrap_or(&ex.url).to_lowercase();
-            ex.status.is_some()
-                && ["search", "user/profile", "user/detail", "aweme/post"]
-                    .iter()
-                    .any(|p| path.contains(p))
-        })
-        .await;
 
     let mut captured_values: Vec<Value> = Vec::new();
     let ui_page = CdpUiPage::new(page);
@@ -186,47 +229,66 @@ pub async fn resolve_identity(
         captured_values.push(Value::Object(parsed));
     }
 
-    let snapshot = buffer.snapshot();
-    let mut protocol_errors: Vec<DoudouError> = Vec::new();
-    for ex in snapshot.get(start_idx..).unwrap_or(&[]) {
-        let path = ex.url.split('?').next().unwrap_or(&ex.url).to_lowercase();
-        if !["search", "user/profile", "user/detail", "aweme/post"]
-            .iter()
-            .any(|p| path.contains(p))
-        {
-            continue;
-        }
-        let proto = exchange_to_proto_response(ex);
-        match parse_result(
-            session,
-            &proto,
-            ResponseCodes {
-                empty: "IDENTITY_RESPONSE_EMPTY",
-                invalid: "IDENTITY_RESPONSE_INVALID",
-                failed: "IDENTITY_LOOKUP_FAILED",
-            },
-            "identity.lookup",
-        )
-        .await
-        {
-            Ok(map) => captured_values.push(Value::Object(map)),
-            Err(err) => protocol_errors.push(err),
-        }
-    }
-
-    let mut candidates: BTreeMap<(String, String, String), Value> = BTreeMap::new();
-    for value in &captured_values {
-        for item in identities_in(value) {
-            let k = (
-                value_as_string(item.get("unique_id")),
-                value_as_string(item.get("sec_uid")),
-                value_as_string(item.get("uid")),
-            );
-            candidates.insert(k, item);
-        }
-    }
-    let values: Vec<Value> = candidates.into_values().collect();
+    // Wait boundedly for JSON API search/profile responses with completed response bodies
+    // (skipping HTML document navigations), checking both SSR #RENDER_DATA and XHR responses.
+    let wait_budget = if session.mode() == doudou_cdp::SessionMode::Fake {
+        Duration::from_millis(200)
+    } else {
+        Duration::from_secs(10)
+    };
+    let deadline = Instant::now() + wait_budget;
     let needle = douyin_id.to_lowercase();
+    let mut protocol_errors: Vec<DoudouError> = Vec::new();
+
+    let values = loop {
+        let ready: Vec<CapturedNetworkExchange> = buffer
+            .snapshot()
+            .into_iter()
+            .filter(|ex| {
+                !seen_request_ids.contains(&ex.request_id) && is_ready_identity_api_exchange(ex)
+            })
+            .collect();
+
+        for ex in ready {
+            seen_request_ids.insert(ex.request_id.clone());
+            let proto = exchange_to_proto_response(&ex);
+            match parse_result(
+                session,
+                &proto,
+                ResponseCodes {
+                    empty: "IDENTITY_RESPONSE_EMPTY",
+                    invalid: "IDENTITY_RESPONSE_INVALID",
+                    failed: "IDENTITY_LOOKUP_FAILED",
+                },
+                "identity.lookup",
+            )
+            .await
+            {
+                Ok(map) => captured_values.push(Value::Object(map)),
+                Err(err) => protocol_errors.push(err),
+            }
+        }
+
+        let current_values = extract_identity_candidates(&captured_values);
+        let has_exact = current_values.iter().any(|item| {
+            value_as_string(item.get("unique_id")).to_lowercase() == needle
+                && !value_as_string(item.get("sec_uid")).is_empty()
+        });
+        if has_exact {
+            break current_values;
+        }
+
+        let remaining = deadline.saturating_duration_since(Instant::now());
+        if remaining.is_zero() {
+            break current_values;
+        }
+        let _ = buffer
+            .wait_for(remaining.min(Duration::from_millis(250)), |ex| {
+                !seen_request_ids.contains(&ex.request_id) && is_ready_identity_api_exchange(ex)
+            })
+            .await;
+    };
+
     let exact: Vec<&Value> = values
         .iter()
         .filter(|item| {
@@ -290,7 +352,7 @@ pub async fn resolve_identity(
 async fn next_video_list_page(
     session: &mut ChromeSession,
     buffer: &doudou_cdp::NetworkCaptureBuffer,
-    cursor_idx: &mut usize,
+    seen_request_ids: &mut HashSet<String>,
     timeout: Duration,
     ignored_non_json: &mut usize,
 ) -> Result<(String, Map<String, Value>)> {
@@ -299,16 +361,22 @@ async fn next_video_list_page(
     let mut last_invalid: Option<DoudouError> = None;
 
     loop {
-        let snapshot = buffer.snapshot();
-        while *cursor_idx < snapshot.len() {
-            let ex = &snapshot[*cursor_idx];
-            *cursor_idx += 1;
-            if !ex.url.contains(list_path) || ex.status.is_none() {
-                continue;
-            }
-            let proto = exchange_to_proto_response(ex);
+        let ready: Vec<CapturedNetworkExchange> = buffer
+            .snapshot()
+            .into_iter()
+            .filter(|ex| {
+                !seen_request_ids.contains(&ex.request_id)
+                    && ex.url.contains(list_path)
+                    && ex.status.is_some()
+                    && ex.response_body.is_some()
+            })
+            .collect();
+
+        for ex in ready {
+            seen_request_ids.insert(ex.request_id.clone());
+            let proto = exchange_to_proto_response(&ex);
             match parse_result(session, &proto, VIDEO_LIST_CODES, "video.list").await {
-                Ok(parsed) => return Ok((ex.url.clone(), parsed)),
+                Ok(parsed) => return Ok((ex.url, parsed)),
                 Err(err) => {
                     if err.code == "VIDEO_RESPONSE_INVALID"
                         && proto.content_type.to_lowercase().contains("html")
@@ -335,7 +403,14 @@ async fn next_video_list_page(
                 "timeout_seconds": timeout.as_secs_f64(),
             })));
         }
-        tokio::time::sleep(remaining.min(Duration::from_millis(50))).await;
+        let _ = buffer
+            .wait_for(remaining.min(Duration::from_millis(50)), |ex| {
+                !seen_request_ids.contains(&ex.request_id)
+                    && ex.url.contains(list_path)
+                    && ex.status.is_some()
+                    && ex.response_body.is_some()
+            })
+            .await;
     }
 }
 
@@ -359,7 +434,11 @@ pub async fn collect_user_videos(
     let buffer = page
         .enable_network_capture(vec![list_path.to_owned()])
         .await?;
-    let mut cursor_idx = buffer.snapshot().len();
+    let mut seen_request_ids: HashSet<String> = buffer
+        .snapshot()
+        .into_iter()
+        .map(|ex| ex.request_id)
+        .collect();
 
     let profile_url = format!("https://www.douyin.com/user/{sec_uid}?from_tab_name=main");
     let _ = session.navigate_douyin(&profile_url).await?;
@@ -373,7 +452,7 @@ pub async fn collect_user_videos(
     let (_template, mut value) = next_video_list_page(
         session,
         &buffer,
-        &mut cursor_idx,
+        &mut seen_request_ids,
         initial_timeout,
         &mut ignored_non_json,
     )
@@ -433,7 +512,7 @@ pub async fn collect_user_videos(
             match next_video_list_page(
                 session,
                 &buffer,
-                &mut cursor_idx,
+                &mut seen_request_ids,
                 Duration::from_secs(4),
                 &mut ignored_non_json,
             )
@@ -651,7 +730,11 @@ pub async fn collect_video(
             detail_path.to_owned(),
         ])
         .await?;
-    let start_idx = buffer.snapshot().len();
+    let mut seen_request_ids: HashSet<String> = buffer
+        .snapshot()
+        .into_iter()
+        .map(|ex| ex.request_id)
+        .collect();
 
     let source_url = format!("https://www.douyin.com/video/{aweme_id}");
     let _ = session.navigate_douyin(&source_url).await?;
@@ -678,7 +761,10 @@ pub async fn collect_video(
         };
         let found = buffer
             .wait_for(wait, |ex| {
-                ex.url.contains(detail_path) && ex.status.is_some()
+                !seen_request_ids.contains(&ex.request_id)
+                    && ex.url.contains(detail_path)
+                    && ex.status.is_some()
+                    && ex.response_body.is_some()
             })
             .await
             .ok_or_else(|| {
@@ -687,6 +773,7 @@ pub async fn collect_video(
                     "Timed out waiting for video detail protocol response.",
                 )
             })?;
+        seen_request_ids.insert(found.request_id.clone());
         let proto = exchange_to_proto_response(&found);
         let detail_value = parse_result(
             session,
@@ -740,20 +827,26 @@ pub async fn collect_video(
         tokio::time::sleep(Duration::from_millis(500)).await;
     }
 
-    let find_root_template = |buf: &doudou_cdp::NetworkCaptureBuffer| -> Option<String> {
+    let find_root_template = |buf: &doudou_cdp::NetworkCaptureBuffer,
+                              seen: &HashSet<String>|
+     -> Option<(String, String)> {
         let snap = buf.snapshot();
-        snap.get(start_idx..)?
-            .iter()
+        snap.into_iter()
             .rev()
             .find(|ex| {
-                ex.url.contains(root_path)
+                !seen.contains(&ex.request_id)
+                    && ex.url.contains(root_path)
                     && !ex.url.contains(reply_path)
                     && url_matches_aweme(&ex.url, aweme_id)
+                    && ex.status.is_some()
+                    && ex.response_body.is_some()
             })
-            .map(|ex| ex.url.clone())
+            .map(|ex| (ex.request_id, ex.url))
     };
 
-    let root_template = if let Some(url) = find_root_template(&buffer) {
+    let root_template = if let Some((req_id, url)) = find_root_template(&buffer, &seen_request_ids)
+    {
+        seen_request_ids.insert(req_id);
         url
     } else {
         let wait = if session.mode() == doudou_cdp::SessionMode::Fake {
@@ -763,9 +856,12 @@ pub async fn collect_video(
         };
         let matched = buffer
             .wait_for(wait, |ex| {
-                ex.url.contains(root_path)
+                !seen_request_ids.contains(&ex.request_id)
+                    && ex.url.contains(root_path)
                     && !ex.url.contains(reply_path)
                     && url_matches_aweme(&ex.url, aweme_id)
+                    && ex.status.is_some()
+                    && ex.response_body.is_some()
             })
             .await
             .ok_or_else(|| {
@@ -774,6 +870,7 @@ pub async fn collect_video(
                     "Timed out waiting for comment root template URL.",
                 )
             })?;
+        seen_request_ids.insert(matched.request_id);
         matched.url
     };
 
@@ -985,12 +1082,21 @@ pub async fn collect_video(
                 } else {
                     Duration::from_secs(20)
                 };
-                buffer
+                let matched_reply = buffer
                     .wait_for(wait, |ex| {
-                        ex.url.contains(reply_path) && url_matches_aweme(&ex.url, aweme_id)
+                        !seen_request_ids.contains(&ex.request_id)
+                            && ex.url.contains(reply_path)
+                            && url_matches_aweme(&ex.url, aweme_id)
+                            && ex.status.is_some()
+                            && ex.response_body.is_some()
                     })
-                    .await
-                    .map_or_else(|| root_template.clone(), |ex| ex.url)
+                    .await;
+                if let Some(ex) = matched_reply {
+                    seen_request_ids.insert(ex.request_id);
+                    ex.url
+                } else {
+                    root_template.clone()
+                }
             }
         };
 
@@ -1124,4 +1230,172 @@ pub async fn collect_video(
         "pages": pages,
         "files": files,
     }))
+}
+
+#[cfg(test)]
+mod tests {
+    use doudou_cdp::{CdpPageOps as _, FakeBrowserSession};
+    use doudou_core::profile_paths;
+    use doudou_storage::create_profile;
+    use tempfile::TempDir;
+
+    use super::*;
+
+    #[tokio::test]
+    async fn resolve_identity_skips_html_document_and_waits_for_response_body() {
+        let dir = TempDir::new().expect("tempdir");
+        let home = dir.path().join("home");
+        let root = dir.path().join("project");
+        create_profile(&home, &root, "work", None).expect("profile");
+        let paths = profile_paths(&home, &root, "work").expect("paths");
+
+        let mut fake = FakeBrowserSession::authenticated(paths);
+        let page = std::sync::Arc::clone(fake.fake_page());
+        let buffer = page.capture_buffer();
+
+        // Simulate live navigation order:
+        // 1. HTML Document response arrives first (must be skipped, never treated as verification).
+        // 2. JSON search XHR arrives with status=Some(200) and response_body=None (in-flight).
+        // 3. Network.getResponseBody populates response_body shortly afterward.
+        let producer = tokio::spawn(async move {
+            for _ in 0..100 {
+                if !page.navigations().is_empty() {
+                    break;
+                }
+                tokio::time::sleep(Duration::from_millis(1)).await;
+            }
+
+            let mut html_headers = BTreeMap::new();
+            html_headers.insert(
+                "content-type".to_owned(),
+                "text/html; charset=utf-8".to_owned(),
+            );
+            buffer.upsert(CapturedNetworkExchange {
+                request_id: "doc-html-1".to_owned(),
+                url: "https://www.douyin.com/search/Rurutia.wow?type=user".to_owned(),
+                method: "GET".to_owned(),
+                status: Some(200),
+                mime_type: Some("text/html".to_owned()),
+                request_headers: BTreeMap::new(),
+                response_headers: html_headers,
+                request_body: None,
+                response_body: Some(b"<html><body>captcha check</body></html>".to_vec()),
+                resource_type: Some("Document".to_owned()),
+                timestamp: doudou_core::utc_now(),
+            });
+
+            let mut json_headers = BTreeMap::new();
+            json_headers.insert("content-type".to_owned(), "application/json".to_owned());
+            buffer.upsert(CapturedNetworkExchange {
+                request_id: "xhr-search-1".to_owned(),
+                url: "https://www.douyin.com/aweme/v1/web/discover/search/?keyword=Rurutia.wow"
+                    .to_owned(),
+                method: "GET".to_owned(),
+                status: Some(200),
+                mime_type: Some("application/json".to_owned()),
+                request_headers: BTreeMap::new(),
+                response_headers: json_headers,
+                request_body: None,
+                response_body: None,
+                resource_type: Some("XHR".to_owned()),
+                timestamp: doudou_core::utc_now(),
+            });
+
+            tokio::time::sleep(Duration::from_millis(15)).await;
+            let body = serde_json::to_vec(&json!({
+                "status_code": 0,
+                "user_list": [{
+                    "user_info": {
+                        "unique_id": "Rurutia.wow",
+                        "sec_uid": "MS4wLjAB_rurutia",
+                        "uid": "123456",
+                        "nickname": "Rurutia"
+                    }
+                }]
+            }))
+            .expect("serialize search json");
+            buffer.update_by_id("xhr-search-1", |ex| {
+                ex.response_body = Some(body);
+            });
+        });
+
+        let result = resolve_identity(fake.session_mut(), &home, &root, "work", "Rurutia.wow")
+            .await
+            .expect("resolve_identity should skip HTML and resolve JSON XHR");
+        producer.await.expect("producer task");
+
+        assert_eq!(result["status"], "resolved");
+        assert_eq!(result["identity"]["sec_uid"], "MS4wLjAB_rurutia");
+        assert_eq!(result["identity"]["unique_id"], "Rurutia.wow");
+
+        let patterns = fake.fake_page().network_capture_patterns();
+        assert_eq!(patterns.len(), 1);
+        assert!(
+            !patterns[0].iter().any(|p| p == "search"),
+            "capture patterns must not include bare 'search': {:?}",
+            patterns[0]
+        );
+        assert!(patterns[0].iter().any(|p| p == "/aweme/v1/web/"));
+    }
+
+    #[tokio::test]
+    async fn next_video_list_page_waits_for_inflight_response_body_without_skipping() {
+        let dir = TempDir::new().expect("tempdir");
+        let home = dir.path().join("home");
+        let root = dir.path().join("project");
+        create_profile(&home, &root, "work", None).expect("profile");
+        let paths = profile_paths(&home, &root, "work").expect("paths");
+
+        let mut fake = FakeBrowserSession::authenticated(paths);
+        let buffer = fake.fake_page().capture_buffer();
+        let mut seen = HashSet::new();
+        let mut ignored_non_json = 0usize;
+
+        let mut headers = BTreeMap::new();
+        headers.insert("content-type".to_owned(), "application/json".to_owned());
+        buffer.upsert(CapturedNetworkExchange {
+            request_id: "post-1".to_owned(),
+            url: "https://www.douyin.com/aweme/v1/web/aweme/post/?sec_user_id=sec1".to_owned(),
+            method: "GET".to_owned(),
+            status: Some(200),
+            mime_type: Some("application/json".to_owned()),
+            request_headers: BTreeMap::new(),
+            response_headers: headers,
+            request_body: None,
+            response_body: None,
+            resource_type: Some("XHR".to_owned()),
+            timestamp: doudou_core::utc_now(),
+        });
+
+        let buf_clone = buffer.clone();
+        let body_filler = tokio::spawn(async move {
+            tokio::time::sleep(Duration::from_millis(15)).await;
+            let payload = serde_json::to_vec(&json!({
+                "status_code": 0,
+                "aweme_list": [{ "aweme_id": "777", "desc": "hello" }],
+                "max_cursor": 0,
+                "has_more": 0
+            }))
+            .expect("serialize post json");
+            buf_clone.update_by_id("post-1", |ex| {
+                ex.response_body = Some(payload);
+            });
+        });
+
+        let (url, parsed) = next_video_list_page(
+            fake.session_mut(),
+            &buffer,
+            &mut seen,
+            Duration::from_secs(2),
+            &mut ignored_non_json,
+        )
+        .await
+        .expect("should wait for response_body instead of skipping");
+        body_filler.await.expect("body filler");
+
+        assert!(url.contains("/aweme/v1/web/aweme/post/"));
+        assert_eq!(parsed["aweme_list"][0]["aweme_id"], "777");
+        assert!(seen.contains("post-1"));
+        assert_eq!(ignored_non_json, 0);
+    }
 }

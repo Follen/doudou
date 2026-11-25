@@ -18,7 +18,10 @@ pub use broker::{
     command_timeout_seconds, constant_time_eq, descriptor_is_live, list_brokers, read_bounded_line,
     register_broker, registration_path, stop_all_brokers, stop_broker, unregister_broker,
 };
-pub use cdp_ui_bridge::{CdpNetworkCaptureHandle, CdpUiPage, CdpUiSession, parse_key_spec};
+pub use cdp_ui_bridge::{
+    CdpNetworkCaptureHandle, CdpUiPage, CdpUiSession, CssSelectorClause, CssTextFilter,
+    parse_css_clauses, parse_key_spec,
+};
 pub use features::{
     DefaultBrokerHandler, DoctorOptions, diagnose_chat, diagnose_video, doctor, protocol_capture,
     ui_probe,

@@ -15,8 +15,264 @@ use doudou_ui::{
     MouseButton as UiMouseButton, NetworkCaptureHandle, NetworkCaptureSnapshot, PointHit,
     SelectorQuery, TextMatchMode, UiPage, UiSession,
 };
+use serde::Serialize;
 use serde_json::{Value, json};
 use tokio::sync::Mutex as AsyncMutex;
+
+/// Text filter extracted from Playwright-style pseudo-selectors (`:has-text`, `:text`, `:text-is`).
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[serde(tag = "kind", content = "value", rename_all = "snake_case")]
+pub enum CssTextFilter {
+    /// Case-insensitive substring match (`:has-text(...)`).
+    HasText(String),
+    /// Case-insensitive substring match (`:text(...)`).
+    Text(String),
+    /// Trimmed exact text match (`:text-is(...)`).
+    TextIs(String),
+}
+
+/// One top-level comma-separated CSS selector clause with Playwright pseudo-classes stripped.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+pub struct CssSelectorClause {
+    /// Standard CSS selector passed to `querySelectorAll` (`"*"` when empty).
+    pub base_css: String,
+    /// Ordered text filters (`:has-text`, `:text`, `:text-is`) applied to matched elements.
+    pub text_filters: Vec<CssTextFilter>,
+    /// Whether `:visible` was present on this clause.
+    pub require_visible: bool,
+}
+
+fn split_top_level_commas(selector: &str) -> Vec<&str> {
+    let mut clauses = Vec::new();
+    let mut start = 0usize;
+    let mut in_quote: Option<char> = None;
+    let mut escaped = false;
+    let mut paren_depth = 0usize;
+    let mut bracket_depth = 0usize;
+
+    for (idx, ch) in selector.char_indices() {
+        if escaped {
+            escaped = false;
+            continue;
+        }
+        if let Some(q) = in_quote {
+            if ch == '\\' {
+                escaped = true;
+            } else if ch == q {
+                in_quote = None;
+            }
+            continue;
+        }
+        match ch {
+            '\'' | '"' => in_quote = Some(ch),
+            '(' => paren_depth += 1,
+            ')' => paren_depth = paren_depth.saturating_sub(1),
+            '[' => bracket_depth += 1,
+            ']' => bracket_depth = bracket_depth.saturating_sub(1),
+            ',' if paren_depth == 0 && bracket_depth == 0 => {
+                let part = selector[start..idx].trim();
+                if !part.is_empty() {
+                    clauses.push(part);
+                }
+                start = idx + ch.len_utf8();
+            }
+            _ => {}
+        }
+    }
+    let tail = selector[start..].trim();
+    if !tail.is_empty() {
+        clauses.push(tail);
+    }
+    clauses
+}
+
+fn consume_paren_arg(after_open: &str) -> (&str, usize) {
+    let mut in_quote: Option<char> = None;
+    let mut escaped = false;
+    let mut depth = 0usize;
+
+    for (idx, ch) in after_open.char_indices() {
+        if escaped {
+            escaped = false;
+            continue;
+        }
+        if let Some(q) = in_quote {
+            if ch == '\\' {
+                escaped = true;
+            } else if ch == q {
+                in_quote = None;
+            }
+            continue;
+        }
+        match ch {
+            '\'' | '"' => in_quote = Some(ch),
+            '(' => depth += 1,
+            ')' => {
+                if depth == 0 {
+                    return (&after_open[..idx], idx + ch.len_utf8());
+                }
+                depth -= 1;
+            }
+            _ => {}
+        }
+    }
+    (after_open, after_open.len())
+}
+
+fn unquote_pseudo_arg(raw: &str) -> String {
+    let trimmed = raw.trim();
+    let bytes = trimmed.as_bytes();
+    if bytes.len() >= 2
+        && ((bytes[0] == b'"' && bytes[bytes.len() - 1] == b'"')
+            || (bytes[0] == b'\'' && bytes[bytes.len() - 1] == b'\''))
+    {
+        let inner = &trimmed[1..trimmed.len() - 1];
+        let mut out = String::with_capacity(inner.len());
+        let mut chars = inner.chars();
+        while let Some(ch) = chars.next() {
+            if ch == '\\'
+                && let Some(next) = chars.next()
+            {
+                match next {
+                    'n' => out.push('\n'),
+                    'r' => out.push('\r'),
+                    't' => out.push('\t'),
+                    other => out.push(other),
+                }
+                continue;
+            }
+            out.push(ch);
+        }
+        return out;
+    }
+    trimmed.to_owned()
+}
+
+fn starts_with_visible_pseudo(s: &str) -> bool {
+    let Some(after) = s.strip_prefix(":visible") else {
+        return false;
+    };
+    !after
+        .chars()
+        .next()
+        .is_some_and(|ch| ch.is_ascii_alphanumeric() || ch == '-' || ch == '_')
+}
+
+fn needs_universal_placeholder(prefix: &str, suffix: &str) -> bool {
+    let after_combinator = !prefix.is_empty()
+        && prefix.ends_with(|c: char| c.is_whitespace() || matches!(c, '>' | '+' | '~'));
+    if !after_combinator {
+        return false;
+    }
+    let next_is_valid_simple = suffix
+        .starts_with(|c: char| c.is_ascii_alphabetic() || matches!(c, '.' | '#' | '[' | '*'))
+        || (suffix.starts_with(':')
+            && !suffix.starts_with(":has-text(")
+            && !suffix.starts_with(":text-is(")
+            && !suffix.starts_with(":text(")
+            && !starts_with_visible_pseudo(suffix));
+    !next_is_valid_simple
+}
+
+fn parse_single_css_clause(clause: &str) -> CssSelectorClause {
+    let mut base_css = String::with_capacity(clause.len());
+    let mut text_filters = Vec::new();
+    let mut require_visible = false;
+
+    let mut i = 0usize;
+    let mut in_quote: Option<char> = None;
+    let mut escaped = false;
+    let mut paren_depth = 0usize;
+    let mut bracket_depth = 0usize;
+
+    while i < clause.len() {
+        let rest = &clause[i..];
+        if in_quote.is_none() && paren_depth == 0 && bracket_depth == 0 {
+            if let Some(after) = rest.strip_prefix(":has-text(") {
+                let (arg, consumed) = consume_paren_arg(after);
+                text_filters.push(CssTextFilter::HasText(unquote_pseudo_arg(arg)));
+                i += ":has-text(".len() + consumed;
+                if needs_universal_placeholder(&base_css, &clause[i..]) {
+                    base_css.push('*');
+                }
+                continue;
+            }
+            if let Some(after) = rest.strip_prefix(":text-is(") {
+                let (arg, consumed) = consume_paren_arg(after);
+                text_filters.push(CssTextFilter::TextIs(unquote_pseudo_arg(arg)));
+                i += ":text-is(".len() + consumed;
+                if needs_universal_placeholder(&base_css, &clause[i..]) {
+                    base_css.push('*');
+                }
+                continue;
+            }
+            if let Some(after) = rest.strip_prefix(":text(") {
+                let (arg, consumed) = consume_paren_arg(after);
+                text_filters.push(CssTextFilter::Text(unquote_pseudo_arg(arg)));
+                i += ":text(".len() + consumed;
+                if needs_universal_placeholder(&base_css, &clause[i..]) {
+                    base_css.push('*');
+                }
+                continue;
+            }
+            if starts_with_visible_pseudo(rest) {
+                require_visible = true;
+                i += ":visible".len();
+                if needs_universal_placeholder(&base_css, &clause[i..]) {
+                    base_css.push('*');
+                }
+                continue;
+            }
+        }
+
+        let Some(ch) = rest.chars().next() else {
+            break;
+        };
+        if escaped {
+            escaped = false;
+        } else if let Some(q) = in_quote {
+            if ch == '\\' {
+                escaped = true;
+            } else if ch == q {
+                in_quote = None;
+            }
+        } else {
+            match ch {
+                '\'' | '"' => in_quote = Some(ch),
+                '(' => paren_depth += 1,
+                ')' => paren_depth = paren_depth.saturating_sub(1),
+                '[' => bracket_depth += 1,
+                ']' => bracket_depth = bracket_depth.saturating_sub(1),
+                _ => {}
+            }
+        }
+        base_css.push(ch);
+        i += ch.len_utf8();
+    }
+
+    let trimmed = base_css.trim();
+    let final_base = if trimmed.is_empty() {
+        "*".to_owned()
+    } else {
+        trimmed.to_owned()
+    };
+
+    CssSelectorClause {
+        base_css: final_base,
+        text_filters,
+        require_visible,
+    }
+}
+
+/// Split a CSS selector string (supporting Playwright `:has-text`, `:text`, `:text-is`, `:visible`
+/// pseudo-classes and comma-separated lists) into structured clauses for browser evaluation.
+#[must_use]
+pub fn parse_css_clauses(selector: &str) -> Vec<CssSelectorClause> {
+    split_top_level_commas(selector)
+        .into_iter()
+        .map(parse_single_css_clause)
+        .collect()
+}
 
 /// JS bootstrap that maintains an isolated-world `Map<string, Element>` handle table.
 const REGISTRY_PRELUDE: &str = r"
@@ -109,7 +365,7 @@ fn exchanges_to_snapshot(
     let mut requests = Vec::new();
     let mut responses = Vec::new();
     for exchange in exchanges {
-        if !filter.matches(&exchange.url) {
+        if !filter.matches(&exchange.url) || exchange.method.eq_ignore_ascii_case("OPTIONS") {
             continue;
         }
         requests.push(CapturedRequest::new(
@@ -117,11 +373,11 @@ fn exchanges_to_snapshot(
             exchange.url.clone(),
             exchange.request_body.clone().unwrap_or_default(),
         ));
-        if let Some(status) = exchange.status {
+        if let (Some(status), Some(body)) = (exchange.status, exchange.response_body.as_ref()) {
             responses.push(CapturedResponse::new(
                 exchange.url.clone(),
                 status,
-                exchange.response_body.clone().unwrap_or_default(),
+                body.clone(),
             ));
         }
     }
@@ -227,12 +483,19 @@ impl UiPage for CdpUiPage {
             Some(id) => serde_json::to_string(id.as_str()).unwrap_or_else(|_| "null".to_owned()),
             None => "null".to_owned(),
         };
-        let (kind, pattern, exact) = match query {
-            SelectorQuery::Css(sel) => ("css", sel.as_str(), false),
-            SelectorQuery::XPath(expr) => ("xpath", expr.as_str(), false),
-            SelectorQuery::Text { text, mode } => {
-                ("text", text.as_str(), *mode == TextMatchMode::Exact)
+        let (kind, pattern, exact, clauses_json) = match query {
+            SelectorQuery::Css(sel) => {
+                let clauses = parse_css_clauses(sel);
+                let json = serde_json::to_string(&clauses).unwrap_or_else(|_| "[]".to_owned());
+                ("css", sel.as_str(), false, json)
             }
+            SelectorQuery::XPath(expr) => ("xpath", expr.as_str(), false, "[]".to_owned()),
+            SelectorQuery::Text { text, mode } => (
+                "text",
+                text.as_str(),
+                *mode == TextMatchMode::Exact,
+                "[]".to_owned(),
+            ),
         };
         let pattern_json = serde_json::to_string(pattern).unwrap_or_else(|_| "\"\"".to_owned());
         let script = format!(
@@ -251,10 +514,42 @@ impl UiPage for CdpUiPage {
     const id = __dd.idOf(el);
     if (id && !out.includes(id)) out.push(id);
   }};
+  const norm = (s) => (s || '').replace(/\s+/g, ' ').trim();
+  const isVisible = (el) => {{
+    if (!el || el.nodeType !== 1) return false;
+    const style = getComputedStyle(el);
+    if (style.display === 'none' || style.visibility === 'hidden' || parseFloat(style.opacity || '1') === 0) return false;
+    const rect = el.getBoundingClientRect();
+    return rect.width > 0 && rect.height > 0;
+  }};
   if (kind === 'css') {{
-    const list = root.querySelectorAll(pattern);
-    for (const el of list) {{
-      push(el);
+    const clauses = {clauses_json};
+    for (const clause of clauses) {{
+      let list;
+      try {{
+        list = root.querySelectorAll(clause.base_css || '*');
+      }} catch (_) {{
+        continue;
+      }}
+      for (const el of list) {{
+        if (clause.require_visible && !isVisible(el)) continue;
+        if (clause.text_filters && clause.text_filters.length > 0) {{
+          const txt = norm(el.innerText || el.textContent || '');
+          const txtLower = txt.toLowerCase();
+          let ok = true;
+          for (const f of clause.text_filters) {{
+            const want = norm(f.value || '');
+            if (f.kind === 'text_is') {{
+              if (txt !== want) {{ ok = false; break; }}
+            }} else {{
+              if (!txtLower.includes(want.toLowerCase())) {{ ok = false; break; }}
+            }}
+          }}
+          if (!ok) continue;
+        }}
+        push(el);
+        if (out.length >= limit) break;
+      }}
       if (out.length >= limit) break;
     }}
   }} else if (kind === 'xpath') {{
@@ -264,7 +559,6 @@ impl UiPage for CdpUiPage {
       push(snapshot.snapshotItem(i));
     }}
   }} else if (kind === 'text') {{
-    const norm = (s) => (s || '').replace(/\s+/g, ' ').trim();
     const target = norm(pattern);
     const elements = root.nodeType === 1 ? [root, ...root.querySelectorAll('*')] : [...document.querySelectorAll('*')];
     for (const el of elements) {{
@@ -783,3 +1077,144 @@ const _: () = {
     assert_send_sync::<CdpUiSession>();
     assert_send_sync::<CdpNetworkCaptureHandle>();
 };
+
+#[cfg(test)]
+mod tests {
+    use std::collections::BTreeMap;
+
+    use doudou_cdp::FakeCdpPage;
+
+    use super::*;
+
+    #[test]
+    fn parse_css_clauses_handles_playwright_pseudos_and_comma_lists() {
+        let auth_passkey = r#"[role="dialog"] button:has-text("Passkey"), [role="dialog"] button:has-text("通行密钥"), [class*="login" i] button:has-text("Passkey"), [class*="login" i] button:has-text("通行密钥")"#;
+        let clauses = parse_css_clauses(auth_passkey);
+        assert_eq!(
+            clauses,
+            vec![
+                CssSelectorClause {
+                    base_css: r#"[role="dialog"] button"#.to_owned(),
+                    text_filters: vec![CssTextFilter::HasText("Passkey".to_owned())],
+                    require_visible: false,
+                },
+                CssSelectorClause {
+                    base_css: r#"[role="dialog"] button"#.to_owned(),
+                    text_filters: vec![CssTextFilter::HasText("通行密钥".to_owned())],
+                    require_visible: false,
+                },
+                CssSelectorClause {
+                    base_css: r#"[class*="login" i] button"#.to_owned(),
+                    text_filters: vec![CssTextFilter::HasText("Passkey".to_owned())],
+                    require_visible: false,
+                },
+                CssSelectorClause {
+                    base_css: r#"[class*="login" i] button"#.to_owned(),
+                    text_filters: vec![CssTextFilter::HasText("通行密钥".to_owned())],
+                    require_visible: false,
+                },
+            ]
+        );
+
+        let mixed = r#"button:has-text("Hello, world"), div:is(.a, .b):text-is('Exact, Text'):visible, :text("登录"), div > :visible, div.list:has([data-e2e="item"])"#;
+        let parsed = parse_css_clauses(mixed);
+        assert_eq!(
+            parsed,
+            vec![
+                CssSelectorClause {
+                    base_css: "button".to_owned(),
+                    text_filters: vec![CssTextFilter::HasText("Hello, world".to_owned())],
+                    require_visible: false,
+                },
+                CssSelectorClause {
+                    base_css: "div:is(.a, .b)".to_owned(),
+                    text_filters: vec![CssTextFilter::TextIs("Exact, Text".to_owned())],
+                    require_visible: true,
+                },
+                CssSelectorClause {
+                    base_css: "*".to_owned(),
+                    text_filters: vec![CssTextFilter::Text("登录".to_owned())],
+                    require_visible: false,
+                },
+                CssSelectorClause {
+                    base_css: "div > *".to_owned(),
+                    text_filters: vec![],
+                    require_visible: true,
+                },
+                CssSelectorClause {
+                    base_css: r#"div.list:has([data-e2e="item"])"#.to_owned(),
+                    text_filters: vec![],
+                    require_visible: false,
+                },
+            ]
+        );
+    }
+
+    #[tokio::test]
+    async fn query_all_embeds_parsed_clauses_without_raw_has_text_selector() {
+        let fake = Arc::new(FakeCdpPage::new());
+        fake.push_eval_result("querySelectorAll", json!(["el-1"]));
+        let ui = CdpUiPage::new(Arc::clone(&fake) as Arc<dyn CdpPageOps>);
+
+        let found = ui
+            .query_all(
+                None,
+                &SelectorQuery::css(r#"[role="dialog"] button:has-text("Passkey"):visible"#),
+                5,
+            )
+            .await
+            .expect("query_all");
+        assert_eq!(found, vec![ElementId::new("el-1")]);
+
+        let evals = fake.evaluations();
+        assert_eq!(evals.len(), 1);
+        let expr = &evals[0].expression;
+        assert!(expr.contains(r#""base_css":"[role=\"dialog\"] button""#));
+        assert!(expr.contains(r#""kind":"has_text","value":"Passkey""#));
+        assert!(expr.contains(r#""require_visible":true"#));
+    }
+
+    #[test]
+    fn exchanges_to_snapshot_waits_for_response_body_some_while_allowing_empty_vec() {
+        let filter = CaptureFilter::contains(["/v1/message/send"]);
+        let make_exchange =
+            |id: &str, status: Option<u16>, body: Option<Vec<u8>>| CapturedNetworkExchange {
+                request_id: id.to_owned(),
+                url: "https://imapi.douyin.com/v1/message/send".to_owned(),
+                method: "POST".to_owned(),
+                status,
+                mime_type: Some("application/x-protobuf".to_owned()),
+                request_headers: BTreeMap::new(),
+                response_headers: BTreeMap::new(),
+                request_body: Some(b"req".to_vec()),
+                response_body: body,
+                resource_type: Some("Fetch".to_owned()),
+                timestamp: doudou_core::utc_now(),
+            };
+
+        // In-flight exchange between responseReceived and loadingFinished/getResponseBody:
+        // status is Some(200) but response_body is None -> must NOT emit CapturedResponse yet.
+        let inflight = vec![make_exchange("r-inflight", Some(200), None)];
+        let snap = exchanges_to_snapshot(&inflight, &filter);
+        assert_eq!(snap.requests.len(), 1);
+        assert!(
+            snap.responses.is_empty(),
+            "in-flight exchange without response_body must not emit CapturedResponse"
+        );
+
+        // Completed exchange with empty body Some(vec![]) (e.g. fake/test or empty HTTP body):
+        // MUST still emit CapturedResponse, while CORS OPTIONS preflights are skipped completely.
+        let mut options_preflight = make_exchange("r-options", Some(200), Some(Vec::new()));
+        options_preflight.method = "OPTIONS".to_owned();
+        let completed_empty = vec![
+            options_preflight,
+            make_exchange("r-empty", Some(200), Some(Vec::new())),
+            make_exchange("r-full", Some(200), Some(b"ok".to_vec())),
+        ];
+        let snap2 = exchanges_to_snapshot(&completed_empty, &filter);
+        assert_eq!(snap2.requests.len(), 2);
+        assert_eq!(snap2.responses.len(), 2);
+        assert_eq!(snap2.responses[0].body, b"");
+        assert_eq!(snap2.responses[1].body, b"ok");
+    }
+}

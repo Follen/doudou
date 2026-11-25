@@ -860,6 +860,13 @@ impl Drop for CdpBrowser {
     }
 }
 
+#[derive(Debug, Clone)]
+enum CapturePatternState {
+    Unconfigured,
+    All,
+    Filtered(Vec<String>),
+}
+
 /// Stealth CDP page session targeting a single browser tab without `Runtime.enable`.
 #[derive(Debug)]
 pub struct CdpPage {
@@ -869,6 +876,8 @@ pub struct CdpPage {
     main_frame_id: RwLock<String>,
     isolated_context_id: RwLock<Option<i64>>,
     capture_buffer: NetworkCaptureBuffer,
+    capture_patterns: Arc<Mutex<CapturePatternState>>,
+    capture_started: AtomicBool,
     blocked_media: Arc<AtomicUsize>,
     background_tasks: Mutex<Vec<JoinHandle<()>>>,
 }
@@ -950,6 +959,64 @@ impl CdpPage {
             )
             .await;
 
+        // Best-effort headless User-Agent + Sec-CH-UA sanitization so Douyin endpoints never see
+        // "HeadlessChrome" in HTTP headers or navigator.userAgentData.
+        if let Ok(ver) = conn
+            .send_command_with_timeout(
+                "Browser.getVersion",
+                json!({}),
+                None,
+                Duration::from_secs(2),
+            )
+            .await
+            && let Some(raw_ua) = ver.get("userAgent").and_then(Value::as_str)
+            && raw_ua.contains("HeadlessChrome/")
+        {
+            let clean_ua = raw_ua.replace("HeadlessChrome/", "Chrome/");
+            let full_ver = ver
+                .get("product")
+                .and_then(Value::as_str)
+                .and_then(|p| p.split('/').nth(1))
+                .unwrap_or("131.0.0.0");
+            let major = full_ver.split('.').next().unwrap_or("131");
+            let (platform, platform_version) = if cfg!(windows) {
+                ("Windows", "15.0.0")
+            } else if cfg!(target_os = "macos") {
+                ("macOS", "14.0.0")
+            } else {
+                ("Linux", "6.0.0")
+            };
+            let _ = conn
+                .send_command_with_timeout(
+                    "Emulation.setUserAgentOverride",
+                    json!({
+                        "userAgent": clean_ua,
+                        "acceptLanguage": "zh-CN,zh;q=0.9",
+                        "userAgentMetadata": {
+                            "brands": [
+                                { "brand": "Google Chrome", "version": major },
+                                { "brand": "Chromium", "version": major },
+                                { "brand": "Not_A Brand", "version": "24" }
+                            ],
+                            "fullVersionList": [
+                                { "brand": "Google Chrome", "version": full_ver },
+                                { "brand": "Chromium", "version": full_ver },
+                                { "brand": "Not_A Brand", "version": "24.0.0.0" }
+                            ],
+                            "fullVersion": full_ver,
+                            "platform": platform,
+                            "platformVersion": platform_version,
+                            "architecture": if cfg!(target_arch = "aarch64") { "arm" } else { "x86" },
+                            "model": "",
+                            "mobile": false
+                        }
+                    }),
+                    Some(&session_id),
+                    Duration::from_secs(2),
+                )
+                .await;
+        }
+
         let frame_tree = conn
             .send_command("Page.getFrameTree", json!({}), Some(&session_id))
             .await?;
@@ -966,6 +1033,8 @@ impl CdpPage {
             main_frame_id: RwLock::new(main_frame_id),
             isolated_context_id: RwLock::new(None),
             capture_buffer: NetworkCaptureBuffer::new(),
+            capture_patterns: Arc::new(Mutex::new(CapturePatternState::Unconfigured)),
+            capture_started: AtomicBool::new(false),
             blocked_media: Arc::new(AtomicUsize::new(0)),
             background_tasks: Mutex::new(Vec::new()),
         })
@@ -1471,12 +1540,44 @@ impl CdpPageOps for CdpPage {
         &self,
         url_patterns: Vec<String>,
     ) -> Result<NetworkCaptureBuffer> {
+        {
+            let mut guard = self
+                .capture_patterns
+                .lock()
+                .expect("capture patterns lock poisoned");
+            if url_patterns.is_empty() {
+                *guard = CapturePatternState::All;
+            } else {
+                match &mut *guard {
+                    CapturePatternState::Unconfigured => {
+                        *guard = CapturePatternState::Filtered(url_patterns);
+                    }
+                    CapturePatternState::All => {}
+                    CapturePatternState::Filtered(existing) => {
+                        for pattern in url_patterns {
+                            if !existing.contains(&pattern) {
+                                existing.push(pattern);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        if self.capture_started.swap(true, Ordering::SeqCst) {
+            return Ok(self.capture_buffer.clone());
+        }
+
         let mut events = self.conn.subscribe();
-        self.send("Network.enable", json!({})).await?;
+        if let Err(err) = self.send("Network.enable", json!({})).await {
+            self.capture_started.store(false, Ordering::SeqCst);
+            return Err(err);
+        }
 
         let conn = Arc::clone(&self.conn);
         let session_id = self.session_id.clone();
         let buffer = self.capture_buffer.clone();
+        let patterns = Arc::clone(&self.capture_patterns);
 
         let task = tokio::spawn(async move {
             let mut tracked: HashMap<String, String> = HashMap::new();
@@ -1505,7 +1606,7 @@ impl CdpPageOps for CdpPage {
                             .and_then(Value::as_str)
                             .unwrap_or_default()
                             .to_owned();
-                        if !matches_patterns(&url, &url_patterns) {
+                        if !matches_capture_state(&url, &patterns) {
                             continue;
                         }
                         let method = event
@@ -1549,7 +1650,8 @@ impl CdpPageOps for CdpPage {
                             .and_then(Value::as_str)
                             .unwrap_or_default()
                             .to_owned();
-                        if !tracked.contains_key(req_id) && !matches_patterns(&url, &url_patterns) {
+                        if !tracked.contains_key(req_id) && !matches_capture_state(&url, &patterns)
+                        {
                             continue;
                         }
                         tracked
@@ -1567,11 +1669,19 @@ impl CdpPageOps for CdpPage {
                             .map(str::to_owned);
                         let response_headers =
                             extract_headers(event.params.pointer("/response/headers"));
+                        let resource_type = event
+                            .params
+                            .get("type")
+                            .and_then(Value::as_str)
+                            .map(str::to_owned);
 
                         let updated = buffer.update_by_id(req_id, |item| {
                             item.status = status;
                             item.mime_type.clone_from(&mime_type);
                             item.response_headers.clone_from(&response_headers);
+                            if item.resource_type.is_none() {
+                                item.resource_type.clone_from(&resource_type);
+                            }
                         });
                         if !updated {
                             buffer.upsert(CapturedNetworkExchange {
@@ -1584,11 +1694,7 @@ impl CdpPageOps for CdpPage {
                                 response_headers,
                                 request_body: None,
                                 response_body: None,
-                                resource_type: event
-                                    .params
-                                    .get("type")
-                                    .and_then(Value::as_str)
-                                    .map(str::to_owned),
+                                resource_type,
                                 timestamp: utc_now(),
                             });
                         }
@@ -1609,7 +1715,7 @@ impl CdpPageOps for CdpPage {
                         let sid = session_id.clone();
                         let buf = buffer.clone();
                         tokio::spawn(async move {
-                            if let Ok(body_res) = conn_clone
+                            let bytes = match conn_clone
                                 .send_command_with_timeout(
                                     "Network.getResponseBody",
                                     json!({ "requestId": req_id }),
@@ -1617,23 +1723,36 @@ impl CdpPageOps for CdpPage {
                                     Duration::from_secs(5),
                                 )
                                 .await
-                                && let Some(raw_body) = body_res.get("body").and_then(Value::as_str)
                             {
-                                let base64_encoded = body_res
-                                    .get("base64Encoded")
-                                    .and_then(Value::as_bool)
-                                    .unwrap_or(false);
-                                let decoded = if base64_encoded {
-                                    BASE64.decode(raw_body).ok()
-                                } else {
-                                    Some(raw_body.as_bytes().to_vec())
-                                };
-                                if let Some(bytes) = decoded {
-                                    buf.update_by_id(&req_id, |item| {
-                                        item.response_body = Some(bytes);
-                                    });
+                                Ok(body_res) => {
+                                    if let Some(raw_body) =
+                                        body_res.get("body").and_then(Value::as_str)
+                                    {
+                                        let base64_encoded = body_res
+                                            .get("base64Encoded")
+                                            .and_then(Value::as_bool)
+                                            .unwrap_or(false);
+                                        if base64_encoded {
+                                            BASE64.decode(raw_body).unwrap_or_default()
+                                        } else {
+                                            raw_body.as_bytes().to_vec()
+                                        }
+                                    } else {
+                                        Vec::new()
+                                    }
                                 }
-                            }
+                                Err(err) => {
+                                    debug!(
+                                        request_id = %req_id,
+                                        error = %err,
+                                        "Network.getResponseBody failed after loadingFinished"
+                                    );
+                                    Vec::new()
+                                }
+                            };
+                            buf.update_by_id(&req_id, |item| {
+                                item.response_body = Some(bytes);
+                            });
                         });
                     }
                     _ => {}
@@ -1774,6 +1893,15 @@ impl CdpPage {
 
 fn matches_patterns(url: &str, patterns: &[String]) -> bool {
     patterns.is_empty() || patterns.iter().any(|pattern| url.contains(pattern))
+}
+
+fn matches_capture_state(url: &str, state: &Mutex<CapturePatternState>) -> bool {
+    let guard = state.lock().expect("capture patterns lock poisoned");
+    match &*guard {
+        CapturePatternState::Unconfigured => false,
+        CapturePatternState::All => true,
+        CapturePatternState::Filtered(patterns) => matches_patterns(url, patterns),
+    }
 }
 
 fn extract_post_data(request: Option<&Value>) -> Option<Vec<u8>> {
@@ -2166,5 +2294,233 @@ mod tests {
             .await
             .expect_err("must time out");
         assert_eq!(timeout_err.code, "CDP_COMMAND_TIMEOUT");
+    }
+
+    #[tokio::test]
+    async fn enable_network_capture_merges_patterns_without_duplicate_listeners() {
+        let listener = TcpListener::bind("127.0.0.1:0").await.expect("bind");
+        let addr = listener.local_addr().expect("addr");
+        let recorded_methods = Arc::new(Mutex::new(Vec::<(String, Option<String>)>::new()));
+        let recorded_clone = Arc::clone(&recorded_methods);
+        let (event_tx, mut event_rx) = mpsc::channel::<Value>(32);
+
+        tokio::spawn(async move {
+            let (stream, _) = listener.accept().await.expect("accept");
+            let ws = tokio_tungstenite::accept_async(stream).await.expect("ws");
+            let (mut sink, mut reader) = ws.split();
+
+            loop {
+                tokio::select! {
+                    Some(ev) = event_rx.recv() => {
+                        sink.send(Message::text(ev.to_string())).await.unwrap();
+                    }
+                    msg = reader.next() => {
+                        let Some(Ok(Message::Text(text))) = msg else {
+                            if msg.is_none() {
+                                break;
+                            }
+                            continue;
+                        };
+                        let req: Value = serde_json::from_str(text.as_str()).expect("json");
+                        let id = req["id"].as_u64().expect("id");
+                        let method = req["method"].as_str().expect("method").to_owned();
+                        let req_id_param = req
+                            .pointer("/params/requestId")
+                            .and_then(Value::as_str)
+                            .map(str::to_owned);
+                        recorded_clone
+                            .lock()
+                            .expect("recorded lock")
+                            .push((method.clone(), req_id_param.clone()));
+
+                        let result = match method.as_str() {
+                            "Target.getTargets" => json!({
+                                "targetInfos": [{ "targetId": "t-1", "type": "page" }]
+                            }),
+                            "Target.attachToTarget" => json!({ "sessionId": "s-1" }),
+                            "Page.getFrameTree" => json!({
+                                "frameTree": { "frame": { "id": "f-1" } }
+                            }),
+                            "Network.getResponseBody" => match req_id_param.as_deref() {
+                                Some("req-search") => json!({
+                                    "body": r#"{"status_code":0}"#,
+                                    "base64Encoded": false
+                                }),
+                                Some("req-empty") => json!({
+                                    "body": "",
+                                    "base64Encoded": false
+                                }),
+                                _ => json!({
+                                    "body": "extra",
+                                    "base64Encoded": false
+                                }),
+                            },
+                            _ => json!({}),
+                        };
+                        let reply = json!({ "id": id, "result": result });
+                        sink.send(Message::text(reply.to_string())).await.unwrap();
+                    }
+                }
+            }
+        });
+
+        let conn = Arc::new(
+            CdpConnection::connect(&format!("ws://{addr}/devtools/browser/dedup"))
+                .await
+                .expect("connect"),
+        );
+        let page = CdpPage::attach_or_create(Arc::clone(&conn))
+            .await
+            .expect("attach");
+
+        // Call enable_network_capture twice with distinct patterns.
+        let buf1 = page
+            .enable_network_capture(vec!["/aweme/v1/web/discover/search".to_owned()])
+            .await
+            .expect("first enable");
+        let buf2 = page
+            .enable_network_capture(vec!["/aweme/v1/web/aweme/post".to_owned()])
+            .await
+            .expect("second enable");
+
+        let emit_exchange = |tx: &mpsc::Sender<Value>, req_id: &str, url: &str| {
+            let tx = tx.clone();
+            let req_id = req_id.to_owned();
+            let url = url.to_owned();
+            async move {
+                tx.send(json!({
+                    "method": "Network.requestWillBeSent",
+                    "sessionId": "s-1",
+                    "params": {
+                        "requestId": req_id,
+                        "type": "XHR",
+                        "request": { "url": url, "method": "GET", "headers": {} }
+                    }
+                }))
+                .await
+                .unwrap();
+                tx.send(json!({
+                    "method": "Network.responseReceived",
+                    "sessionId": "s-1",
+                    "params": {
+                        "requestId": req_id,
+                        "type": "XHR",
+                        "response": {
+                            "url": url,
+                            "status": 200,
+                            "mimeType": "application/json",
+                            "headers": { "Content-Type": "application/json" }
+                        }
+                    }
+                }))
+                .await
+                .unwrap();
+                tx.send(json!({
+                    "method": "Network.loadingFinished",
+                    "sessionId": "s-1",
+                    "params": { "requestId": req_id }
+                }))
+                .await
+                .unwrap();
+            }
+        };
+
+        emit_exchange(
+            &event_tx,
+            "req-search",
+            "https://www.douyin.com/aweme/v1/web/discover/search/?keyword=test",
+        )
+        .await;
+        emit_exchange(
+            &event_tx,
+            "req-ignored",
+            "https://www.douyin.com/static/app.js",
+        )
+        .await;
+        emit_exchange(
+            &event_tx,
+            "req-empty",
+            "https://www.douyin.com/aweme/v1/web/aweme/post/?sec_user_id=u1",
+        )
+        .await;
+
+        let search_ex = buf1
+            .wait_for(Duration::from_secs(2), |ex| {
+                ex.request_id == "req-search" && ex.response_body.is_some()
+            })
+            .await
+            .expect("req-search captured");
+        assert_eq!(
+            search_ex.response_body.as_deref(),
+            Some(br#"{"status_code":0}"#.as_slice())
+        );
+
+        let empty_ex = buf2
+            .wait_for(Duration::from_secs(2), |ex| {
+                ex.request_id == "req-empty" && ex.response_body.is_some()
+            })
+            .await
+            .expect("req-empty captured with Some(empty)");
+        assert_eq!(empty_ex.response_body.as_deref(), Some(b"".as_slice()));
+
+        // Allow any duplicate tasks (if they existed) time to run before auditing.
+        tokio::time::sleep(Duration::from_millis(50)).await;
+
+        let snap = buf2.snapshot();
+        assert_eq!(
+            snap.len(),
+            2,
+            "expected exactly 2 captured exchanges: {snap:?}"
+        );
+        assert!(snap.iter().any(|ex| ex.request_id == "req-search"));
+        assert!(snap.iter().any(|ex| ex.request_id == "req-empty"));
+
+        let calls = recorded_methods.lock().expect("recorded lock").clone();
+        let network_enables = calls.iter().filter(|(m, _)| m == "Network.enable").count();
+        assert_eq!(
+            network_enables, 1,
+            "Network.enable should only be called once, got {network_enables}"
+        );
+        let search_body_fetches = calls
+            .iter()
+            .filter(|(m, id)| m == "Network.getResponseBody" && id.as_deref() == Some("req-search"))
+            .count();
+        let empty_body_fetches = calls
+            .iter()
+            .filter(|(m, id)| m == "Network.getResponseBody" && id.as_deref() == Some("req-empty"))
+            .count();
+        assert_eq!(
+            search_body_fetches, 1,
+            "duplicate listener fetched req-search body {search_body_fetches} times"
+        );
+        assert_eq!(
+            empty_body_fetches, 1,
+            "duplicate listener fetched req-empty body {empty_body_fetches} times"
+        );
+
+        // Passing empty url_patterns upgrades to capture-all without spawning another task.
+        let _ = page
+            .enable_network_capture(Vec::new())
+            .await
+            .expect("capture all");
+        let _ = page
+            .enable_network_capture(vec!["/only-something-else".to_owned()])
+            .await
+            .expect("still capture all");
+        emit_exchange(
+            &event_tx,
+            "req-any",
+            "https://www.douyin.com/unmatched/endpoint",
+        )
+        .await;
+        let any_ex = buf2
+            .wait_for(Duration::from_secs(2), |ex| {
+                ex.request_id == "req-any" && ex.response_body.is_some()
+            })
+            .await
+            .expect("capture-all should capture unmatched endpoint");
+        assert_eq!(any_ex.response_body.as_deref(), Some(b"extra".as_slice()));
+
+        page.close().await.expect("close");
     }
 }

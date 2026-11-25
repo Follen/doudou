@@ -28,6 +28,10 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
         with:
@@ -48,6 +52,12 @@ jobs:
       - name: Build release binary
         run: cargo build --release -p doudou-cli
 
+      - name: Run npm wrapper tests and package checks
+        run: |
+          npm run check:manifest
+          npm test
+          npm run test:pack
+
       - name: Smoke-check CLI discovery
         shell: bash
         run: |
@@ -58,3 +68,5 @@ jobs:
           "$BIN" --version
           "$BIN" cli search send --json > /dev/null
           "$BIN" cli schema doctor > /dev/null
+          DOUDOU_BINARY="$BIN" DOUDOU_HOME="${{ runner.temp }}/doudou-home" \
+            node npm/bin/doudou.mjs --skill-dir "${{ runner.temp }}/doudou-skill" cli schema doctor > /dev/null

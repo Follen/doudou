@@ -1,0 +1,19 @@
+{
+  "schema": "doudou.npm-skill-manifest.v1",
+  "package_name": "@follenfang/doudou",
+  "package_version": "0.1.0",
+  "skill_version": "0.1.0",
+  "tree_sha256": "633c7c690b7ea19639d07961b8e9581538cc63d3af29b53213a2aba1b12f68f1",
+  "files": [
+    {
+      "path": "agents/openai.yaml",
+      "bytes": 331,
+      "sha256": "ef3695cacd405c6baf79da56f0654bafa033a5b52b75b338455a96af097a3d06"
+    },
+    {
+      "path": "SKILL.md",
+      "bytes": 1768,
+      "sha256": "4151dcccd527ed09e02b4c17addfd2ff9907af91d20545dbfcbe8e26e81b111e"
+    }
+  ]
+}

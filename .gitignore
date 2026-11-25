@@ -1,4 +1,4 @@
-# Default-deny: only source crates, docs, workflows, and deliverable Skill files are versioned.
+# Default-deny: only source crates, docs, workflows, npm wrapper, and deliverable Skill files are versioned.
 *
 # Local Git worktrees belong under .worktree/<name>.
 .worktree/
@@ -8,6 +8,7 @@
 !PORTING.md
 !Cargo.toml
 !Cargo.lock
+!package.json
 !.comet/
 !.comet/**
 !.github/
@@ -18,3 +19,5 @@
 !docs/**
 !doudou/
 !doudou/**
+!npm/
+!npm/**

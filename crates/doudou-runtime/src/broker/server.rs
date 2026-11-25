@@ -20,7 +20,7 @@ use doudou_core::{
 use doudou_storage::load_profile;
 use rand::RngCore as _;
 use serde_json::{Value, json};
-use tokio::io::{AsyncWriteExt as _, BufReader};
+use tokio::io::{AsyncReadExt as _, AsyncWriteExt as _, BufReader};
 use tokio::net::{TcpListener, TcpStream};
 use tokio::sync::{Mutex as AsyncMutex, Notify};
 use tokio::task::JoinHandle;
@@ -740,7 +740,9 @@ async fn handle_tcp_connection(state: Arc<BrokerState>, stream: TcpStream) {
     let (read_half, mut write_half) = stream.into_split();
     let mut reader = BufReader::new(read_half);
 
-    let response = match read_bounded_line(&mut reader, MAX_FRAME_BYTES).await {
+    let read_outcome = read_bounded_line(&mut reader, MAX_FRAME_BYTES).await;
+    let read_overflow = matches!(&read_outcome, Err(err) if err.code == "BROKER_FRAME_TOO_LARGE");
+    let response = match read_outcome {
         Ok(None) => error_response(
             None,
             &DoudouError::new("BROKER_REQUEST_INVALID", "The broker request is empty."),
@@ -777,6 +779,16 @@ async fn handle_tcp_connection(state: Arc<BrokerState>, stream: TcpStream) {
         let _ = write_half.flush().await;
     }
     let _ = write_half.shutdown().await;
+
+    // Lingering close on oversized frames: drain remaining client bytes briefly so Windows TCP
+    // does not emit an immediate RST that discards the error frame before the client reads it.
+    if read_overflow {
+        let mut discard = [0u8; 8192];
+        let _ = tokio::time::timeout(Duration::from_millis(250), async {
+            while matches!(reader.read(&mut discard).await, Ok(n) if n > 0) {}
+        })
+        .await;
+    }
 }
 
 /// Running loopback TCP broker server handle.

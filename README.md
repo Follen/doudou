@@ -12,22 +12,33 @@ Doudou is a Rust CLI and self-describing Agent Skill for Douyin. It drives your 
 
 ### Requirements & Installation
 
-- Rust toolchain `>= 1.85` (Rust edition 2024)
 - Local Chrome, Chromium, or Edge installed on the machine (auto-discovered, or override via `DOUDOU_CHROME_PATH`)
+- **Via npm (recommended, Node.js `>= 18.18`)** — automatically installs the Agent Skill into `~/.agents/skills/doudou/` and downloads the SHA-256 verified native Rust binary for Windows x64, Linux x64, macOS arm64, or macOS x64 from GitHub Releases (zero runtime dependencies, no Python or Camoufox):
 
-Install the CLI binary from source:
+```bash
+npm install -g @follenfang/doudou
+doudou doctor --launch-probe
+```
+
+Or run without a global install via `npx`:
+
+```bash
+npx --yes @follenfang/doudou -- doctor
+```
+
+Upgrade or uninstall managed Skill + cached binaries (user profiles and collected messages in AppData are preserved):
+
+```bash
+doudou update --check
+doudou update
+doudou uninstall
+```
+
+- **Or build from source (Rust `>= 1.85`, edition 2024)**:
 
 ```bash
 cargo install --path crates/doudou-cli
 ```
-
-Or build without installing:
-
-```bash
-cargo build --release -p doudou-cli
-```
-
-To install the Agent Skill, copy `doudou/` (`doudou/SKILL.md` and `doudou/agents/openai.yaml`) to `~/.agents/skills/doudou/`.
 
 ### Quick Start
 
@@ -102,22 +113,33 @@ Doudou 是基于 Rust + 原生 Chrome CDP 的抖音 CLI 与自解释 Agent Skill
 
 ### 环境要求与安装
 
-- Rust 工具链 `>= 1.85`（Rust edition 2024）
 - 本机已安装 Chrome、Chromium 或 Edge（自动探测，也可用 `DOUDOU_CHROME_PATH` 指定）
+- **通过 npm 安装（推荐，需 Node.js `>= 18.18`）**——自动将精简 Agent Skill 安装到 `~/.agents/skills/doudou/`，并从 GitHub Releases 下载经 SHA-256 校验的原生 Rust 二进制（支持 Windows x64 / Linux x64 / macOS arm64 / macOS x64，零 npm 依赖，无需 Python 或 Camoufox）：
 
-从源码安装 `doudou` 命令：
+```bash
+npm install -g @follenfang/doudou
+doudou doctor --launch-probe
+```
+
+或使用 `npx` 免全局安装运行：
+
+```bash
+npx --yes @follenfang/doudou -- doctor
+```
+
+升级与卸载（保留 AppData 中的 Profile 与聊天/视频采集数据）：
+
+```bash
+doudou update --check
+doudou update
+doudou uninstall
+```
+
+- **或从源码编译安装（Rust `>= 1.85`，edition 2024）**：
 
 ```bash
 cargo install --path crates/doudou-cli
 ```
-
-或仅编译 release 二进制：
-
-```bash
-cargo build --release -p doudou-cli
-```
-
-如需安装 Agent Skill，将仓库中的 `doudou/` 目录（含 `SKILL.md` 和 `agents/openai.yaml`）复制到 `~/.agents/skills/doudou/` 即可。
 
 ### 快速开始
 

@@ -652,8 +652,11 @@ fn data_root_defaults_to_home_and_honors_env_and_cli_overrides() {
     assert!(env_out.status.success());
     let env_events = parse_ndjson(&env_out.stdout);
     assert_eq!(
-        Path::new(env_events[0]["data_root"].as_str().expect("data_root str")),
-        doudou_core::absolutize_path(&env_data)
+        fs::canonicalize(Path::new(
+            env_events[0]["data_root"].as_str().expect("data_root str")
+        ))
+        .expect("canonical actual env_data"),
+        fs::canonicalize(&env_data).expect("canonical expected env_data")
     );
     assert!(env_data.join("message").is_dir());
 
@@ -668,8 +671,11 @@ fn data_root_defaults_to_home_and_honors_env_and_cli_overrides() {
     assert!(cli_out.status.success());
     let cli_events = parse_ndjson(&cli_out.stdout);
     assert_eq!(
-        Path::new(cli_events[0]["data_root"].as_str().expect("data_root str")),
-        doudou_core::absolutize_path(&cli_data)
+        fs::canonicalize(Path::new(
+            cli_events[0]["data_root"].as_str().expect("data_root str")
+        ))
+        .expect("canonical actual cli_data"),
+        fs::canonicalize(&cli_data).expect("canonical expected cli_data")
     );
     assert!(cli_data.join("message").is_dir());
 }

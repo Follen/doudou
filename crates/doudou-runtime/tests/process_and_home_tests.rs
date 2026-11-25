@@ -6,7 +6,9 @@ use doudou_runtime::{
     doctor, lock_is_live, parse_windows_process_json, proc_stat_is_zombie, process_identity,
     same_process, windows_process_query_script,
 };
-use doudou_storage::{create_profile, platform_background_mode};
+use doudou_storage::create_profile;
+#[cfg(windows)]
+use doudou_storage::platform_background_mode;
 use tempfile::TempDir;
 
 #[test]

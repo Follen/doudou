@@ -573,8 +573,11 @@ impl ChromeSession {
 
         let deadline = Instant::now() + timeout;
         let mut last_classification = initial;
+        let mut observed_challenge = last_classification.verification_visible;
+        let mut last_chat_nav: Option<Instant> = None;
         while Instant::now() < deadline {
             let classification = self.classify_login().await?;
+            observed_challenge |= classification.verification_visible;
             if classification.valid {
                 self.takeover = TakeoverState::default();
                 let restore_mode = if previous_mode == SessionMode::Fake {
@@ -586,6 +589,20 @@ impl ChromeSession {
                     .switch_mode(restore_mode, PreserveUrl::KeepDouyinUrl)
                     .await;
                 return Ok(classification);
+            }
+            if !self.fake_backend && !classification.verification_visible {
+                let current_url = match &self.page {
+                    Some(page) => page.current_url().await.unwrap_or_default(),
+                    None => String::new(),
+                };
+                let on_chat = current_url.starts_with("https://www.douyin.com/chat");
+                let has_auth_cookie = self.has_douyin_auth_cookie().await;
+                let can_navigate =
+                    last_chat_nav.is_none_or(|prev| prev.elapsed() >= Duration::from_secs(8));
+                if !on_chat && (observed_challenge || has_auth_cookie) && can_navigate {
+                    last_chat_nav = Some(Instant::now());
+                    let _ = self.navigate_douyin("/chat").await;
+                }
             }
             last_classification = classification;
             tokio::time::sleep(poll_interval).await;
@@ -745,6 +762,25 @@ impl ChromeSession {
         Ok(())
     }
 
+    async fn has_douyin_auth_cookie(&self) -> bool {
+        let Some(page) = &self.page else {
+            return false;
+        };
+        let Ok(cookies) = page
+            .cookies(&["https://www.douyin.com/", "https://imapi.douyin.com/"])
+            .await
+        else {
+            return false;
+        };
+        cookies.iter().any(|c| {
+            !c.value.is_empty()
+                && matches!(
+                    c.name.as_str(),
+                    "sessionid" | "sessionid_ss" | "sid_tt" | "uid_tt"
+                )
+        })
+    }
+
     fn record_login_state(&self, login: &LoginClassification) {
         let Ok(Some(mut metadata)) = read_json(&self.config.paths.metadata, true) else {
             return;
@@ -870,8 +906,11 @@ const VERIFICATION_DETECT_JS: &str = r#"(() => {
 
 const CHAT_LOADED_DETECT_JS: &str = r#"(() => {
   if (!window.location.href.startsWith('https://www.douyin.com/chat')) return false;
-  const items = document.querySelectorAll('[data-e2e="conversation-item"]');
-  return items.length > 0;
+  return Boolean(
+    document.querySelector('[data-e2e="conversation-item"]') ||
+    document.querySelector('[role="listitem"]') ||
+    document.querySelector('[contenteditable="true"]')
+  );
 })()"#;
 
 async fn detect_verification_on_page(page: &dyn CdpPageOps) -> Result<Option<VerificationKind>> {

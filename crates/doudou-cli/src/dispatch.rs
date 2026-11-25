@@ -213,7 +213,7 @@ async fn run_interactive_login(
     client
         .request_async(
             "page.open",
-            json!({ "url": "https://www.douyin.com/" }),
+            json!({ "url": "https://www.douyin.com/chat" }),
             CommandSemantics::Control,
             None,
             true,

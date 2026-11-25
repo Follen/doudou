@@ -350,10 +350,16 @@ impl BrokerState {
         let command_timeout =
             requested_timeout.clamp(MIN_COMMAND_TIMEOUT_SECONDS, MAX_COMMAND_TIMEOUT_SECONDS);
         let params = request.get("params").cloned().unwrap_or_else(|| json!({}));
+        let effective_data_root = request
+            .get("data_root")
+            .and_then(Value::as_str)
+            .map(str::trim)
+            .filter(|s| !s.is_empty())
+            .map_or_else(|| self.data_root.clone(), |s| absolutize_path(Path::new(s)));
 
         let outcome = tokio::time::timeout(
             Duration::from_secs_f64(command_timeout),
-            self.dispatch_with_read_recovery(&command, &params, semantics),
+            self.dispatch_with_read_recovery(&command, &params, semantics, &effective_data_root),
         )
         .await;
 
@@ -508,8 +514,9 @@ impl BrokerState {
         command: &str,
         params: &Value,
         semantics: CommandSemantics,
+        data_root: &Path,
     ) -> Result<Value> {
-        match self.dispatch(command, params).await {
+        match self.dispatch(command, params, data_root).await {
             Ok(val) => Ok(val),
             Err(err) => {
                 if semantics != CommandSemantics::Read
@@ -536,12 +543,12 @@ impl BrokerState {
                         })
                         .await?;
                 }
-                self.dispatch(command, params).await
+                self.dispatch(command, params, data_root).await
             }
         }
     }
 
-    async fn dispatch(&self, command: &str, params: &Value) -> Result<Value> {
+    async fn dispatch(&self, command: &str, params: &Value, data_root: &Path) -> Result<Value> {
         match command {
             "ping" => Ok(json!({
                 "pong": true,
@@ -637,7 +644,7 @@ impl BrokerState {
                             params,
                             &self.session,
                             &self.home,
-                            &self.data_root,
+                            data_root,
                             &self.profile_name,
                         )
                         .await?

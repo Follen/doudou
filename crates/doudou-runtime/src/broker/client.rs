@@ -325,7 +325,17 @@ impl BrokerClient {
             })?;
         let token = self.token().await?;
 
-        Self::send_to_endpoint(host, port, &token, command, params, semantics, request_id).await
+        Self::send_to_endpoint_with_data_root(
+            host,
+            port,
+            &token,
+            command,
+            params,
+            semantics,
+            request_id,
+            Some(&self.data_root),
+        )
+        .await
     }
 
     /// Send a single framed JSON-line request directly to `(host, port)` with `token`.
@@ -340,9 +350,26 @@ impl BrokerClient {
         semantics: CommandSemantics,
         request_id: Option<&str>,
     ) -> Result<Value> {
+        Self::send_to_endpoint_with_data_root(
+            host, port, token, command, params, semantics, request_id, None,
+        )
+        .await
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    async fn send_to_endpoint_with_data_root(
+        host: &str,
+        port: u16,
+        token: &str,
+        command: &str,
+        params: Value,
+        semantics: CommandSemantics,
+        request_id: Option<&str>,
+        data_root: Option<&Path>,
+    ) -> Result<Value> {
         let req_id = request_id.map_or_else(|| random_id("request"), ToOwned::to_owned);
         let timeout_secs = command_timeout_seconds(command, &params);
-        let payload = json!({
+        let mut payload = json!({
             "token": token,
             "request_id": req_id,
             "command": command,
@@ -350,6 +377,11 @@ impl BrokerClient {
             "params": params,
             "command_timeout_seconds": timeout_secs,
         });
+        if let Some(root) = data_root
+            && let Some(obj) = payload.as_object_mut()
+        {
+            obj.insert("data_root".to_owned(), json!(root.display().to_string()));
+        }
 
         let stream = TcpStream::connect((host, port)).await.map_err(|err| {
             if semantics == CommandSemantics::Write {

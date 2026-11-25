@@ -1516,11 +1516,7 @@ impl CdpPageOps for CdpPage {
                             .to_owned();
                         let request_headers =
                             extract_headers(event.params.pointer("/request/headers"));
-                        let request_body = event
-                            .params
-                            .pointer("/request/postData")
-                            .and_then(Value::as_str)
-                            .map(|s| s.as_bytes().to_vec());
+                        let request_body = extract_post_data(event.params.pointer("/request"));
                         let resource_type = event
                             .params
                             .get("type")
@@ -1778,6 +1774,28 @@ impl CdpPage {
 
 fn matches_patterns(url: &str, patterns: &[String]) -> bool {
     patterns.is_empty() || patterns.iter().any(|pattern| url.contains(pattern))
+}
+
+fn extract_post_data(request: Option<&Value>) -> Option<Vec<u8>> {
+    let req = request?;
+    if let Some(entries) = req.get("postDataEntries").and_then(Value::as_array) {
+        let mut combined = Vec::new();
+        let mut decoded_any = false;
+        for entry in entries {
+            if let Some(b64) = entry.get("bytes").and_then(Value::as_str)
+                && let Ok(chunk) = BASE64.decode(b64)
+            {
+                combined.extend_from_slice(&chunk);
+                decoded_any = true;
+            }
+        }
+        if decoded_any {
+            return Some(combined);
+        }
+    }
+    req.get("postData")
+        .and_then(Value::as_str)
+        .map(|s| s.as_bytes().to_vec())
 }
 
 fn extract_headers(value: Option<&Value>) -> BTreeMap<String, String> {

@@ -23,18 +23,19 @@ pub fn registration_path(home: &Path, data_root: &Path, profile_id: &str) -> Pat
     broker_registry_root(home).join(format!("{}.json", sha256_str(&identity)))
 }
 
-/// Check whether a persisted broker descriptor belongs to `(data_root, profile_id)` and is live.
-pub fn descriptor_is_live(descriptor: &Value, data_root: &Path, profile_id: &str) -> bool {
+/// Check whether a persisted broker descriptor belongs to `profile_id` and is live.
+///
+/// Profiles live in shared OS `AppData`, so a live broker for `profile_id` can serve
+/// requests from any project `data_root` (passed per request). Never treat a live
+/// broker from another working directory as dead.
+pub fn descriptor_is_live(descriptor: &Value, _data_root: &Path, profile_id: &str) -> bool {
     let Some(obj) = descriptor.as_object() else {
         return false;
     };
     if obj.get("schema").and_then(Value::as_str) != Some(BROKER_DESCRIPTOR_SCHEMA) {
         return false;
     }
-    let Some(desc_root) = obj.get("data_root").and_then(Value::as_str) else {
-        return false;
-    };
-    if absolutize_path(Path::new(desc_root)) != absolutize_path(data_root) {
+    if obj.get("data_root").and_then(Value::as_str).is_none() {
         return false;
     }
     if obj.get("profile_id").and_then(Value::as_str) != Some(profile_id) {

@@ -533,9 +533,30 @@ impl ChromeSession {
             let _ = self.navigate_douyin("/chat").await?;
         }
 
-        let initial = self.classify_login().await?;
+        let mut initial = self.classify_login().await?;
         if initial.valid {
             return Ok(initial);
+        }
+
+        // After navigating to /chat in a freshly launched headless Chrome, Douyin's SPA
+        // needs a short hydration window to fire `get_by_user_init` and render chat DOM
+        // even when valid auth cookies are already persisted in the profile.
+        if !self.fake_backend
+            && !initial.verification_visible
+            && self.has_douyin_auth_cookie().await
+        {
+            let settle_deadline = Instant::now() + Duration::from_secs(12);
+            while Instant::now() < settle_deadline {
+                tokio::time::sleep(Duration::from_millis(300)).await;
+                let probe = self.classify_login().await?;
+                if probe.valid {
+                    return Ok(probe);
+                }
+                initial = probe;
+                if initial.verification_visible {
+                    break;
+                }
+            }
         }
 
         let AuthPolicy::InteractiveTakeover {

@@ -594,3 +594,82 @@ fn broker_launcher_spawns_serve_subprocess_and_handles_fake_browser_rpc() {
     let stop_events = parse_ndjson(&stop.stdout);
     assert_eq!(stop_events[1]["result"]["stopped"], true);
 }
+
+#[test]
+fn data_root_defaults_to_home_and_honors_env_and_cli_overrides() {
+    let dir = TempDir::new().expect("tempdir");
+    let cwd = dir.path().join("clean-cwd");
+    let home = dir.path().join("appdata");
+    let env_data = dir.path().join("env-data");
+    let cli_data = dir.path().join("cli-data");
+    fs::create_dir_all(&cwd).expect("mkdir cwd");
+
+    // 1. Only --home passed: data_root defaults to home and CWD stays clean
+    let default_out = Command::new(doudou_bin())
+        .current_dir(&cwd)
+        .env_remove("DOUDOU_DATA_ROOT")
+        .env_remove("DOUDOU_HOME")
+        .args([
+            "--home",
+            &home.display().to_string(),
+            "profile",
+            "create",
+            "--profile",
+            "default-root",
+        ])
+        .output()
+        .expect("run default-root profile create");
+    assert!(
+        default_out.status.success(),
+        "stderr: {}",
+        String::from_utf8_lossy(&default_out.stderr)
+    );
+    let default_events = parse_ndjson(&default_out.stdout);
+    assert_eq!(
+        default_events[0]["data_root"], default_events[0]["home"],
+        "data_root must default to home: {:?}",
+        default_events[0]
+    );
+    assert!(
+        home.join("message")
+            .join("profiles")
+            .join("default-root")
+            .is_dir()
+    );
+    assert!(
+        !cwd.join("message").exists(),
+        "CWD must not be polluted with message/"
+    );
+
+    // 2. DOUDOU_DATA_ROOT overrides default home
+    let env_out = Command::new(doudou_bin())
+        .current_dir(&cwd)
+        .env("DOUDOU_HOME", &home)
+        .env("DOUDOU_DATA_ROOT", &env_data)
+        .args(["doctor"])
+        .output()
+        .expect("run doctor with DOUDOU_DATA_ROOT");
+    assert!(env_out.status.success());
+    let env_events = parse_ndjson(&env_out.stdout);
+    assert_eq!(
+        Path::new(env_events[0]["data_root"].as_str().expect("data_root str")),
+        doudou_core::absolutize_path(&env_data)
+    );
+    assert!(env_data.join("message").is_dir());
+
+    // 3. Explicit --data-root beats DOUDOU_DATA_ROOT
+    let cli_out = Command::new(doudou_bin())
+        .current_dir(&cwd)
+        .env("DOUDOU_HOME", &home)
+        .env("DOUDOU_DATA_ROOT", &env_data)
+        .args(["--data-root", &cli_data.display().to_string(), "doctor"])
+        .output()
+        .expect("run doctor with --data-root");
+    assert!(cli_out.status.success());
+    let cli_events = parse_ndjson(&cli_out.stdout);
+    assert_eq!(
+        Path::new(cli_events[0]["data_root"].as_str().expect("data_root str")),
+        doudou_core::absolutize_path(&cli_data)
+    );
+    assert!(cli_data.join("message").is_dir());
+}

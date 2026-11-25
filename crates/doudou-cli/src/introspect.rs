@@ -815,7 +815,8 @@ pub fn build_schema(command_path: &[String]) -> Result<Value> {
             },
             "data_root": {
                 "override_flag": "--data-root <DIR>",
-                "default": "current working directory",
+                "env_var": "DOUDOU_DATA_ROOT",
+                "default": "doudou_home (OS AppData)",
                 "stores": ["message/profiles/<profile_id>/conversations/", "message/profiles/<profile_id>/plans/", "message/profiles/<profile_id>/sends/", "message/profiles/<profile_id>/interactions/", "message/profiles/<profile_id>/diagnostics/"]
             }
         },

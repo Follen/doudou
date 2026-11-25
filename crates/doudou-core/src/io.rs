@@ -79,18 +79,30 @@ pub fn normalize_lookup(value: &str) -> String {
         .to_lowercase()
 }
 
-/// Resolve the project data root directory, defaulting to the current working directory.
-pub fn resolve_data_root(candidate: Option<&Path>) -> Result<PathBuf> {
-    let path = match candidate {
-        Some(p) => expand_tilde(p),
-        None => std::env::current_dir().map_err(|err| {
-            DoudouError::new(
-                "IO_ERROR",
-                format!("Failed to resolve current directory: {err}"),
-            )
-        })?,
-    };
-    Ok(absolutize_path(&path))
+/// Resolve the business data root directory (`message/profiles/<name>/`).
+///
+/// Priority:
+/// 1. Explicit `candidate` (`--data-root`).
+/// 2. `DOUDOU_DATA_ROOT` environment variable (when non-empty).
+/// 3. `default_home` (the resolved `doudou_home`, defaulting to OS `AppData`).
+pub fn resolve_data_root(candidate: Option<&Path>, default_home: &Path) -> PathBuf {
+    let env_override = std::env::var("DOUDOU_DATA_ROOT").ok();
+    resolve_data_root_with_env(candidate, env_override.as_deref(), default_home)
+}
+
+/// Pure helper backing [`resolve_data_root`] for deterministic testing without mutating process env.
+pub fn resolve_data_root_with_env(
+    candidate: Option<&Path>,
+    env_override: Option<&str>,
+    default_home: &Path,
+) -> PathBuf {
+    if let Some(explicit) = candidate {
+        return absolutize_path(&expand_tilde(explicit));
+    }
+    if let Some(configured) = env_override.map(str::trim).filter(|v| !v.is_empty()) {
+        return absolutize_path(&expand_tilde(Path::new(configured)));
+    }
+    absolutize_path(default_home)
 }
 
 /// Expand a leading `~` against the user's home directory.

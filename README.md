@@ -46,17 +46,16 @@ doudou cli schema protocol send
 
 ### Storage Boundary
 
-Profiles, browser state, and broker metadata live in standard OS AppData (overridable via `--home` or `DOUDOU_HOME`):
+Profiles, browser state, broker metadata, and collected records all default to standard OS AppData:
 
-- **Windows**: `%LOCALAPPDATA%\doudou\profiles\<name>\`
-- **macOS**: `~/Library/Application Support/doudou/profiles/<name>/`
-- **Linux**: `${XDG_DATA_HOME:-~/.local/share}/doudou/profiles/<name>/`
+- **Windows**: `%LOCALAPPDATA%\doudou\`
+- **macOS**: `~/Library/Application Support/doudou/`
+- **Linux**: `${XDG_DATA_HOME:-~/.local/share}/doudou/`
 
-Collected conversations, messages, images, videos, comments, write plans, and receipts always stay inside the current working directory (overridable via `--data-root`):
+Layout & overrides:
 
-```text
-message/profiles/<name>/
-```
+- **Home (`--home` / `DOUDOU_HOME`)**: stores `profiles/<name>/` and `brokers/`.
+- **Data root (`--data-root` / `DOUDOU_DATA_ROOT`)**: defaults to `<doudou_home>`, storing `message/profiles/<name>/` (conversations, messages, decrypted images, videos, comments, write plans, receipts, and diagnostics). Pass `--data-root <dir>` whenever you want project-isolated output.
 
 ### How It Works
 
@@ -137,17 +136,16 @@ doudou cli schema protocol send
 
 ### 数据与目录边界
 
-Profile、Chrome 用户数据与 broker 状态存放在系统标准 AppData 目录（可用 `--home` 或 `DOUDOU_HOME` 覆盖）：
+Profile、Chrome 用户数据、broker 状态以及采集记录默认统一存放在系统标准 AppData 目录：
 
-- **Windows**：`%LOCALAPPDATA%\doudou\profiles\<name>\`
-- **macOS**：`~/Library/Application Support/doudou/profiles/<name>/`
-- **Linux**：`${XDG_DATA_HOME:-~/.local/share}/doudou/profiles/<name>/`
+- **Windows**：`%LOCALAPPDATA%\doudou\`
+- **macOS**：`~/Library/Application Support/doudou/`
+- **Linux**：`${XDG_DATA_HOME:-~/.local/share}/doudou/`
 
-采集到的会话、消息、解密图片、视频、评论、写计划与回执始终写入当前工作目录（可用 `--data-root` 覆盖）：
+目录职责与覆盖方式：
 
-```text
-message/profiles/<name>/
-```
+- **Home（`--home` / `DOUDOU_HOME`）**：存放 `profiles/<name>/` 与 `brokers/`。
+- **Data Root（`--data-root` / `DOUDOU_DATA_ROOT`）**：默认指向 `<doudou_home>`，存放 `message/profiles/<name>/`（会话、消息、解密图片、视频、评论、写计划、回执与诊断）；需要按项目单独存放时显式传入 `--data-root <目录>` 即可。
 
 ### 核心机制
 

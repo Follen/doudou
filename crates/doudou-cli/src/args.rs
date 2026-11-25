@@ -11,7 +11,7 @@ use clap::{Args, Parser, Subcommand, ValueEnum};
     name = "doudou",
     version,
     about = "Self-describing Douyin Chrome CDP CLI for chat, video, profile, and broker automation.",
-    long_about = "Doudou controls local Chrome profiles over native Rust CDP (never invoking Runtime.enable) to read Douyin group/direct chats, stranger message requests, images, users, videos, and comments, and to execute confirmed two-phase UI writes.\n\nStorage boundaries:\n  - Browser profiles & broker state live in OS AppData (%LOCALAPPDATA%\\doudou, ~/Library/Application Support/doudou, or ~/.local/share/doudou), overridable via --home or DOUDOU_HOME.\n  - Collected chats, media, write plans, receipts, and diagnostics live under <data-root>/message/profiles/<name>/.\n\nOutput contract:\n  - All runtime commands emit compact NDJSON lines on stdout: started -> result (or error).\n  - Discovery commands (`cli search`, `cli schema`) output directly for fast agent and human inspection.",
+    long_about = "Doudou controls local Chrome profiles over native Rust CDP (never invoking Runtime.enable) to read Douyin group/direct chats, stranger message requests, images, users, videos, and comments, and to execute confirmed two-phase UI writes.\n\nStorage boundaries:\n  - Browser profiles & broker state live in OS AppData (%LOCALAPPDATA%\\doudou, ~/Library/Application Support/doudou, or ~/.local/share/doudou), overridable via --home or DOUDOU_HOME.\n  - Collected chats, media, write plans, receipts, and diagnostics live under <data-root>/message/profiles/<name>/, defaulting to <doudou_home> (OS AppData) and overridable via --data-root or DOUDOU_DATA_ROOT.\n\nOutput contract:\n  - All runtime commands emit compact NDJSON lines on stdout: started -> result (or error).\n  - Discovery commands (`cli search`, `cli schema`) output directly for fast agent and human inspection.",
     after_help = "QUICK START:\n  doudou doctor\n  doudou profile list\n  doudou profile create --profile work --display-name \"Work\"\n  doudou session login --profile work\n  doudou conversations refresh --profile work --kind all --inbox all\n  doudou cli search \"send\"\n  doudou cli schema protocol send",
     propagate_version = true
 )]
@@ -26,13 +26,13 @@ pub struct Cli {
     )]
     pub home: Option<PathBuf>,
 
-    /// Override project-local business data root (defaults to current working directory).
+    /// Override business data root (defaults to `DOUDOU_DATA_ROOT` or `<doudou_home>`).
     #[arg(
         long = "data-root",
         global = true,
         value_name = "DIR",
-        help = "Project business data root (message/profiles/<name>/; defaults to CWD)",
-        long_help = "Project-local business data root where message/profiles/<name>/ records, media, write plans, receipts, and diagnostics are stored. Defaults to the current working directory."
+        help = "Override business data root (message/profiles/<name>/; defaults to --home / OS AppData)",
+        long_help = "Override the business data root where message/profiles/<name>/ records, media, write plans, receipts, and diagnostics are stored. Priority: --data-root > DOUDOU_DATA_ROOT > <doudou_home> (OS AppData)."
     )]
     pub data_root: Option<PathBuf>,
 
@@ -46,14 +46,14 @@ pub struct Cli {
 pub enum Commands {
     /// Inspect runtime readiness, OS AppData/data-root writability, Chrome discovery, profiles, and brokers.
     #[command(
-        long_about = "Check environment health before operating on profiles. Verifies OS AppData (--home / DOUDOU_HOME) and project --data-root writability, discovers local Chrome/Chromium/Edge binaries, lists profiles and active brokers, and optionally runs a live headless Chrome CDP launch probe without Runtime.enable.\n\nRejects legacy Profile/ directory casing with LEGACY_UNSUPPORTED before probing.",
+        long_about = "Check environment health before operating on profiles. Verifies OS AppData (--home / DOUDOU_HOME) and --data-root (DOUDOU_DATA_ROOT, defaulting to <doudou_home>) writability, discovers local Chrome/Chromium/Edge binaries, lists profiles and active brokers, and optionally runs a live headless Chrome CDP launch probe without Runtime.enable.\n\nRejects legacy Profile/ directory casing with LEGACY_UNSUPPORTED before probing.",
         after_help = "EXAMPLES:\n  doudou doctor\n  doudou doctor --launch-probe\n  doudou doctor --profile work --chrome-binary \"C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe\"\n\nERROR CODES: LEGACY_UNSUPPORTED, CHROME_NOT_FOUND, CHROME_LAUNCH_FAILED, CDP_CONNECT_FAILED, PROFILE_NOT_FOUND"
     )]
     Doctor(DoctorArgs),
 
     /// Create, list, inspect, log in, or delete Chrome profiles in OS `AppData`.
     #[command(
-        long_about = "Manage isolated Douyin Chrome profiles stored under <doudou_home>/profiles/<name>/ (schema doudou.profile.v3, runtime chrome-rust, chrome-config.json). Project-local collected records are stored separately under <data_root>/message/profiles/<name>/.",
+        long_about = "Manage isolated Douyin Chrome profiles stored under <doudou_home>/profiles/<name>/ (schema doudou.profile.v3, runtime chrome-rust, chrome-config.json). Collected records live under <data_root>/message/profiles/<name>/ (defaulting to <doudou_home>).",
         after_help = "EXAMPLES:\n  doudou profile list\n  doudou profile create --profile work --display-name \"Work Account\"\n  doudou profile status --profile work\n  doudou profile login --profile work --timeout 600\n  doudou profile delete --profile work --with-messages\n\nERROR CODES: PROFILE_EXISTS, PROFILE_NOT_FOUND, PROFILE_LOCKED, PROFILE_METADATA_MISMATCH, LEGACY_UNSUPPORTED"
     )]
     Profile {

@@ -15,7 +15,7 @@ pub use identity::{
 pub use io::{
     absolutize_path, atomic_write_bytes, atomic_write_json, atomic_write_jsonl, atomic_write_text,
     emit, expand_tilde, is_dir_writable, normalize_lookup, random_id, read_json, read_jsonl,
-    resolve_data_root, safe_segment, sha256_bytes, sha256_str, utc_now,
+    resolve_data_root, resolve_data_root_with_env, safe_segment, sha256_bytes, sha256_str, utc_now,
 };
 pub use paths::{
     CURRENT_IDENTITY_SCHEMA, CURRENT_PROFILE_RUNTIME, CURRENT_PROFILE_SCHEMA, ProfilePaths,
@@ -77,6 +77,29 @@ mod tests {
         assert_eq!(
             paths.message,
             project.join("message").join("profiles").join("work")
+        );
+    }
+
+    #[test]
+    fn resolve_data_root_defaults_to_home_and_supports_overrides() {
+        let dir = TempDir::new().unwrap();
+        let home = absolutize_path(&dir.path().join("appdata"));
+        let env_root = dir.path().join("env-data");
+        let explicit_root = dir.path().join("cli-data");
+
+        assert_eq!(resolve_data_root_with_env(None, None, &home), home);
+        assert_eq!(resolve_data_root_with_env(None, Some("   "), &home), home);
+        assert_eq!(
+            resolve_data_root_with_env(None, Some(&env_root.display().to_string()), &home),
+            absolutize_path(&env_root)
+        );
+        assert_eq!(
+            resolve_data_root_with_env(
+                Some(&explicit_root),
+                Some(&env_root.display().to_string()),
+                &home
+            ),
+            absolutize_path(&explicit_root)
         );
     }
 

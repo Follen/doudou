@@ -99,7 +99,7 @@ pub const fn command_name(command: &Commands) -> &'static str {
 /// Resolve `(home, data_root)` from global CLI options, environment variables, and OS defaults.
 pub fn resolve_roots(cli: &Cli) -> Result<(std::path::PathBuf, std::path::PathBuf)> {
     let home = doudou_home(cli.home.as_deref());
-    let data_root = resolve_data_root(cli.data_root.as_deref())?;
+    let data_root = resolve_data_root(cli.data_root.as_deref(), &home);
     Ok((home, data_root))
 }
 

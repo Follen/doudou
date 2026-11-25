@@ -142,24 +142,29 @@ async fn invalid_token_and_oversized_request_frame_are_rejected_cleanly() {
 
     // 2. Oversized request line (> 16 MiB) returns BROKER_FRAME_TOO_LARGE cleanly.
     {
-        let mut stream = TcpStream::connect((endpoint.host.as_str(), endpoint.port))
+        let stream = TcpStream::connect((endpoint.host.as_str(), endpoint.port))
             .await
             .expect("connect");
-        let (read_half, mut write_half) = stream.split();
+        let (read_half, mut write_half) = stream.into_split();
         let mut reader = BufReader::new(read_half);
 
-        let chunk = vec![b'a'; 64 * 1024];
-        let chunks_needed = (MAX_FRAME_BYTES / chunk.len()) + 2;
-        for _ in 0..chunks_needed {
-            if write_half.write_all(&chunk).await.is_err() {
-                break;
+        // Read concurrently with writing so Windows TCP does not RST unread response bytes
+        // when the server closes the connection immediately after rejecting >16 MiB.
+        let writer_task = tokio::spawn(async move {
+            let chunk = vec![b'a'; 64 * 1024];
+            let chunks_needed = (MAX_FRAME_BYTES / chunk.len()) + 2;
+            for _ in 0..chunks_needed {
+                if write_half.write_all(&chunk).await.is_err() {
+                    break;
+                }
             }
-        }
-        let _ = write_half.write_all(b"\n").await;
-        let _ = write_half.flush().await;
+            let _ = write_half.write_all(b"\n").await;
+            let _ = write_half.flush().await;
+        });
 
         let mut line = String::new();
         reader.read_line(&mut line).await.expect("read error frame");
+        let _ = writer_task.await;
         let resp: Value = serde_json::from_str(&line).expect("json error response");
         assert_eq!(resp["ok"], false);
         assert_eq!(resp["error"]["code"], "BROKER_FRAME_TOO_LARGE");

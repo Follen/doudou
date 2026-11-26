@@ -3,7 +3,7 @@
 use std::process::Command;
 use std::sync::OnceLock;
 
-use chrono::{DateTime, Utc};
+use chrono::{DateTime, NaiveDateTime, Utc};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
@@ -129,6 +129,22 @@ fn query_process_identity_uncached(pid: u32) -> Option<ProcessIdentity> {
     parse_windows_process_json(&stdout)
 }
 
+/// Parse `LC_ALL=C TZ=UTC ps -p <pid> -o state=,lstart=` output into `(is_zombie, utc_rfc3339_start)`.
+pub fn parse_ps_state_lstart(stdout: &str) -> Option<(bool, Option<String>)> {
+    let line = stdout.lines().find(|l| !l.trim().is_empty())?.trim();
+    let mut parts = line.split_whitespace();
+    let state = parts.next()?;
+    let is_zombie = state.starts_with('Z');
+    // `lstart` format is `<Weekday> <Mon> <Day> <HH:MM:SS> <YYYY>`; drop `<Weekday>`.
+    let _weekday = parts.next();
+    let rest = parts.collect::<Vec<_>>().join(" ");
+    let start = NaiveDateTime::parse_from_str(&rest, "%b %e %H:%M:%S %Y")
+        .or_else(|_| NaiveDateTime::parse_from_str(&rest, "%b %d %H:%M:%S %Y"))
+        .ok()
+        .map(|naive| DateTime::<Utc>::from_naive_utc_and_offset(naive, Utc).to_rfc3339());
+    Some((is_zombie, start))
+}
+
 #[cfg(not(windows))]
 fn query_process_identity_uncached(pid: u32) -> Option<ProcessIdentity> {
     use std::fs;
@@ -155,7 +171,29 @@ fn query_process_identity_uncached(pid: u32) -> Option<ProcessIdentity> {
         });
     }
 
-    // Fallback for Unix platforms without /proc (e.g. macOS): probe via `kill -0`.
+    // Unix platforms without /proc (e.g. macOS): query state and UTC start time via `ps`.
+    if let Ok(output) = Command::new("ps")
+        .env("LC_ALL", "C")
+        .env("TZ", "UTC")
+        .args(["-p", &pid.to_string(), "-o", "state=,lstart="])
+        .output()
+    {
+        if !output.status.success() {
+            return None;
+        }
+        let stdout = String::from_utf8_lossy(&output.stdout);
+        let (is_zombie, start) = parse_ps_state_lstart(&stdout)?;
+        if is_zombie {
+            return None;
+        }
+        return Some(ProcessIdentity {
+            pid,
+            start,
+            command: None,
+        });
+    }
+
+    // Final fallback when `ps` is unavailable: probe via `kill -0`.
     let status = Command::new("kill")
         .args(["-0", &pid.to_string()])
         .status()
@@ -250,5 +288,22 @@ mod tests {
     fn proc_stat_detects_zombies() {
         assert!(proc_stat_is_zombie("1234 (chrome (1)) Z 1 2 3"));
         assert!(!proc_stat_is_zombie("1234 (chrome) S 1 2 3"));
+    }
+
+    #[test]
+    fn ps_state_lstart_parses_utc_and_detects_zombies() {
+        assert_eq!(
+            parse_ps_state_lstart("Ss   Thu Nov  5 09:07:25 2026\n"),
+            Some((false, Some("2026-11-05T09:07:25+00:00".to_owned())))
+        );
+        assert_eq!(
+            parse_ps_state_lstart("S    Wed Nov 25 18:07:25 2026\n"),
+            Some((false, Some("2026-11-25T18:07:25+00:00".to_owned())))
+        );
+        assert_eq!(
+            parse_ps_state_lstart("Z+   Wed Nov 25 18:07:25 2026\n"),
+            Some((true, Some("2026-11-25T18:07:25+00:00".to_owned())))
+        );
+        assert_eq!(parse_ps_state_lstart("   \n"), None);
     }
 }

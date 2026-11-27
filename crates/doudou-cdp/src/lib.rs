@@ -10,7 +10,7 @@ pub use cdp::{
     CapturedNetworkExchange, CdpBrowser, CdpConnection, CdpEvent, CdpPage, CdpPageOps, Cookie,
     DEFAULT_COMMAND_TIMEOUT, EvalWorld, FORBIDDEN_CDP_METHODS, FetchRequest, FetchResponse,
     FetchResponseKind, ISOLATED_WORLD_NAME, KeyEventSpec, KeyModifiers, LoadWait, MediaBlockMode,
-    MouseButton, NetworkCaptureBuffer,
+    MouseButton, NetworkCaptureBuffer, ScreenshotClip,
 };
 pub use chrome::{
     BrowserBrand, CHROME_BIN_ENV, ChromeBinary, ChromeLaunchOptions, ChromeProcess, DEFAULT_LANG,

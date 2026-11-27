@@ -679,3 +679,66 @@ fn data_root_defaults_to_home_and_honors_env_and_cli_overrides() {
     );
     assert!(cli_data.join("message").is_dir());
 }
+
+#[test]
+fn cli_search_and_parser_expose_headless_qr_and_sms_auth_commands() {
+    let qr_search = run_doudou(&["cli", "search", "qr", "--json"]);
+    assert!(qr_search.status.success());
+    let qr_payload: Value = serde_json::from_slice(&qr_search.stdout).expect("valid qr JSON");
+    let qr_paths: Vec<&str> = qr_payload["matches"]
+        .as_array()
+        .expect("matches")
+        .iter()
+        .filter_map(|m| m["path"].as_str())
+        .collect();
+    assert!(
+        qr_paths.contains(&"session auth start"),
+        "qr paths: {qr_paths:?}"
+    );
+    assert!(
+        qr_paths.contains(&"session auth refresh-qr"),
+        "qr paths: {qr_paths:?}"
+    );
+
+    let sms_search = run_doudou(&["cli", "search", "sms", "--json"]);
+    assert!(sms_search.status.success());
+    let sms_payload: Value = serde_json::from_slice(&sms_search.stdout).expect("valid sms JSON");
+    let sms_paths: Vec<&str> = sms_payload["matches"]
+        .as_array()
+        .expect("matches")
+        .iter()
+        .filter_map(|m| m["path"].as_str())
+        .collect();
+    assert!(
+        sms_paths.contains(&"session auth sms-send"),
+        "sms paths: {sms_paths:?}"
+    );
+    assert!(
+        sms_paths.contains(&"session auth sms-verify"),
+        "sms paths: {sms_paths:?}"
+    );
+
+    assert!(
+        Cli::try_parse_from([
+            "doudou",
+            "session",
+            "login",
+            "--profile",
+            "work",
+            "--headless"
+        ])
+        .is_ok()
+    );
+    assert!(
+        Cli::try_parse_from([
+            "doudou",
+            "session",
+            "auth",
+            "sms-verify",
+            "--profile",
+            "work",
+            "--code-stdin"
+        ])
+        .is_ok()
+    );
+}

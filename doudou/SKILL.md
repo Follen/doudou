@@ -21,3 +21,4 @@ doudou <command> -h
 3. **两阶段写入**：写命令默认生成一次性 plan；向用户展示精确预览并获确认后，带 `--confirm --plan-id <id>` 执行一次。遇到 `WRITE_RESULT_UNKNOWN` 先只读核对，禁止自动重试。
 4. **结构化输出与隐私**：stdout 为 NDJSON，逐行解析后只投影必要字段；默认不输出 Cookie、token、`sec_uid` 或未要求的聊天正文。
 5. **只信真实错误码**：保持 `PROFILE_*`、`AUTH_*`、`WRITE_RESULT_UNKNOWN`、`PROTOCOL_*`、`UI_*` 原始分类，不猜测绕过。
+6. **无头扫码与短信登录**：远程/无界面环境优先后台运行 `doudou session login --headless --profile <name>`（同时保活无头 Chrome 并在扫码确认后自动回调退出）；按宿主能力向用户展示二维码（支持 HTML 渲染则用 `latest-qr.png` + `expire_time` 做倒计时卡片，支持图片则发 `latest-qr.png`，纯文本终端用 `--terminal-qr` 或 `qr_text`）；短信登录/二次验证用 `session auth sms-send` / `sms-verify --code-stdin`，严禁把手机号或验证码明文写入日志。

@@ -15,7 +15,7 @@ pub use args::{
     BrokerCommand, ChatCommand, Cli, CliMetaCommand, Commands, ConversationKindFilter,
     ConversationsCommand, DoctorArgs, IdentityCommand, InboxFilter, MessagesCommand,
     PageDoctorArgs, ProfileCommand, ProtocolCommand, ReplyArgs, SendArgs, SendBatchArgs,
-    SessionCommand, VideoCommand, VideosCommand,
+    SessionAuthCommand, SessionCommand, VideoCommand, VideosCommand,
 };
 pub use dispatch::{command_name, dispatch, dispatch_with_roots, resolve_roots};
 pub use introspect::{

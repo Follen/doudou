@@ -336,6 +336,21 @@ pub struct Cookie {
     pub same_site: Option<String>,
 }
 
+/// Rectangular viewport clip region passed to CDP `Page.captureScreenshot`.
+#[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
+pub struct ScreenshotClip {
+    /// Left offset in CSS pixels.
+    pub x: f64,
+    /// Top offset in CSS pixels.
+    pub y: f64,
+    /// Width in CSS pixels.
+    pub width: f64,
+    /// Height in CSS pixels.
+    pub height: f64,
+    /// Device scale factor (e.g. `2.0` for crisp QR codes).
+    pub scale: f64,
+}
+
 /// Media/asset blocking policy for [`CdpPageOps::enable_media_abort`].
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
@@ -515,6 +530,12 @@ pub trait CdpPageOps: Send + Sync {
 
     /// Capture a PNG screenshot of the current viewport.
     async fn screenshot_png(&self) -> Result<Vec<u8>>;
+
+    /// Capture a PNG screenshot clipped to a specific viewport rectangle.
+    async fn screenshot_clip_png(&self, clip: ScreenshotClip) -> Result<Vec<u8>> {
+        let _ = clip;
+        self.screenshot_png().await
+    }
 
     /// Subscribe to network traffic matching any substring in `url_patterns` (all traffic if empty).
     async fn enable_network_capture(
@@ -1096,6 +1117,32 @@ impl CdpPage {
             .push(handle);
     }
 
+    async fn capture_screenshot_inner(&self, clip: Option<ScreenshotClip>) -> Result<Vec<u8>> {
+        let mut params = json!({ "format": "png" });
+        if let Some(region) = clip {
+            params["clip"] = json!({
+                "x": region.x,
+                "y": region.y,
+                "width": region.width,
+                "height": region.height,
+                "scale": region.scale,
+            });
+        }
+        let res = self.send("Page.captureScreenshot", params).await?;
+        let encoded = res.get("data").and_then(Value::as_str).ok_or_else(|| {
+            DoudouError::new(
+                "CDP_SCREENSHOT_ERROR",
+                "Page.captureScreenshot missing data.",
+            )
+        })?;
+        BASE64.decode(encoded).map_err(|err| {
+            DoudouError::new(
+                "CDP_SCREENSHOT_ERROR",
+                format!("Failed decoding screenshot PNG base64: {err}"),
+            )
+        })
+    }
+
     fn abort_background_tasks(&self) {
         let tasks = {
             let mut guard = self
@@ -1519,21 +1566,11 @@ impl CdpPageOps for CdpPage {
     }
 
     async fn screenshot_png(&self) -> Result<Vec<u8>> {
-        let res = self
-            .send("Page.captureScreenshot", json!({ "format": "png" }))
-            .await?;
-        let encoded = res.get("data").and_then(Value::as_str).ok_or_else(|| {
-            DoudouError::new(
-                "CDP_SCREENSHOT_ERROR",
-                "Page.captureScreenshot missing data.",
-            )
-        })?;
-        BASE64.decode(encoded).map_err(|err| {
-            DoudouError::new(
-                "CDP_SCREENSHOT_ERROR",
-                format!("Failed decoding screenshot PNG base64: {err}"),
-            )
-        })
+        self.capture_screenshot_inner(None).await
+    }
+
+    async fn screenshot_clip_png(&self, clip: ScreenshotClip) -> Result<Vec<u8>> {
+        self.capture_screenshot_inner(Some(clip)).await
     }
 
     async fn enable_network_capture(

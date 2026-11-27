@@ -10,7 +10,7 @@ use serde_json::{Value, json};
 use tokio::sync::Mutex as AsyncMutex;
 
 use crate::broker::server::BrokerHandler;
-use crate::features::{chat, diagnostics, video};
+use crate::features::{auth, chat, diagnostics, video};
 use crate::reads::chat::refresh_session_index;
 
 /// Production broker command router matching Python's `features/broker.py::dispatch`.
@@ -29,6 +29,24 @@ impl BrokerHandler for DefaultBrokerHandler {
         profile_name: &str,
     ) -> Result<Option<Value>> {
         let result = match command {
+            "session.auth.start" => {
+                auth::auth_start(session, home, data_root, profile_name, params).await?
+            }
+            "session.auth.status" => {
+                auth::auth_status(session, home, data_root, profile_name).await?
+            }
+            "session.auth.refresh_qr" => {
+                auth::auth_refresh_qr(session, home, data_root, profile_name).await?
+            }
+            "session.auth.sms_send" => {
+                auth::auth_sms_send(session, home, data_root, profile_name, params).await?
+            }
+            "session.auth.sms_verify" => {
+                auth::auth_sms_verify(session, home, data_root, profile_name, params).await?
+            }
+            "session.auth.wait" => {
+                auth::auth_wait(session, home, data_root, profile_name, params).await?
+            }
             "session.refresh" => {
                 let is_fake = {
                     let guard = session.lock().await;

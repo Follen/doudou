@@ -783,7 +783,8 @@ impl ChromeSession {
         Ok(())
     }
 
-    async fn has_douyin_auth_cookie(&self) -> bool {
+    /// Return `true` when Douyin auth session cookies (`sessionid` / `sid_tt` / `uid_tt`) exist.
+    pub async fn has_douyin_auth_cookie(&self) -> bool {
         let Some(page) = &self.page else {
             return false;
         };
@@ -898,17 +899,22 @@ const VERIFICATION_DETECT_JS: &str = r#"(() => {
     return rect.width > 1 && rect.height > 1;
   };
   const anyVisible = (selector) => Array.from(document.querySelectorAll(selector)).find(isVisible) || null;
-  const sms = anyVisible('.second-verify-mask input, input[placeholder*="验证码"], input[maxlength="6"]');
-  if (sms) {
-    const dialog = sms.closest('[role="dialog"], [class*="verify"], [class*="login"], .second-verify-mask') || document.body;
-    const text = (dialog && dialog.innerText) || '';
-    return text.includes('快捷登录') ? 'quick_login_sms' : 'sms_code';
-  }
   if (anyVisible('iframe[src*="captcha" i], [class*="captcha" i] [class*="slide" i], [class*="captcha" i] [class*="drag" i]')) {
     return 'slider';
   }
-  if (anyVisible('[class*="login" i] img[src*="qr" i], [class*="login" i] canvas[class*="qr" i], [class*="qrcode" i] img, [class*="qr-code" i] img')) {
+  const secondVerifySms = anyVisible('.second-verify-mask input');
+  if (secondVerifySms) {
+    return 'sms_code';
+  }
+  const qr = anyVisible('#douyin_login_comp_scan_code_qrcode img, [id*="qrcode" i] img, [class*="login" i] img[src*="qr" i], [class*="login" i] canvas[class*="qr" i], [class*="qrcode" i] img, [class*="qr-code" i] img');
+  if (qr) {
     return 'qr_login';
+  }
+  const sms = anyVisible('input[placeholder*="验证码"], input[maxlength="6"]');
+  if (sms) {
+    const dialog = sms.closest('[role="dialog"], [class*="verify"], [class*="login"], #login-panel-new, #douyin_login_comp_flat_panel, .second-verify-mask') || document.body;
+    const text = (dialog && dialog.innerText) || '';
+    return text.includes('快捷登录') ? 'quick_login_sms' : 'sms_code';
   }
   const buttons = Array.from(document.querySelectorAll('[role="dialog"] button, [class*="login" i] button')).filter(isVisible);
   if (buttons.some((b) => /Passkey|通行密钥/i.test(b.innerText || ''))) {

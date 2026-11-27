@@ -204,58 +204,86 @@ impl BrokerClient {
                 format!("Failed creating broker runtime dir: {err}"),
             )
         })?;
-        let stdout = OpenOptions::new()
-            .create(true)
-            .append(true)
-            .open(&self.paths.broker_stdout)
-            .map_err(|err| {
-                DoudouError::new(
-                    "IO_ERROR",
-                    format!("Failed opening broker stdout log: {err}"),
-                )
-            })?;
-        let stderr = OpenOptions::new()
-            .create(true)
-            .append(true)
-            .open(&self.paths.broker_stderr)
-            .map_err(|err| {
-                DoudouError::new(
-                    "IO_ERROR",
-                    format!("Failed opening broker stderr log: {err}"),
-                )
-            })?;
-
         let idle_seconds =
             std::env::var("DOUDOU_BROKER_IDLE_SECONDS").unwrap_or_else(|_| "1200".to_owned());
 
-        let mut cmd = Command::new(&launcher.executable);
-        cmd.args(&launcher.prefix_args)
-            .args([
-                "--home",
-                &self.home.display().to_string(),
-                "--data-root",
-                &self.data_root.display().to_string(),
-                "--profile",
-                &self.profile_name,
-                "--idle-timeout",
-                &idle_seconds,
-            ])
-            .current_dir(&self.data_root)
-            .stdin(Stdio::null())
-            .stdout(Stdio::from(stdout))
-            .stderr(Stdio::from(stderr));
-        if self.fake_browser {
-            cmd.arg("--fake-browser");
-        }
+        let build_cmd = |extra_flags: u32| -> Result<Command> {
+            let stdout = OpenOptions::new()
+                .create(true)
+                .append(true)
+                .open(&self.paths.broker_stdout)
+                .map_err(|err| {
+                    DoudouError::new(
+                        "IO_ERROR",
+                        format!("Failed opening broker stdout log: {err}"),
+                    )
+                })?;
+            let stderr = OpenOptions::new()
+                .create(true)
+                .append(true)
+                .open(&self.paths.broker_stderr)
+                .map_err(|err| {
+                    DoudouError::new(
+                        "IO_ERROR",
+                        format!("Failed opening broker stderr log: {err}"),
+                    )
+                })?;
+
+            let mut cmd = Command::new(&launcher.executable);
+            cmd.args(&launcher.prefix_args)
+                .args([
+                    "--home",
+                    &self.home.display().to_string(),
+                    "--data-root",
+                    &self.data_root.display().to_string(),
+                    "--profile",
+                    &self.profile_name,
+                    "--idle-timeout",
+                    &idle_seconds,
+                ])
+                .current_dir(&self.data_root)
+                .stdin(Stdio::null())
+                .stdout(Stdio::from(stdout))
+                .stderr(Stdio::from(stderr));
+            if self.fake_browser {
+                cmd.arg("--fake-browser");
+            }
+            #[cfg(windows)]
+            {
+                use std::os::windows::process::CommandExt as _;
+                const CREATE_NO_WINDOW: u32 = 0x0800_0000;
+                const CREATE_NEW_PROCESS_GROUP: u32 = 0x0000_0200;
+                cmd.creation_flags(CREATE_NO_WINDOW | CREATE_NEW_PROCESS_GROUP | extra_flags);
+            }
+            #[cfg(not(windows))]
+            let _ = extra_flags;
+            Ok(cmd)
+        };
 
         #[cfg(windows)]
-        {
-            use std::os::windows::process::CommandExt as _;
-            const CREATE_NO_WINDOW: u32 = 0x0800_0000;
-            cmd.creation_flags(CREATE_NO_WINDOW);
-        }
+        let child = {
+            const CREATE_BREAKAWAY_FROM_JOB: u32 = 0x0100_0000;
+            match build_cmd(CREATE_BREAKAWAY_FROM_JOB)?.spawn() {
+                Ok(child) => child,
+                Err(err) if err.raw_os_error() == Some(5) => {
+                    build_cmd(0)?.spawn().map_err(|fallback_err| {
+                        DoudouError::new(
+                            "BROKER_START_FAILED",
+                            format!("Failed spawning broker process: {fallback_err}"),
+                        )
+                    })?
+                }
+                Err(err) => {
+                    return Err(DoudouError::new(
+                        "BROKER_START_FAILED",
+                        format!("Failed spawning broker process: {err}"),
+                    ));
+                }
+            }
+        };
 
-        let child = cmd.spawn().map_err(|err| {
+        #[cfg(not(windows))]
+        let child = build_cmd(0)?.spawn().map_err(|err| {
             DoudouError::new(
                 "BROKER_START_FAILED",
                 format!("Failed spawning broker process: {err}"),

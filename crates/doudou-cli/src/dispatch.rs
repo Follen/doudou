@@ -6,7 +6,7 @@ use std::sync::Arc;
 use std::time::Duration;
 
 use doudou_core::{
-    DoudouError, Result, absolutize_path, assert_supported_identity_records, doudou_home,
+    DoudouError, Result, absolutize_path, assert_supported_identity_records, doudou_home, emit,
     initialize_roots, parse_selection, resolve_conversation, resolve_data_root, utc_now,
 };
 use doudou_runtime::{
@@ -22,7 +22,7 @@ use serde_json::{Map, Value, json};
 use crate::args::{
     BrokerCommand, ChatCommand, Cli, Commands, ConversationsCommand, DoctorArgs, IdentityCommand,
     MessagesCommand, PageDoctorArgs, ProfileCommand, ProtocolCommand, ReplyArgs, SendArgs,
-    SendBatchArgs, SessionCommand, VideoCommand, VideosCommand,
+    SendBatchArgs, SessionAuthCommand, SessionCommand, VideoCommand, VideosCommand,
 };
 
 fn build_broker_client(
@@ -355,9 +355,19 @@ async fn handle_session(home: &Path, data_root: &Path, command: &SessionCommand)
                 .await?;
             Ok(broker_result(&resp))
         }
-        SessionCommand::Login { profile, timeout } => {
-            run_interactive_login(home, data_root, profile, *timeout).await
+        SessionCommand::Login {
+            profile,
+            timeout,
+            headless,
+            terminal_qr,
+        } => {
+            if *headless {
+                run_headless_login(home, data_root, profile, *timeout, *terminal_qr).await
+            } else {
+                run_interactive_login(home, data_root, profile, *timeout).await
+            }
         }
+        SessionCommand::Auth { command } => handle_session_auth(home, data_root, command).await,
         SessionCommand::Close { profile } => {
             let outcome = stop_broker(home, data_root, profile).await?;
             if outcome.get("was_running").and_then(Value::as_bool) == Some(true)
@@ -372,6 +382,211 @@ async fn handle_session(home: &Path, data_root: &Path, command: &SessionCommand)
             Ok(outcome)
         }
     }
+}
+
+async fn handle_session_auth(
+    home: &Path,
+    data_root: &Path,
+    command: &SessionAuthCommand,
+) -> Result<Value> {
+    match command {
+        SessionAuthCommand::Start {
+            profile,
+            reload,
+            terminal_qr,
+        } => {
+            let client = build_broker_client(home, data_root, profile, false)?;
+            let resp = client
+                .request_async(
+                    "session.auth.start",
+                    json!({ "force_reload": reload }),
+                    CommandSemantics::Control,
+                    None,
+                    true,
+                )
+                .await?;
+            let result = broker_result(&resp);
+            maybe_print_terminal_qr(&result, *terminal_qr, false);
+            Ok(result)
+        }
+        SessionAuthCommand::Status { profile } => {
+            let client = build_broker_client(home, data_root, profile, false)?;
+            let resp = client
+                .request_async(
+                    "session.auth.status",
+                    json!({}),
+                    CommandSemantics::Read,
+                    None,
+                    true,
+                )
+                .await?;
+            Ok(broker_result(&resp))
+        }
+        SessionAuthCommand::RefreshQr {
+            profile,
+            terminal_qr,
+        } => {
+            let client = build_broker_client(home, data_root, profile, false)?;
+            let resp = client
+                .request_async(
+                    "session.auth.refresh_qr",
+                    json!({}),
+                    CommandSemantics::Control,
+                    None,
+                    true,
+                )
+                .await?;
+            let result = broker_result(&resp);
+            maybe_print_terminal_qr(&result, *terminal_qr, false);
+            Ok(result)
+        }
+        SessionAuthCommand::SmsSend { profile, phone } => {
+            let client = build_broker_client(home, data_root, profile, false)?;
+            let resp = client
+                .request_async(
+                    "session.auth.sms_send",
+                    json!({ "phone": phone }),
+                    CommandSemantics::Control,
+                    None,
+                    true,
+                )
+                .await?;
+            Ok(broker_result(&resp))
+        }
+        SessionAuthCommand::SmsVerify {
+            profile,
+            code,
+            code_stdin,
+        } => {
+            let resolved_code = if *code_stdin {
+                use std::io::Read as _;
+                let mut buf = String::new();
+                std::io::stdin().read_to_string(&mut buf).map_err(|err| {
+                    DoudouError::new(
+                        "IO_ERROR",
+                        format!("Failed reading SMS code from stdin: {err}"),
+                    )
+                })?;
+                buf.trim().to_owned()
+            } else {
+                code.as_deref()
+                    .map(str::trim)
+                    .unwrap_or_default()
+                    .to_owned()
+            };
+            if resolved_code.is_empty() {
+                return Err(DoudouError::new(
+                    "MISSING_ARGUMENT",
+                    "Provide --code <digits> or pass the SMS verification code via --code-stdin.",
+                ));
+            }
+            let client = build_broker_client(home, data_root, profile, false)?;
+            let resp = client
+                .request_async(
+                    "session.auth.sms_verify",
+                    json!({ "code": resolved_code }),
+                    CommandSemantics::Control,
+                    None,
+                    true,
+                )
+                .await?;
+            Ok(broker_result(&resp))
+        }
+        SessionAuthCommand::Wait {
+            profile,
+            timeout,
+            no_auto_refresh,
+        } => {
+            let client = build_broker_client(home, data_root, profile, false)?;
+            let resp = client
+                .request_async(
+                    "session.auth.wait",
+                    json!({
+                        "timeout_seconds": timeout,
+                        "auto_refresh": !no_auto_refresh,
+                    }),
+                    CommandSemantics::Control,
+                    None,
+                    true,
+                )
+                .await?;
+            Ok(broker_result(&resp))
+        }
+    }
+}
+
+fn maybe_print_terminal_qr(payload: &Value, force: bool, auto_on_tty: bool) {
+    use std::io::IsTerminal as _;
+    let should_print = force || (auto_on_tty && std::io::stderr().is_terminal());
+    if !should_print {
+        return;
+    }
+    let Some(qr) = payload
+        .get("qr_terminal")
+        .and_then(Value::as_str)
+        .or_else(|| payload.get("qr_text").and_then(Value::as_str))
+    else {
+        return;
+    };
+    let path = payload
+        .get("qr_latest_path")
+        .or_else(|| payload.get("qr_image_path"))
+        .and_then(Value::as_str)
+        .unwrap_or("");
+    eprintln!("\n{qr}\n");
+    if path.is_empty() {
+        eprintln!("请用手机抖音扫码登录（约 60 秒有效）");
+    } else {
+        eprintln!("请用手机抖音扫码登录（约 60 秒有效） | PNG: {path}");
+    }
+}
+
+async fn run_headless_login(
+    home: &Path,
+    data_root: &Path,
+    profile: &str,
+    timeout: f64,
+    terminal_qr: bool,
+) -> Result<Value> {
+    let client = build_broker_client(home, data_root, profile, false)?;
+    let start_resp = client
+        .request_async(
+            "session.auth.start",
+            json!({ "force_reload": false }),
+            CommandSemantics::Control,
+            None,
+            true,
+        )
+        .await?;
+    let started = broker_result(&start_resp);
+    let state = started
+        .get("status")
+        .and_then(Value::as_str)
+        .unwrap_or_default();
+    if matches!(
+        state,
+        "authenticated" | "sms_required" | "verification_required"
+    ) {
+        return Ok(started);
+    }
+    emit(&json!({
+        "event": "qr_code",
+        "qr": started,
+    }));
+    maybe_print_terminal_qr(&started, terminal_qr, true);
+    let wait_resp = client
+        .request_async(
+            "session.auth.wait",
+            json!({
+                "timeout_seconds": timeout,
+                "auto_refresh": false,
+            }),
+            CommandSemantics::Control,
+            None,
+            true,
+        )
+        .await?;
+    Ok(broker_result(&wait_resp))
 }
 
 async fn handle_broker(home: &Path, data_root: &Path, command: &BrokerCommand) -> Result<Value> {

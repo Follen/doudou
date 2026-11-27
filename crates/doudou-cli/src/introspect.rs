@@ -201,6 +201,67 @@ fn command_contract(path: &str) -> CommandContract {
             ],
             keywords: &["im", "init", "index", "reconnect"],
         },
+        "session auth start" => CommandContract {
+            semantics: "control",
+            broker_command: Some("session.auth.start"),
+            two_phase_write: false,
+            error_codes: &[
+                "PROFILE_NOT_FOUND",
+                "AUTH_QR_NOT_READY",
+                "VERIFICATION_REQUIRED",
+            ],
+            keywords: &["headless", "qr", "qrcode", "scan", "login", "sms", "auth"],
+        },
+        "session auth status" => CommandContract {
+            semantics: "read",
+            broker_command: Some("session.auth.status"),
+            two_phase_write: false,
+            error_codes: &["PROFILE_NOT_FOUND", "BROKER_NOT_RUNNING"],
+            keywords: &["headless", "qr", "qrcode", "scan", "sms", "login", "status"],
+        },
+        "session auth refresh-qr" => CommandContract {
+            semantics: "control",
+            broker_command: Some("session.auth.refresh_qr"),
+            two_phase_write: false,
+            error_codes: &["PROFILE_NOT_FOUND", "AUTH_QR_NOT_READY"],
+            keywords: &["headless", "qr", "qrcode", "refresh", "expired", "login"],
+        },
+        "session auth sms-send" => CommandContract {
+            semantics: "control",
+            broker_command: Some("session.auth.sms_send"),
+            two_phase_write: false,
+            error_codes: &[
+                "PROFILE_NOT_FOUND",
+                "AUTH_SMS_FORM_NOT_FOUND",
+                "AUTH_SMS_BUTTON_NOT_FOUND",
+                "AUTH_SMS_SEND_FAILED",
+                "VERIFICATION_REQUIRED",
+            ],
+            keywords: &["headless", "sms", "phone", "otp", "code", "login"],
+        },
+        "session auth sms-verify" => CommandContract {
+            semantics: "control",
+            broker_command: Some("session.auth.sms_verify"),
+            two_phase_write: false,
+            error_codes: &[
+                "MISSING_ARGUMENT",
+                "AUTH_SMS_FORM_NOT_FOUND",
+                "AUTH_SMS_VERIFY_FAILED",
+                "VERIFICATION_REQUIRED",
+            ],
+            keywords: &["headless", "sms", "otp", "code", "verify", "login"],
+        },
+        "session auth wait" => CommandContract {
+            semantics: "control",
+            broker_command: Some("session.auth.wait"),
+            two_phase_write: false,
+            error_codes: &[
+                "AUTH_LOGIN_TIMEOUT",
+                "VERIFICATION_REQUIRED",
+                "PROFILE_NOT_FOUND",
+            ],
+            keywords: &["headless", "qr", "qrcode", "scan", "wait", "login"],
+        },
         "session close" => CommandContract {
             semantics: "control",
             broker_command: Some("shutdown"),
@@ -496,6 +557,30 @@ fn command_contract(path: &str) -> CommandContract {
 /// Complete catalog of stable machine-readable Doudou error codes.
 pub fn error_code_catalog() -> Vec<ErrorCodeDoc> {
     vec![
+        ErrorCodeDoc {
+            code: "AUTH_QR_NOT_READY",
+            category: "AUTH",
+            description: "The headless Douyin login page did not render a QR code or SMS form within the wait budget.",
+            recovery: "Retry `doudou session auth start --profile <name> --reload` or fall back to headed `doudou session login`.",
+        },
+        ErrorCodeDoc {
+            code: "AUTH_SMS_SEND_FAILED",
+            category: "AUTH",
+            description: "Douyin rejected the SMS verification code request (e.g. invalid phone or rate limit).",
+            recovery: "Inspect the error message, verify the phone number, or use QR code login instead.",
+        },
+        ErrorCodeDoc {
+            code: "AUTH_SMS_VERIFY_FAILED",
+            category: "AUTH",
+            description: "Douyin rejected the submitted SMS code or timed out confirming login.",
+            recovery: "Request a fresh SMS code with `doudou session auth sms-send` or switch to QR login.",
+        },
+        ErrorCodeDoc {
+            code: "AUTH_LOGIN_TIMEOUT",
+            category: "AUTH",
+            description: "Headless QR/SMS authentication did not complete within the configured timeout.",
+            recovery: "Refresh the QR code with `doudou session auth refresh-qr` or re-run `doudou session auth wait`.",
+        },
         ErrorCodeDoc {
             code: "PROFILE_EXISTS",
             category: "PROFILE",

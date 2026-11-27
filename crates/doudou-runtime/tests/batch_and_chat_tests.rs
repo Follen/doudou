@@ -1020,3 +1020,275 @@ async fn cdp_ui_page_bridge_translates_queries_clicks_keys_and_network_capture()
     assert_eq!(snap.responses.len(), 1);
     assert_eq!(snap.responses[0].body, b"resp");
 }
+
+#[tokio::test]
+async fn headless_auth_start_status_and_sms_flows_work_with_fake_page() {
+    use base64::Engine as _;
+    use doudou_cdp::FakeBrowserSession;
+    use doudou_runtime::features::auth::{auth_sms_send, auth_sms_verify, auth_start, auth_status};
+    use tokio::sync::Mutex as AsyncMutex;
+
+    let dir = TempDir::new().expect("tempdir");
+    let home = dir.path().join("appdata");
+    let data_root = dir.path().join("data");
+    let (_meta, paths) = create_profile(&home, &data_root, "headless-test", None).expect("profile");
+
+    let fake_png = b"\x89PNG\r\n\x1a\nFAKE_QR_BYTES_1234";
+    let qr_data_url = format!(
+        "data:image/png;base64,{}",
+        base64::engine::general_purpose::STANDARD.encode(fake_png)
+    );
+
+    let fake_page = Arc::new(FakeCdpPage::new());
+    fake_page.set_url("https://www.douyin.com/chat");
+    let mut sample_matrix = vec!["0".repeat(21); 21];
+    sample_matrix[0] = "1".repeat(21);
+    sample_matrix[20] = "1".repeat(21);
+    let full_panel = json!({
+        "has_qr_panel": true,
+        "qr_data_url": qr_data_url,
+        "qr_matrix": sample_matrix,
+        "qr_rect": { "x": 442.0, "y": 290.0, "width": 178.0, "height": 178.0 },
+        "qr_expired": false,
+        "refresh_rect": null,
+        "sms_available": true,
+        "phone_rect": { "x": 766.0, "y": 310.0, "width": 250.0, "height": 40.0 },
+        "code_rect": { "x": 766.0, "y": 370.0, "width": 160.0, "height": 40.0 },
+        "sms_tab_rect": null,
+        "get_code_rect": { "x": 937.0, "y": 378.0, "width": 70.0, "height": 22.0 },
+        "get_code_text": "获取验证码",
+        "sms_countdown_active": false,
+        "submit_rect": { "x": 766.0, "y": 485.0, "width": 253.0, "height": 48.0 },
+        "inline_error": null
+    });
+    fake_page.push_eval_result("Passkey", json!("qr_login"));
+    fake_page.push_eval_result("qrDataUrl", full_panel.clone());
+    fake_page.push_captured_exchange(CapturedNetworkExchange {
+        request_id: "qr-1".to_owned(),
+        url: "https://www.douyin.com/passport/web/get_qrcode/?aid=6383".to_owned(),
+        method: "GET".to_owned(),
+        status: Some(200),
+        mime_type: Some("application/json".to_owned()),
+        request_headers: BTreeMap::new(),
+        response_headers: BTreeMap::new(),
+        request_body: None,
+        response_body: Some(
+            serde_json::to_vec(&json!({
+                "data": { "expire_time": 1_795_693_982i64, "error_code": 0 }
+            }))
+            .expect("json"),
+        ),
+        resource_type: Some("XHR".to_owned()),
+        timestamp: doudou_core::utc_now(),
+    });
+    fake_page.push_captured_exchange(CapturedNetworkExchange {
+        request_id: "chk-1".to_owned(),
+        url: "https://www.douyin.com/passport/web/check_qrconnect/?aid=6383".to_owned(),
+        method: "GET".to_owned(),
+        status: Some(200),
+        mime_type: Some("application/json".to_owned()),
+        request_headers: BTreeMap::new(),
+        response_headers: BTreeMap::new(),
+        request_body: None,
+        response_body: Some(
+            serde_json::to_vec(&json!({ "data": { "status": "scanned", "error_code": 0 } }))
+                .expect("json"),
+        ),
+        resource_type: Some("XHR".to_owned()),
+        timestamp: doudou_core::utc_now(),
+    });
+
+    let session = Arc::new(AsyncMutex::new(
+        FakeBrowserSession::from_page(paths, Arc::clone(&fake_page)).into_chrome_session(),
+    ));
+
+    // 1. auth_start extracts QR PNG to disk and returns metadata immediately
+    let started = auth_start(&session, &home, &data_root, "headless-test", &json!({}))
+        .await
+        .expect("auth_start");
+    assert_eq!(started["status"], "qr_ready");
+    assert_eq!(started["qr_source"], "dom_data_url");
+    assert_eq!(started["qr_modules"], 21);
+    assert!(
+        started["qr_terminal"]
+            .as_str()
+            .is_some_and(|s| s.contains("\x1b[30;47m"))
+    );
+    assert!(
+        started["qr_text"]
+            .as_str()
+            .is_some_and(|s| s.lines().count() == 13)
+    );
+    assert_eq!(started["expire_time"], 1_795_693_982i64);
+    assert_eq!(started["sms_available"], true);
+    let qr_path = std::path::PathBuf::from(started["qr_image_path"].as_str().expect("qr path"));
+    assert_eq!(std::fs::read(&qr_path).expect("read saved qr"), fake_png);
+
+    // 1b. auth_status on an empty page does NOT falsely report qr_ready even if latest-qr.png exists on disk
+    let empty_page = Arc::new(FakeCdpPage::new());
+    empty_page.set_url("about:blank");
+    empty_page.push_eval_result("Passkey", Value::Null);
+    empty_page.push_eval_result("qrDataUrl", json!({}));
+    let empty_paths =
+        doudou_core::profile_paths(&home, &data_root, "headless-test").expect("paths");
+    let empty_session = Arc::new(AsyncMutex::new(
+        FakeBrowserSession::from_page(empty_paths, Arc::clone(&empty_page)).into_chrome_session(),
+    ));
+    let empty_st = auth_status(&empty_session, &home, &data_root, "headless-test")
+        .await
+        .expect("empty auth_status");
+    assert_eq!(empty_st["status"], "login_required");
+
+    // 2. auth_status reports scanned status from check_qrconnect
+    let st = auth_status(&session, &home, &data_root, "headless-test")
+        .await
+        .expect("auth_status");
+    assert_eq!(st["status"], "qr_scanned");
+
+    // 3. auth_sms_send masks phone and detects countdown
+    fake_page.push_eval_result("qrDataUrl", full_panel.clone());
+    fake_page.push_eval_result(
+        "qrDataUrl",
+        json!({
+            "code_rect": { "x": 766.0, "y": 370.0, "width": 160.0, "height": 40.0 },
+            "submit_rect": { "x": 766.0, "y": 485.0, "width": 253.0, "height": 48.0 },
+            "sms_available": true,
+            "sms_countdown_active": true
+        }),
+    );
+    let sent = auth_sms_send(
+        &session,
+        &home,
+        &data_root,
+        "headless-test",
+        &json!({ "phone": "13812345678" }),
+    )
+    .await
+    .expect("auth_sms_send");
+    assert_eq!(sent["status"], "sms_sent");
+    assert_eq!(sent["phone_masked"], "138****5678");
+    assert!(!sent.to_string().contains("13812345678"));
+
+    // 4. auth_sms_verify clears stale sms_login error from a prior wrong OTP and settles authenticated
+    fake_page.push_captured_exchange(CapturedNetworkExchange {
+        request_id: "sms-old-err".to_owned(),
+        url: "https://www.douyin.com/passport/web/sms_login/?aid=6383".to_owned(),
+        method: "POST".to_owned(),
+        status: Some(200),
+        mime_type: Some("application/json".to_owned()),
+        request_headers: BTreeMap::new(),
+        response_headers: BTreeMap::new(),
+        request_body: None,
+        response_body: Some(
+            serde_json::to_vec(&json!({
+                "data": { "error_code": 1202, "description": "验证码错误，请重新输入" }
+            }))
+            .expect("json"),
+        ),
+        resource_type: Some("XHR".to_owned()),
+        timestamp: doudou_core::utc_now(),
+    });
+    // Simulate pre-submit still unauthenticated, then post-submit login success: verification gone + chat loaded
+    fake_page.push_eval_result("Passkey", Value::Null);
+    fake_page.push_eval_result("conversation-item", json!(false));
+    fake_page.push_eval_result("conversation-item", json!(true));
+    let verified = auth_sms_verify(
+        &session,
+        &home,
+        &data_root,
+        "headless-test",
+        &json!({ "code": "654321" }),
+    )
+    .await
+    .expect("auth_sms_verify");
+    assert_eq!(verified["status"], "authenticated");
+    assert_eq!(verified["login"]["valid"], true);
+}
+
+#[tokio::test]
+async fn headless_auth_captcha_cooldown_and_unconfirmed_sms_fail_closed() {
+    use doudou_cdp::FakeCdpPage;
+    use doudou_runtime::features::auth::{auth_sms_send, auth_sms_verify};
+    use tokio::sync::Mutex as AsyncMutex;
+
+    let dir = TempDir::new().expect("tempdir");
+    let home = dir.path().join("home");
+    let data_root = dir.path().join("data");
+    let (_meta, paths) = create_profile(&home, &data_root, "captcha-test", None).expect("profile");
+
+    // 1. Replay TLC counterexample: active SMS cooldown underneath a visible slider CAPTCHA
+    // must fail closed as verification_required, never sms_sent.
+    let slider_page = Arc::new(FakeCdpPage::new());
+    slider_page.set_url("https://www.douyin.com/chat");
+    slider_page.push_eval_result("Passkey", json!("slider"));
+    slider_page.push_eval_result(
+        "qrDataUrl",
+        json!({
+            "sms_available": true,
+            "sms_countdown_active": true,
+            "get_code_rect": null,
+            "code_rect": { "x": 766.0, "y": 370.0, "width": 160.0, "height": 40.0 },
+            "submit_rect": { "x": 766.0, "y": 485.0, "width": 253.0, "height": 48.0 }
+        }),
+    );
+    let slider_session = Arc::new(AsyncMutex::new(
+        FakeBrowserSession::from_page(paths.clone(), Arc::clone(&slider_page))
+            .into_chrome_session(),
+    ));
+
+    let sms_res = auth_sms_send(
+        &slider_session,
+        &home,
+        &data_root,
+        "captcha-test",
+        &json!({}),
+    )
+    .await
+    .expect("auth_sms_send fails closed");
+    assert_eq!(sms_res["status"], "verification_required");
+    assert_eq!(sms_res["verification_kind"], "slider");
+
+    // 2. auth_sms_verify also fails closed on visible slider BEFORE touching inputs.
+    let verify_res = auth_sms_verify(
+        &slider_session,
+        &home,
+        &data_root,
+        "captcha-test",
+        &json!({ "code": "654321" }),
+    )
+    .await
+    .expect("auth_sms_verify fails closed");
+    assert_eq!(verify_res["status"], "verification_required");
+    assert_eq!(verify_res["verification_kind"], "slider");
+    assert!(
+        slider_page.clicks().is_empty() && slider_page.inserted_texts().is_empty(),
+        "must not click or type while blocking captcha is visible"
+    );
+
+    // 3. auth_sms_send fails closed with AUTH_SMS_SEND_FAILED if settle window ends with
+    // neither countdown_active nor send_code_ok.
+    let unconfirmed_page = Arc::new(FakeCdpPage::new());
+    unconfirmed_page.set_url("https://www.douyin.com/chat");
+    unconfirmed_page.push_eval_result("Passkey", json!("qr_login"));
+    unconfirmed_page.push_eval_result(
+        "qrDataUrl",
+        json!({
+            "sms_available": true,
+            "sms_countdown_active": false,
+            "get_code_rect": { "x": 937.0, "y": 378.0, "width": 70.0, "height": 22.0 }
+        }),
+    );
+    let unconfirmed_session = Arc::new(AsyncMutex::new(
+        FakeBrowserSession::from_page(paths, Arc::clone(&unconfirmed_page)).into_chrome_session(),
+    ));
+    let err = auth_sms_send(
+        &unconfirmed_session,
+        &home,
+        &data_root,
+        "captcha-test",
+        &json!({}),
+    )
+    .await
+    .expect_err("unconfirmed sms_send must fail closed");
+    assert_eq!(err.code, "AUTH_SMS_SEND_FAILED");
+}

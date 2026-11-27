@@ -165,7 +165,7 @@ pub fn command_timeout_seconds(command: &str, params: &Value) -> f64 {
         "page.doctor" => 180.0,
         "videos.collect" => 600.0,
         "video.collect" => 900.0,
-        "login.wait" | "protocol.capture" => {
+        "login.wait" | "protocol.capture" | "session.auth.wait" => {
             let requested = params
                 .get("timeout_seconds")
                 .and_then(Value::as_f64)

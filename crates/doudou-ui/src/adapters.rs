@@ -230,8 +230,18 @@ pub const AUTH_ADAPTER: PageAdapter = PageAdapter {
         ),
         (
             "qr_login",
-            r#"[class*="login" i] img[src*="qr" i], [class*="login" i] canvas[class*="qr" i], [class*="qrcode" i] img, [class*="qr-code" i] img"#,
+            r#"#douyin_login_comp_scan_code_qrcode img, [id*="qrcode" i] img, [class*="login" i] img[src*="qr" i], [class*="login" i] canvas[class*="qr" i], [class*="qrcode" i] img, [class*="qr-code" i] img"#,
         ),
+        (
+            "login_panel",
+            "#douyin_login_comp_flat_panel, #login-panel-new, #douyin-login-new-id",
+        ),
+        (
+            "phone_input",
+            r#"input[name="normal-input"][placeholder*="手机号"], input[placeholder*="手机号"]"#,
+        ),
+        ("sms_tab", "#douyin_login_comp_mobile_title"),
+        ("sms_submit", "#douyin_login_comp_btn_id"),
         (
             "passkey",
             r#"[role="dialog"] button:has-text("Passkey"), [role="dialog"] button:has-text("通行密钥"), [class*="login" i] button:has-text("Passkey"), [class*="login" i] button:has-text("通行密钥")"#,
@@ -245,6 +255,10 @@ pub const AUTH_ADAPTER: PageAdapter = PageAdapter {
         ("quick_login", "快捷登录"),
         ("get_code", "获取验证码"),
         ("send_code", "发送验证码"),
+        ("login", "登录"),
+        ("confirm", "确定"),
+        ("verify", "验证"),
+        ("refresh_qr", "刷新"),
     ],
 };
 

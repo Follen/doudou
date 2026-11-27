@@ -282,16 +282,37 @@ pub enum SessionCommand {
         profile: String,
     },
 
-    /// Switch to headed Chrome on `https://www.douyin.com/` and wait for interactive user login.
-    #[command(after_help = "EXAMPLE:\n  doudou session login --profile work --timeout 600")]
+    /// Switch to headed Chrome (or run headless QR login with `--headless`) and wait for user login.
+    #[command(
+        after_help = "EXAMPLES:\n  doudou session login --profile work --timeout 600\n  doudou session login --profile work --headless --timeout 180"
+    )]
     Login {
         /// Profile name.
         #[arg(long, value_name = "NAME")]
         profile: String,
 
-        /// Maximum wait time in seconds for interactive login completion.
+        /// Maximum wait time in seconds for login completion.
         #[arg(long, default_value_t = 600.0, value_name = "SECONDS")]
         timeout: f64,
+
+        /// Keep Chrome headless, save the Douyin login QR PNG to disk, emit a `qr_code` event, and wait for scan completion.
+        #[arg(long)]
+        headless: bool,
+
+        /// Print a scannable Unicode QR code to stderr (auto-enabled on interactive TTYs when `--headless` is set).
+        #[arg(long = "terminal-qr")]
+        terminal_qr: bool,
+    },
+
+    /// Non-blocking headless QR code and SMS authentication controls (ideal for agents, SSH, and servers).
+    #[command(
+        long_about = "Drive headless QR code and SMS login inside the profile's background broker without opening a local Chrome window.\n\nTypical agent/SSH flow:\n  1. `doudou session auth start --profile work` -> saves QR PNG and returns immediately while keeping the page alive.\n  2. Display the QR PNG to the user, or switch to SMS with `doudou session auth sms-send --profile work --phone <digits>`.\n  3. Poll with `doudou session auth status` / `wait`, or submit SMS code with `doudou session auth sms-verify --profile work --code <digits>`.",
+        after_help = "EXAMPLES:\n  doudou session auth start --profile work\n  doudou session auth status --profile work\n  doudou session auth refresh-qr --profile work\n  doudou session auth sms-send --profile work --phone 13800138000\n  doudou session auth sms-verify --profile work --code-stdin\n  doudou session auth wait --profile work --timeout 180"
+    )]
+    Auth {
+        /// Headless authentication operation.
+        #[command(subcommand)]
+        command: SessionAuthCommand,
     },
 
     /// Gracefully close the profile's active browser session and stop its broker process.
@@ -303,6 +324,99 @@ pub enum SessionCommand {
         /// Profile name.
         #[arg(long, value_name = "NAME")]
         profile: String,
+    },
+}
+
+/// Subcommands under `doudou session auth`.
+#[derive(Debug, Subcommand)]
+pub enum SessionAuthCommand {
+    /// Open Douyin in headless Chrome, save the login QR code PNG, and return immediately while keeping the page alive.
+    #[command(after_help = "EXAMPLE:\n  doudou session auth start --profile work")]
+    Start {
+        /// Profile name.
+        #[arg(long, value_name = "NAME")]
+        profile: String,
+
+        /// Force reloading the Douyin login page even if already on douyin.com.
+        #[arg(long)]
+        reload: bool,
+
+        /// Print a scannable Unicode QR code to stderr while keeping stdout pure NDJSON.
+        #[arg(long = "terminal-qr")]
+        terminal_qr: bool,
+    },
+
+    /// Check live headless authentication status (`authenticated`, `qr_ready`, `qr_scanned`, `qr_expired`, `sms_required`, `verification_required`).
+    #[command(after_help = "EXAMPLE:\n  doudou session auth status --profile work")]
+    Status {
+        /// Profile name.
+        #[arg(long, value_name = "NAME")]
+        profile: String,
+    },
+
+    /// Refresh an expired or stale login QR code in headless Chrome and save the updated PNG.
+    #[command(
+        name = "refresh-qr",
+        after_help = "EXAMPLE:\n  doudou session auth refresh-qr --profile work"
+    )]
+    RefreshQr {
+        /// Profile name.
+        #[arg(long, value_name = "NAME")]
+        profile: String,
+
+        /// Print a scannable Unicode QR code to stderr while keeping stdout pure NDJSON.
+        #[arg(long = "terminal-qr")]
+        terminal_qr: bool,
+    },
+
+    /// Request an SMS verification code on the live headless login or secondary-verify modal.
+    #[command(
+        name = "sms-send",
+        after_help = "EXAMPLES:\n  doudou session auth sms-send --profile work --phone 13800138000\n  doudou session auth sms-send --profile work"
+    )]
+    SmsSend {
+        /// Profile name.
+        #[arg(long, value_name = "NAME")]
+        profile: String,
+
+        /// Phone number to enter before clicking '获取验证码' (omit during secondary SMS verification when already prefilled).
+        #[arg(long, value_name = "PHONE")]
+        phone: Option<String>,
+    },
+
+    /// Submit a user-received SMS verification code on the live headless login or secondary-verify modal.
+    #[command(
+        name = "sms-verify",
+        after_help = "EXAMPLES:\n  doudou session auth sms-verify --profile work --code 123456\n  echo 123456 | doudou session auth sms-verify --profile work --code-stdin"
+    )]
+    SmsVerify {
+        /// Profile name.
+        #[arg(long, value_name = "NAME")]
+        profile: String,
+
+        /// Verification code digits (prefer `--code-stdin` when calling from scripts/agents to avoid argv exposure).
+        #[arg(long, value_name = "CODE", conflicts_with = "code_stdin")]
+        code: Option<String>,
+
+        /// Read the SMS verification code from standard input instead of command-line arguments.
+        #[arg(long = "code-stdin")]
+        code_stdin: bool,
+    },
+
+    /// Wait until the active headless QR/SMS session finishes authenticating, requests SMS, or expires.
+    #[command(after_help = "EXAMPLE:\n  doudou session auth wait --profile work --timeout 180")]
+    Wait {
+        /// Profile name.
+        #[arg(long, value_name = "NAME")]
+        profile: String,
+
+        /// Maximum wait time in seconds.
+        #[arg(long, default_value_t = 180.0, value_name = "SECONDS")]
+        timeout: f64,
+
+        /// Disable automatic QR code refresh when the QR expires during wait.
+        #[arg(long = "no-auto-refresh")]
+        no_auto_refresh: bool,
     },
 }
 

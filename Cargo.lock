@@ -365,7 +365,7 @@ dependencies = [
 
 [[package]]
 name = "doudou-cdp"
-version = "0.2.1"
+version = "0.2.2"
 dependencies = [
  "async-trait",
  "base64 0.22.1",
@@ -385,7 +385,7 @@ dependencies = [
 
 [[package]]
 name = "doudou-cli"
-version = "0.2.1"
+version = "0.2.2"
 dependencies = [
  "chrono",
  "clap",
@@ -404,7 +404,7 @@ dependencies = [
 
 [[package]]
 name = "doudou-core"
-version = "0.2.1"
+version = "0.2.2"
 dependencies = [
  "chrono",
  "dirs",
@@ -419,7 +419,7 @@ dependencies = [
 
 [[package]]
 name = "doudou-protocol"
-version = "0.2.1"
+version = "0.2.2"
 dependencies = [
  "aes-gcm",
  "doudou-core",
@@ -434,7 +434,7 @@ dependencies = [
 
 [[package]]
 name = "doudou-runtime"
-version = "0.2.1"
+version = "0.2.2"
 dependencies = [
  "async-trait",
  "base64 0.22.1",
@@ -458,7 +458,7 @@ dependencies = [
 
 [[package]]
 name = "doudou-storage"
-version = "0.2.1"
+version = "0.2.2"
 dependencies = [
  "chrono",
  "doudou-core",
@@ -470,7 +470,7 @@ dependencies = [
 
 [[package]]
 name = "doudou-ui"
-version = "0.2.1"
+version = "0.2.2"
 dependencies = [
  "async-trait",
  "chrono",

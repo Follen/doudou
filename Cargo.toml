@@ -11,7 +11,7 @@ members = [
 ]
 
 [workspace.package]
-version = "0.2.1"
+version = "0.2.2"
 edition = "2024"
 rust-version = "1.85"
 license = "UNLICENSED"
@@ -57,3 +57,9 @@ cast_sign_loss = "allow"
 cast_possible_wrap = "allow"
 too_many_lines = "allow"
 struct_excessive_bools = "allow"
+
+[profile.release]
+opt-level = "s"
+lto = "thin"
+codegen-units = 1
+strip = true

@@ -1,8 +1,8 @@
 {
   "schema": "doudou.npm-skill-manifest.v1",
   "package_name": "@follenfang/doudou",
-  "package_version": "0.2.1",
-  "skill_version": "0.2.1",
+  "package_version": "0.2.2",
+  "skill_version": "0.2.2",
   "tree_sha256": "7848fb130800391df74e729f225a106def105e8f030142b6acf0225ee22dfef8",
   "files": [
     {

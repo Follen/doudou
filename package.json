@@ -1,6 +1,6 @@
 {
   "name": "@follenfang/doudou",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Self-describing Douyin Chrome CDP CLI (Rust) and Agent Skill.",
   "type": "module",
   "bin": {
